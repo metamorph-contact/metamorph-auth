@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrivateCodeExchangeRequestV1",
+  "type": "object",
+  "properties": {
+    "callbackOperationId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "code": {
+      "$ref": "#/$defs/LookupCredentialV1"
+    },
+    "codeVerifier": {
+      "$ref": "#/$defs/Secret32"
+    },
+    "exchangeAttemptId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "operationProof": {
+      "$ref": "#/$defs/Secret32"
+    },
+    "registeredCallbackId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "surfaceId": {
+      "$ref": "#/$defs/CatalogId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "code",
+    "codeVerifier",
+    "callbackOperationId",
+    "exchangeAttemptId",
+    "operationProof",
+    "registeredCallbackId",
+    "surfaceId"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "LookupCredentialV1": {
+      "type": "string",
+      "maxLength": 49,
+      "minLength": 46,
+      "pattern": "^k[1-9a-z][0-9a-z]{0,3}\\.[A-Za-z0-9_-]{43}$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

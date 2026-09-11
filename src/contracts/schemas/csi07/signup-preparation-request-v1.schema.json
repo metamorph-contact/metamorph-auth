@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupPreparationRequestV1",
+  "type": "object",
+  "properties": {
+    "capability": {
+      "$ref": "#/$defs/RegionalCredentialCapability"
+    },
+    "email": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "email",
+    "capability"
+  ],
+  "$defs": {
+    "RegionalCredentialCapability": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DestinationPreparationRequestV1",
+  "type": "object",
+  "properties": {
+    "payload": {
+      "$ref": "#/$defs/DestinationPreparationRelayPayloadV1"
+    },
+    "resumeReceipt": {
+      "$ref": "#/$defs/RelayResumeReceipt"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "payload",
+    "resumeReceipt"
+  ],
+  "$defs": {
+    "CancellationLocator": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "DestinationPreparationCapability": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "DestinationPreparationRelayPayloadV1": {
+      "type": "object",
+      "properties": {
+        "cancellationLocator": {
+          "$ref": "#/$defs/CancellationLocator"
+        },
+        "capability": {
+          "$ref": "#/$defs/DestinationPreparationCapability"
+        },
+        "registrationProof": {
+          "$ref": "#/$defs/RemoteOperationRegistrationProof"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "capability",
+        "cancellationLocator",
+        "registrationProof"
+      ]
+    },
+    "RelayResumeReceipt": {
+      "type": "string",
+      "maxLength": 4096,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "RemoteOperationRegistrationProof": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

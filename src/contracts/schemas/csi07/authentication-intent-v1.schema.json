@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuthenticationIntentV1",
+  "type": "string",
+  "enum": [
+    "signIn",
+    "signUp",
+    "addAccount",
+    "switchAccount",
+    "continueSignup"
+  ]
+}

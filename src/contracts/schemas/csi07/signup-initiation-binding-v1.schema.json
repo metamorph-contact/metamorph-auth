@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupInitiationBindingV1",
+  "type": "object",
+  "properties": {
+    "capability": {
+      "$ref": "#/$defs/RegionalCredentialCapability"
+    },
+    "preparationReceipt": {
+      "$ref": "#/$defs/SignupPreparationReceipt"
+    },
+    "registrationProof": {
+      "$ref": "#/$defs/RemoteOperationRegistrationProof"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "capability",
+    "preparationReceipt",
+    "registrationProof"
+  ],
+  "$defs": {
+    "RegionalCredentialCapability": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "RemoteOperationRegistrationProof": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupPreparationReceipt": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

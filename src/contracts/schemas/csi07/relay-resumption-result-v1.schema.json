@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RelayResumptionResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "relay"
+        },
+        "navigationUri": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "navigationUri",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "terminal"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "recoveryAction"
+      ]
+    }
+  ],
+  "$defs": {
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "reauthenticate",
+        "refreshCatalog",
+        "none"
+      ]
+    }
+  }
+}

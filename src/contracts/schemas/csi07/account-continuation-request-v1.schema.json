@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountContinuationRequestV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "establishmentOperationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "kind": {
+          "type": "string",
+          "const": "establishment"
+        },
+        "outcome": {
+          "$ref": "#/$defs/AccountEstablishmentOutcome"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "establishmentOperationId",
+        "outcome"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "authorizationAttemptId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "kind": {
+          "type": "string",
+          "const": "authorization"
+        },
+        "preparation": {
+          "$ref": "#/$defs/HomePreparation"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "authorizationAttemptId",
+        "preparation"
+      ]
+    }
+  ],
+  "$defs": {
+    "AccountEstablishmentOutcome": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "HomePreparation": {
+      "type": "string",
+      "maxLength": 18432,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

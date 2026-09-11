@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountMetadataResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/$defs/HomeAccountSummaryV1"
+        },
+        "kind": {
+          "type": "string",
+          "const": "current"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "validationAttemptId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "validationAttemptId",
+        "account"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "invalid"
+        },
+        "outcome": {
+          "$ref": "#/$defs/AccountValidationReceipt"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "validationAttemptId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "validationAttemptId",
+        "outcome"
+      ]
+    }
+  ],
+  "$defs": {
+    "AccountValidationReceipt": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "AvatarV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "color"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "pictureId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "pictureId",
+            "url",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "HomeAccountSummaryV1": {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "$ref": "#/$defs/AvatarV1"
+        },
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "homeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "homeTenantLabel": {
+          "type": "string"
+        },
+        "homeTenantType": {
+          "$ref": "#/$defs/HomeTenantTypeV1"
+        },
+        "primaryEmail": {
+          "type": "string"
+        },
+        "sessionExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validationReceipt": {
+          "$ref": "#/$defs/AccountValidationReceipt"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "browserAccountId",
+        "displayName",
+        "primaryEmail",
+        "avatar",
+        "homeTenantLabel",
+        "homeTenantType",
+        "homeRegionId",
+        "sessionExpiresAt",
+        "validationReceipt"
+      ]
+    },
+    "HomeTenantTypeV1": {
+      "type": "string",
+      "enum": [
+        "organization",
+        "individual"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

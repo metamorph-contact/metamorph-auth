@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuthorizationFinalizationResultV1",
+  "type": "object",
+  "properties": {
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "navigationUri": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "navigationUri",
+    "expiresAt"
+  ]
+}

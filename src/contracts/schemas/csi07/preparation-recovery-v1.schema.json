@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PreparationRecoveryV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "prepared"
+        },
+        "navigationUri": {
+          "type": "string"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "operationId",
+        "navigationUri",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "notStarted"
+        },
+        "navigationUri": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "navigationUri",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "terminal"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "recoveryAction"
+      ]
+    }
+  ],
+  "$defs": {
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "reauthenticate",
+        "refreshCatalog",
+        "none"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

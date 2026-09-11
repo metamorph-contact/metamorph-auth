@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountEstablishmentResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "established"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "outcome": {
+          "$ref": "#/$defs/AccountEstablishmentOutcome"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "operationId",
+        "outcome",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "credentialRejected"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "notCommitted"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "retryRequired"
+        },
+        "retryAfterSeconds": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "retryAfterSeconds",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "useExisting"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "outcome": {
+          "$ref": "#/$defs/AccountEstablishmentOutcome"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "operationId",
+        "outcome",
+        "recoveryAction",
+        "expiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "stepUpRequired"
+        },
+        "policyCode": {
+          "type": "string"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "policyCode",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "superseded"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "recoveryAction"
+      ]
+    }
+  ],
+  "$defs": {
+    "AccountEstablishmentOutcome": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "reauthenticate",
+        "refreshCatalog",
+        "none"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

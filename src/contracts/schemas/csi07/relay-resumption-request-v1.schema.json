@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RelayResumptionRequestV1",
+  "type": "object",
+  "properties": {
+    "resumeReceipt": {
+      "$ref": "#/$defs/RelayResumeReceipt"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "resumeReceipt"
+  ],
+  "$defs": {
+    "RelayResumeReceipt": {
+      "type": "string",
+      "maxLength": 4096,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

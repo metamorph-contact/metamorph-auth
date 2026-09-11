@@ -2,9 +2,10 @@
 
 This repository owns the common identity frontend. CSI-05 installs its catalog
 contracts, immutable presentation inventory, translations, and approved assets.
-CSI-06 adds generated identity-controller request/response contracts and JSON
-schemas under the `csi06` directories. React pages and application scaffolding
-belong to CSI-11.
+CSI-06 retains its historical identity-controller request/response snapshot
+under the `csi06` directories. CSI-07 retains the destination-binding snapshot
+under `csi07`; CSI-08 adds finalization and recoverable-code-exchange contracts
+under `csi08`. React pages and application scaffolding belong to CSI-11.
 
 Repository documentation and update rules are defined in
 [`docs/README.md`](docs/README.md). The repository remains
@@ -13,8 +14,9 @@ status.
 
 Do not hand-edit `src/contracts/generated` or `src/contracts/schemas`; regenerate
 catalog artifacts through the `identity_catalog export-contracts` command and
-CSI-06 artifacts through `identity_controller_contracts export-contracts`, then
-run `npm run check:contracts`. `generated/release-trust.ts` is the build-
+the current CSI-07/CSI-08 snapshots through `identity_controller_contracts
+export-contracts`; CSI-06 remains immutable historical output. Then run `npm
+run check:contracts`. `generated/release-trust.ts` is the build-
 bound UI release/root trust input; never replace its values with fields from a
 downloaded projection or caller input. Browser code must use the bounded text
 decoders, which reject duplicate member names before strict schema validation,

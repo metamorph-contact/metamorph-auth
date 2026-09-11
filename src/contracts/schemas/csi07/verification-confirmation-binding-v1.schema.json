@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VerificationConfirmationBindingV1",
+  "type": "object",
+  "properties": {
+    "anchorProof": {
+      "$ref": "#/$defs/BrowserAnchorProof"
+    },
+    "context": {
+      "$ref": "#/$defs/HomeVerificationContext"
+    },
+    "preview": {
+      "$ref": "#/$defs/EmailLinkPreview"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "anchorProof",
+    "preview"
+  ],
+  "$defs": {
+    "BrowserAnchorProof": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "EmailLinkPreview": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "HomeVerificationContext": {
+      "type": "string",
+      "maxLength": 4096,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountSelectionRequestV1",
+  "type": "object",
+  "properties": {
+    "browserAccountId": {
+      "$ref": "#/$defs/BrowserAccountId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "selectionAttemptId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "validationReceipt": {
+      "$ref": "#/$defs/AccountValidationReceipt"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "selectionAttemptId",
+    "browserAccountId",
+    "validationReceipt"
+  ],
+  "$defs": {
+    "AccountValidationReceipt": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}
