@@ -1,0 +1,28 @@
+{
+  "name": "shadcn",
+  "register": "The quiet default. True greys, hairline separation, a grotesque that gets out of the way — and a primary that is ink rather than a hue, inverting to near-white in the dark.",
+  "axes": {
+    "geometry": "soft",
+    "depth": "borders",
+    "density": "standard",
+    "contrastTemperament": "standard",
+    "typePersonality": "grotesque",
+    "colorStrategy": "quiet",
+    "motionTemperament": "standard",
+    "ornament": "minimal"
+  },
+  "fonts": {
+    "body": {
+      "family": "Geist Variable"
+    },
+    "display": {
+      "family": "Geist Variable"
+    },
+    "mono": {
+      "family": "Geist Mono Variable"
+    }
+  },
+  "defaultPalette": "neutral",
+  "defaultMode": "system",
+  "kind": "designed"
+}

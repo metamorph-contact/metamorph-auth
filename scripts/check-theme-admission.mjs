@@ -1,0 +1,39 @@
+import { readFile } from "node:fs/promises";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { admitTheme } from "@polymorph/theme";
+
+const uiRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const manifestPath = resolve(process.argv[2] ?? "catalog/identity-ui-release.development.json");
+const release = JSON.parse(await readFile(manifestPath, "utf8"));
+
+for (const pairing of release.themePairings ?? []) {
+  const system = await readControlledJson(pairing.systemSpecPath);
+  const palette = await readControlledJson(pairing.paletteSpecPath);
+  const admission = admitTheme({ system, palette });
+  if (
+    !admission.lawful ||
+    admission.system?.name !== pairing.systemId ||
+    admission.palette?.name !== pairing.paletteId
+  ) {
+    const faults = admission.faults
+      .map((fault) => `[${fault.law}] ${fault.message}`)
+      .join("; ");
+    throw new Error(
+      `Polymorph rejected theme pairing ${pairing.themePairingId}: ${faults || "identity mismatch"}`,
+    );
+  }
+}
+
+async function readControlledJson(path) {
+  if (typeof path !== "string" || isAbsolute(path)) {
+    throw new Error("Theme path must be relative to the identity UI root");
+  }
+  const candidate = resolve(uiRoot, path);
+  const fromRoot = relative(uiRoot, candidate);
+  if (fromRoot.startsWith("..") || isAbsolute(fromRoot)) {
+    throw new Error("Theme path escapes the identity UI root");
+  }
+  return JSON.parse(await readFile(candidate, "utf8"));
+}

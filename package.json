@@ -1,0 +1,21 @@
+{
+  "name": "metamorph-saas-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "check:generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-catalog --bin identity_catalog -- check-generated-contracts ../metamorph-saas-ui docs/features/authentication/contracts config/central-identity/identity-catalog.development.json ../metamorph-saas-ui/catalog/identity-ui-release.development.json",
+    "check:csi06-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-generated-contracts ../metamorph-saas-ui",
+    "check:themes": "tsx scripts/check-theme-admission.mjs catalog/identity-ui-release.development.json",
+    "check:contracts": "npm run check:generated && npm run check:csi06-generated && npm run check:themes && tsc --noEmit && node scripts/check-contracts.mjs"
+  },
+  "dependencies": {
+    "@polymorph/theme": "file:../polymorph/packages/theme",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "tsx": "4.23.13"
+  }
+}

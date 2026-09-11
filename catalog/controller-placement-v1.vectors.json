@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "vectors": [
+    {
+      "browserInitializationId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "realmCatalogDigest": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "eligibleRegionIds": ["ap-south", "eu-west", "us-east"],
+      "expectedRegionId": "us-east"
+    },
+    {
+      "browserInitializationId": "__________________________________________8",
+      "realmCatalogDigest": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "eligibleRegionIds": ["region-b", "region-a"],
+      "expectedRegionId": "region-a"
+    },
+    {
+      "browserInitializationId": "KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKio",
+      "realmCatalogDigest": "Y2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2M",
+      "eligibleRegionIds": ["region-d", "region-b", "region-a", "region-c"],
+      "expectedRegionId": "region-b"
+    },
+    {
+      "browserInitializationId": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc",
+      "realmCatalogDigest": "CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws",
+      "eligibleRegionIds": ["z", "a_z", "a-z", "a.z", "a0", "a"],
+      "expectedRegionId": "a.z"
+    }
+  ]
+}

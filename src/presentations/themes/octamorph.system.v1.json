@@ -1,0 +1,40 @@
+{
+  "name": "octamorph",
+  "register": "The instrument register. A 13px-body working grid, hairlines doing all the architecture, a measured violet spent on action alone, mono as load-bearing chrome \u2014 and the first system to refuse ornament outright.",
+  "axes": {
+    "geometry": "crisp",
+    "depth": "borders",
+    "density": "compact",
+    "contrastTemperament": "standard",
+    "typePersonality": "grotesque",
+    "colorStrategy": "quiet",
+    "motionTemperament": "subtle",
+    "ornament": "none"
+  },
+  "fonts": {
+    "body": {
+      "family": "Inter Variable"
+    },
+    "display": {
+      "family": "Inter Variable"
+    },
+    "mono": {
+      "family": "Fira Code Variable"
+    }
+  },
+  "defaultPalette": "iris",
+  "defaultMode": "system",
+  "kind": "designed",
+  "overrides": {
+    "radius": {
+      "lg": 12
+    },
+    "type": {
+      "ratio": 1.125
+    },
+    "focus": {
+      "width": 2,
+      "offset": 0
+    }
+  }
+}

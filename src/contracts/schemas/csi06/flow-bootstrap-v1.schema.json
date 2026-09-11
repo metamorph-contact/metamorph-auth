@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FlowBootstrapV1",
+  "type": "object",
+  "properties": {
+    "authProjectionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "catalogDigest": {
+      "$ref": "#/$defs/Digest32"
+    },
+    "catalogExpiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "catalogUri": {
+      "type": "string"
+    },
+    "catalogVersion": {
+      "$ref": "#/$defs/CatalogVersion"
+    },
+    "csrfToken": {
+      "$ref": "#/$defs/Secret32"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "flowId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "initialIdentityApiOrigin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "initialRegionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "intent": {
+      "$ref": "#/$defs/AuthenticationIntentV1"
+    },
+    "locale": {
+      "$ref": "#/$defs/Locale"
+    },
+    "nextStep": {
+      "$ref": "#/$defs/FlowNextStepV1"
+    },
+    "presentation": {
+      "$ref": "#/$defs/PresentationV1"
+    },
+    "relocation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RelocationRecoveryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "flowId",
+    "csrfToken",
+    "presentation",
+    "locale",
+    "initialRegionId",
+    "initialIdentityApiOrigin",
+    "intent",
+    "expiresAt",
+    "nextStep",
+    "authProjectionId",
+    "catalogVersion",
+    "catalogDigest",
+    "catalogUri",
+    "catalogExpiresAt"
+  ],
+  "$defs": {
+    "AuthenticationIntentV1": {
+      "type": "string",
+      "enum": [
+        "signIn",
+        "signUp",
+        "addAccount",
+        "switchAccount",
+        "continueSignup"
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "FlowNextStepV1": {
+      "type": "string",
+      "enum": [
+        "chooseAccount",
+        "enterEmail",
+        "recoverCredentialAttempt",
+        "chooseRegion",
+        "continueSignup",
+        "relocateDestination"
+      ]
+    },
+    "Locale": {
+      "type": "string",
+      "maxLength": 35,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "PresentationV1": {
+      "type": "object",
+      "properties": {
+        "logoAssetId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "presentationId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "presentationVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "productNameMessageKey": {
+          "type": "string"
+        },
+        "themeId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "presentationId",
+        "presentationVersion",
+        "productNameMessageKey",
+        "logoAssetId",
+        "themeId"
+      ]
+    },
+    "RelocationRecoveryV1": {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "navigationUri": {
+          "type": "string"
+        },
+        "successorFlowId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "navigationUri",
+        "successorFlowId",
+        "expiresAt"
+      ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

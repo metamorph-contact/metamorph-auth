@@ -1,0 +1,11 @@
+{
+  "name": "neutral",
+  "accentHue": 0,
+  "neutralTint": 0,
+  "chromaBudget": "none",
+  "chartCaps": {
+    "light": 4,
+    "dark": 3,
+    "published": 3
+  }
+}

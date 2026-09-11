@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FlowStartV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "authProjectionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "catalogDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "envelope": {
+          "$ref": "#/$defs/DestinationStart"
+        },
+        "kind": {
+          "type": "string",
+          "const": "initial"
+        },
+        "recoveryReceipt": {
+          "$ref": "#/$defs/StartRecoveryReceipt"
+        },
+        "suggestedControllerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "authProjectionId",
+        "suggestedControllerRegionId",
+        "catalogVersion",
+        "catalogDigest",
+        "recoveryReceipt",
+        "envelope"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "authProjectionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "catalogDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "envelope": {
+          "$ref": "#/$defs/RelocationStart"
+        },
+        "kind": {
+          "type": "string",
+          "const": "relocation"
+        },
+        "recoveryReceipt": {
+          "$ref": "#/$defs/StartRecoveryReceipt"
+        },
+        "suggestedControllerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "authProjectionId",
+        "suggestedControllerRegionId",
+        "catalogVersion",
+        "catalogDigest",
+        "recoveryReceipt",
+        "envelope"
+      ]
+    }
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "DestinationStart": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "RelocationStart": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "StartRecoveryReceipt": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

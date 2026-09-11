@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountValidationRequestV1",
+  "type": "object",
+  "properties": {
+    "browserAccountId": {
+      "$ref": "#/$defs/BrowserAccountId"
+    },
+    "capsuleGeneration": {
+      "$ref": "#/$defs/VersionU64"
+    },
+    "homeOutcome": {
+      "$ref": "#/$defs/AccountValidationReceipt"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "validationAttemptId": {
+      "$ref": "#/$defs/Uuid7"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "validationAttemptId",
+    "browserAccountId",
+    "capsuleGeneration",
+    "homeOutcome"
+  ],
+  "$defs": {
+    "AccountValidationReceipt": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "VersionU64": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "^[1-9][0-9]{0,19}$"
+    }
+  }
+}

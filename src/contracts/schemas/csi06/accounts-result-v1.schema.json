@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccountsResultV1",
+  "type": "object",
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AccountReferenceV1"
+      },
+      "maxItems": 8
+    },
+    "capsuleRepair": {
+      "$ref": "#/$defs/CapsuleRepairStateV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "accounts",
+    "capsuleRepair"
+  ],
+  "$defs": {
+    "AccountMetadataCapability": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "AccountReferenceV1": {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "homeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "identityApiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "metadataCapability": {
+          "$ref": "#/$defs/AccountMetadataCapability"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "browserAccountId",
+        "homeRegionId",
+        "identityApiOrigin",
+        "metadataCapability",
+        "expiresAt"
+      ]
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "CapsuleRepairStateV1": {
+      "type": "string",
+      "enum": [
+        "none",
+        "required"
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    }
+  }
+}

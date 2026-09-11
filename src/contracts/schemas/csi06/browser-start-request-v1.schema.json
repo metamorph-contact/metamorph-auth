@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrowserStartRequestV1",
+  "type": "object",
+  "properties": {
+    "adoptionReceipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SignupAdoptionReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "browserInitializationId": {
+      "$ref": "#/$defs/BrowserInitializationId"
+    },
+    "clientId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "intent": {
+      "$ref": "#/$defs/AuthenticationIntentV1"
+    },
+    "locale": {
+      "$ref": "#/$defs/Locale"
+    },
+    "returnId": {
+      "$ref": "#/$defs/RelativeReturnId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "tabTransactionId": {
+      "$ref": "#/$defs/Secret32"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "clientId",
+    "browserInitializationId",
+    "tabTransactionId",
+    "returnId",
+    "locale",
+    "intent"
+  ],
+  "$defs": {
+    "AuthenticationIntentV1": {
+      "type": "string",
+      "enum": [
+        "signIn",
+        "signUp",
+        "addAccount",
+        "switchAccount",
+        "continueSignup"
+      ]
+    },
+    "BrowserInitializationId": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "Locale": {
+      "type": "string",
+      "maxLength": 35,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+    },
+    "RelativeReturnId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9._-]+$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "SignupAdoptionReceipt": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

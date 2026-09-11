@@ -1,0 +1,462 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IdentityUiReleaseV1",
+  "type": "object",
+  "properties": {
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PresentationAssetV1"
+      },
+      "maxItems": 128
+    },
+    "catalogRootPins": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CatalogRootPinV1"
+      },
+      "maxItems": 3,
+      "minItems": 1
+    },
+    "executableAssetCount": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "localeBundles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$": {
+          "$ref": "#/$defs/UiDataArtifactV1"
+        }
+      }
+    },
+    "localeMessageKeys": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MessageKey"
+          }
+        }
+      }
+    },
+    "presentationSchemaVersions": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "uint16",
+        "maximum": 65535,
+        "minimum": 0
+      },
+      "maxItems": 8,
+      "minItems": 1
+    },
+    "presentations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PresentationManifestV1"
+      },
+      "maxItems": 64,
+      "minItems": 1
+    },
+    "releaseId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "scriptSha256": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 32
+    },
+    "serviceWorkerAssetCount": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "styleSha256": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 32
+    },
+    "supportedLocales": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Locale"
+      },
+      "maxItems": 64,
+      "minItems": 1
+    },
+    "themePairings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ThemePairingV1"
+      },
+      "maxItems": 64,
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "releaseId",
+    "presentationSchemaVersions",
+    "catalogRootPins",
+    "supportedLocales",
+    "themePairings",
+    "assets",
+    "localeMessageKeys",
+    "localeBundles",
+    "presentations",
+    "executableAssetCount",
+    "serviceWorkerAssetCount",
+    "scriptSha256",
+    "styleSha256"
+  ],
+  "$defs": {
+    "AssetAdmissionV1": {
+      "type": "string",
+      "enum": [
+        "reviewedImmutable"
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogRootPinV1": {
+      "type": "object",
+      "properties": {
+        "emergencyDenied": {
+          "type": "boolean"
+        },
+        "issueUntil": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "keyId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "notBefore": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "publicJwk": {
+          "$ref": "#/$defs/EcP256PublicJwkV1"
+        },
+        "verifyUntil": {
+          "$ref": "#/$defs/UtcInstant"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "keyId",
+        "publicJwk",
+        "notBefore",
+        "issueUntil",
+        "verifyUntil",
+        "emergencyDenied"
+      ]
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "ColorModePolicyV1": {
+      "type": "string",
+      "enum": [
+        "system"
+      ]
+    },
+    "ControlledAssetPath": {
+      "type": "string",
+      "maxLength": 240,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "EcKeyTypeV1": {
+      "type": "string",
+      "enum": [
+        "EC"
+      ]
+    },
+    "EcP256PublicJwkV1": {
+      "type": "object",
+      "properties": {
+        "crv": {
+          "$ref": "#/$defs/P256CurveV1"
+        },
+        "kty": {
+          "$ref": "#/$defs/EcKeyTypeV1"
+        },
+        "x": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "y": {
+          "$ref": "#/$defs/Digest32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kty",
+        "crv",
+        "x",
+        "y"
+      ]
+    },
+    "Locale": {
+      "type": "string",
+      "maxLength": 35,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+    },
+    "LogoAssetsV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "assetId": {
+              "$ref": "#/$defs/CatalogId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "modeSafe"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "assetId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "darkAssetId": {
+              "$ref": "#/$defs/CatalogId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "perMode"
+            },
+            "lightAssetId": {
+              "$ref": "#/$defs/CatalogId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "lightAssetId",
+            "darkAssetId"
+          ]
+        }
+      ]
+    },
+    "MessageKey": {
+      "type": "string",
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "P256CurveV1": {
+      "type": "string",
+      "enum": [
+        "P-256"
+      ]
+    },
+    "PresentationAssetV1": {
+      "type": "object",
+      "properties": {
+        "admission": {
+          "$ref": "#/$defs/AssetAdmissionV1"
+        },
+        "assetId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "mediaType": {
+          "$ref": "#/$defs/PresentationMediaTypeV1"
+        },
+        "relativePath": {
+          "$ref": "#/$defs/ControlledAssetPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "relativePath",
+        "mediaType",
+        "sha256",
+        "sizeBytes",
+        "width",
+        "height",
+        "admission"
+      ]
+    },
+    "PresentationLayoutV1": {
+      "type": "string",
+      "enum": [
+        "centeredCard",
+        "splitArtwork"
+      ]
+    },
+    "PresentationManifestV1": {
+      "type": "object",
+      "properties": {
+        "artworkAssetId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CatalogId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "layout": {
+          "$ref": "#/$defs/PresentationLayoutV1"
+        },
+        "logoAssets": {
+          "$ref": "#/$defs/LogoAssetsV1"
+        },
+        "presentationId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "presentationVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "productNameMessageKey": {
+          "$ref": "#/$defs/MessageKey"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "themePairingId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "presentationId",
+        "presentationVersion",
+        "productNameMessageKey",
+        "logoAssets",
+        "themePairingId",
+        "layout"
+      ]
+    },
+    "PresentationMediaTypeV1": {
+      "type": "string",
+      "enum": [
+        "imageSvgXml",
+        "imagePng",
+        "imageWebp"
+      ]
+    },
+    "ThemePairingV1": {
+      "type": "object",
+      "properties": {
+        "modePolicy": {
+          "$ref": "#/$defs/ColorModePolicyV1"
+        },
+        "paletteId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "paletteSpecDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "paletteSpecPath": {
+          "$ref": "#/$defs/ControlledAssetPath"
+        },
+        "systemId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "systemSpecDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "systemSpecPath": {
+          "$ref": "#/$defs/ControlledAssetPath"
+        },
+        "themePairingId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "themePairingId",
+        "systemId",
+        "paletteId",
+        "modePolicy",
+        "systemSpecPath",
+        "systemSpecDigest",
+        "paletteSpecPath",
+        "paletteSpecDigest"
+      ]
+    },
+    "UiDataArtifactV1": {
+      "type": "object",
+      "properties": {
+        "relativePath": {
+          "$ref": "#/$defs/ControlledAssetPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "relativePath",
+        "sha256"
+      ]
+    },
+    "UtcInstant": {
+      "type": "string",
+      "maxLength": 24,
+      "minLength": 1,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$"
+    }
+  }
+}

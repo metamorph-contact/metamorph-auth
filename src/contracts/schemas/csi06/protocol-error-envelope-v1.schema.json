@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProtocolErrorEnvelopeV1",
+  "type": "object",
+  "properties": {
+    "error": {
+      "$ref": "#/$defs/ProtocolErrorV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "error"
+  ],
+  "$defs": {
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "ProtocolErrorCodeV1": {
+      "type": "string",
+      "enum": [
+        "auth.request.invalid",
+        "auth.origin.denied",
+        "auth.proof.invalid",
+        "auth.flow.expired",
+        "auth.flow.limit",
+        "auth.catalog.stale",
+        "auth.credentials.invalid",
+        "auth.credentials.rate_limited",
+        "auth.account.temporarily_unavailable",
+        "auth.account_session.invalid",
+        "auth.account_establishment.superseded",
+        "auth.dependency.unavailable",
+        "auth.internal.invariant"
+      ]
+    },
+    "ProtocolErrorDetailsV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "empty"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "flowLimit"
+            },
+            "limit": {
+              "type": "integer",
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "limit"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expectedCatalogVersion": {
+              "$ref": "#/$defs/CatalogVersion"
+            },
+            "kind": {
+              "type": "string",
+              "const": "catalogStale"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "expectedCatalogVersion"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rateLimit"
+            },
+            "retryAfterSeconds": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "retryAfterSeconds"
+          ]
+        }
+      ]
+    },
+    "ProtocolErrorV1": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ProtocolErrorCodeV1"
+        },
+        "correlationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "details": {
+          "$ref": "#/$defs/ProtocolErrorDetailsV1"
+        },
+        "message": {
+          "type": "string"
+        },
+        "recovery": {
+          "$ref": "#/$defs/ProtocolRecoveryV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "correlationId",
+        "recovery"
+      ]
+    },
+    "ProtocolRecoveryV1": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "action"
+      ]
+    },
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "reauthenticate",
+        "refreshCatalog",
+        "none"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

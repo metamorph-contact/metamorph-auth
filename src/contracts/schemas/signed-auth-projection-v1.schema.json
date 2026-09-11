@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignedAuthProjectionV1",
+  "type": "object",
+  "properties": {
+    "payload": {
+      "$ref": "#/$defs/AuthProjectionV1"
+    },
+    "proof": {
+      "$ref": "#/$defs/CatalogSignatureV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "payload",
+    "proof"
+  ],
+  "$defs": {
+    "AuthProjectionRegionV1": {
+      "type": "object",
+      "properties": {
+        "controllerLifecycle": {
+          "$ref": "#/$defs/ControllerLifecycleV1"
+        },
+        "controllerOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "identityOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "placementEligible": {
+          "type": "boolean"
+        },
+        "productApiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "regionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "regionId",
+        "controllerOrigin",
+        "identityOrigin",
+        "productApiOrigin",
+        "controllerLifecycle",
+        "placementEligible"
+      ]
+    },
+    "AuthProjectionV1": {
+      "type": "object",
+      "properties": {
+        "authProjectionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "clientId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "commonUiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "identityUiReleaseDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "identityUiReleaseId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "immutableAssetOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "issuer": {
+          "$ref": "#/$defs/Origin"
+        },
+        "presentation": {
+          "$ref": "#/$defs/PresentationManifestV1"
+        },
+        "productId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "productUiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "projectionDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "publishedAt": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "realmCatalogDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "realmId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuthProjectionRegionV1"
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "registeredCallbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RegisteredCallbackV1"
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "registeredReturns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RegisteredReturnV1"
+          },
+          "maxItems": 16,
+          "minItems": 1
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "supportedLocales": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Locale"
+          },
+          "maxItems": 64,
+          "minItems": 1
+        },
+        "surfaceId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "verificationKeySetDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "verificationKeySetUri": {
+          "$ref": "#/$defs/ExactPath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "realmId",
+        "issuer",
+        "commonUiOrigin",
+        "immutableAssetOrigin",
+        "identityUiReleaseId",
+        "identityUiReleaseDigest",
+        "catalogVersion",
+        "realmCatalogDigest",
+        "projectionDigest",
+        "authProjectionId",
+        "clientId",
+        "productId",
+        "surfaceId",
+        "productUiOrigin",
+        "registeredCallbacks",
+        "registeredReturns",
+        "presentation",
+        "supportedLocales",
+        "regions",
+        "verificationKeySetUri",
+        "verificationKeySetDigest",
+        "publishedAt",
+        "expiresAt"
+      ]
+    },
+    "CallbackPurposeV1": {
+      "type": "string",
+      "enum": [
+        "authorizationResponse"
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogSignatureV1": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "$ref": "#/$defs/Es256AlgorithmV1"
+        },
+        "keyId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "signature": {
+          "$ref": "#/$defs/Signature64"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "keyId",
+        "signature"
+      ]
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "ControllerLifecycleStateV1": {
+      "type": "string",
+      "enum": [
+        "active",
+        "draining",
+        "retained"
+      ]
+    },
+    "ControllerLifecycleV1": {
+      "type": "object",
+      "properties": {
+        "admitNewHeadsUntil": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "publishedAt": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "serveExistingHeadsUntil": {
+          "$ref": "#/$defs/UtcInstant"
+        },
+        "state": {
+          "$ref": "#/$defs/ControllerLifecycleStateV1"
+        },
+        "verifyArtifactsUntil": {
+          "$ref": "#/$defs/UtcInstant"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "publishedAt",
+        "admitNewHeadsUntil",
+        "serveExistingHeadsUntil",
+        "verifyArtifactsUntil"
+      ]
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Es256AlgorithmV1": {
+      "type": "string",
+      "enum": [
+        "ES256"
+      ]
+    },
+    "ExactPath": {
+      "type": "string",
+      "maxLength": 240,
+      "minLength": 1,
+      "pattern": "^/[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*$"
+    },
+    "Locale": {
+      "type": "string",
+      "maxLength": 35,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+    },
+    "LogoAssetsV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "assetId": {
+              "$ref": "#/$defs/CatalogId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "modeSafe"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "assetId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "darkAssetId": {
+              "$ref": "#/$defs/CatalogId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "perMode"
+            },
+            "lightAssetId": {
+              "$ref": "#/$defs/CatalogId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "lightAssetId",
+            "darkAssetId"
+          ]
+        }
+      ]
+    },
+    "MessageKey": {
+      "type": "string",
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "PresentationLayoutV1": {
+      "type": "string",
+      "enum": [
+        "centeredCard",
+        "splitArtwork"
+      ]
+    },
+    "PresentationManifestV1": {
+      "type": "object",
+      "properties": {
+        "artworkAssetId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CatalogId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "layout": {
+          "$ref": "#/$defs/PresentationLayoutV1"
+        },
+        "logoAssets": {
+          "$ref": "#/$defs/LogoAssetsV1"
+        },
+        "presentationId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "presentationVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "productNameMessageKey": {
+          "$ref": "#/$defs/MessageKey"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "themePairingId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "presentationId",
+        "presentationVersion",
+        "productNameMessageKey",
+        "logoAssets",
+        "themePairingId",
+        "layout"
+      ]
+    },
+    "RegisteredCallbackV1": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/ExactPath"
+        },
+        "purpose": {
+          "$ref": "#/$defs/CallbackPurposeV1"
+        },
+        "registeredCallbackId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "registeredCallbackId",
+        "purpose",
+        "path"
+      ]
+    },
+    "RegisteredReturnV1": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/ExactPath"
+        },
+        "purpose": {
+          "$ref": "#/$defs/ReturnPurposeV1"
+        },
+        "relativeReturnId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "relativeReturnId",
+        "purpose",
+        "path"
+      ]
+    },
+    "ReturnPurposeV1": {
+      "type": "string",
+      "enum": [
+        "authStartRecovery",
+        "productCompletion",
+        "signupAdoption"
+      ]
+    },
+    "Signature64": {
+      "type": "string",
+      "maxLength": 86,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{86}$"
+    },
+    "UtcInstant": {
+      "type": "string",
+      "maxLength": 24,
+      "minLength": 1,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$"
+    }
+  }
+}

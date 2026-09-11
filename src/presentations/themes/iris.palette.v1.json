@@ -1,0 +1,12 @@
+{
+  "name": "iris",
+  "accentHue": 291,
+  "neutralHue": 291,
+  "neutralTint": 0.008,
+  "chromaBudget": "high",
+  "chartCaps": {
+    "light": 4,
+    "dark": 3,
+    "published": 3
+  }
+}

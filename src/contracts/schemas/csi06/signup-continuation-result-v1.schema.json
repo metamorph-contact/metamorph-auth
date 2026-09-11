@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupContinuationResultV1",
+  "type": "object",
+  "properties": {
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "identityApiOrigin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "protocol": {
+      "$ref": "#/$defs/SignupContinuationBindingV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "protocol",
+    "identityApiOrigin",
+    "expiresAt"
+  ],
+  "$defs": {
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "RemoteOperationRegistrationProof": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupContinuationBindingV1": {
+      "type": "object",
+      "properties": {
+        "continuationCapability": {
+          "$ref": "#/$defs/SignupContinuationCapability"
+        },
+        "registrationProof": {
+          "$ref": "#/$defs/RemoteOperationRegistrationProof"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "continuationCapability",
+        "registrationProof"
+      ]
+    },
+    "SignupContinuationCapability": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

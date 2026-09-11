@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "identity-ui-development-5",
+  "presentationSchemaVersions": [1],
+  "catalogRootPins": [
+    {
+      "keyId": "catalog-root-dev-1",
+      "publicJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "HhhTL9R1TALzBB2cdc6zO4P_2BrHzk_ogsyxyYvFiW4",
+        "y": "pGwxHE4v9A3ZajZT5uRURdMt_khuztdcepDGoYiBwKM"
+      },
+      "notBefore": "2026-09-01T00:00:00Z",
+      "issueUntil": "2030-01-01T00:00:00Z",
+      "verifyUntil": "2036-01-01T00:00:00Z",
+      "emergencyDenied": false
+    }
+  ],
+  "supportedLocales": ["en"],
+  "themePairings": [
+    {
+      "themePairingId": "octamorph-iris",
+      "systemId": "octamorph",
+      "paletteId": "iris",
+      "modePolicy": "system",
+      "systemSpecPath": "src/presentations/themes/octamorph.system.v1.json",
+      "systemSpecDigest": "PbjN0KC8VcSoAJ1aOB4h-aM-0bHhF45TKcfLPYS1mDY",
+      "paletteSpecPath": "src/presentations/themes/iris.palette.v1.json",
+      "paletteSpecDigest": "IwmGegT4PLM1heTqDRTFDt8Qg6qWNYy2VpZSaPoCKag"
+    },
+    {
+      "themePairingId": "shadcn-neutral",
+      "systemId": "shadcn",
+      "paletteId": "neutral",
+      "modePolicy": "system",
+      "systemSpecPath": "src/presentations/themes/shadcn.system.v1.json",
+      "systemSpecDigest": "NmouZ8a-uIb_yl4vDEs8dumghb07hUnoB-2xkquh2vI",
+      "paletteSpecPath": "src/presentations/themes/neutral.palette.v1.json",
+      "paletteSpecDigest": "WYUD0mzCyHrlOKoltYwPQYu7321TdvVEK_25pMpZQOM"
+    }
+  ],
+  "assets": [
+    {
+      "assetId": "catalog-test-mark-v1",
+      "relativePath": "public/auth-assets/catalog-test-mark.v1.svg",
+      "mediaType": "imageSvgXml",
+      "sha256": "YqN2fWBWbo9lj7Tg3TlP8PqAWeNmk_P3qga74nJW9E8",
+      "sizeBytes": 314,
+      "width": 64,
+      "height": 64,
+      "admission": "reviewedImmutable"
+    },
+    {
+      "assetId": "octamorph-mark-v1",
+      "relativePath": "public/auth-assets/octamorph-mark.v1.svg",
+      "mediaType": "imageSvgXml",
+      "sha256": "oO2QYgvWfZrLqg3mUPsYpglUa4OXpExxi7fhwUJXTGg",
+      "sizeBytes": 215876,
+      "width": 226,
+      "height": 224,
+      "admission": "reviewedImmutable"
+    }
+  ],
+  "localeMessageKeys": {
+    "en": ["auth.product.catalog-test", "auth.product.octamorph", "region.local-a"]
+  },
+  "localeBundles": {
+    "en": {
+      "relativePath": "src/i18n/locales/en/catalog.json",
+      "sha256": "G44Oxh61t8tYlezU4RQNBsKHjDV1zOmFenL4Wu4KVwg"
+    }
+  },
+  "presentations": [
+    {
+      "schemaVersion": 1,
+      "presentationId": "catalog-test",
+      "presentationVersion": "central-development-5",
+      "productNameMessageKey": "auth.product.catalog-test",
+      "logoAssets": {"kind": "modeSafe", "assetId": "catalog-test-mark-v1"},
+      "artworkAssetId": null,
+      "themePairingId": "shadcn-neutral",
+      "layout": "centeredCard"
+    },
+    {
+      "schemaVersion": 1,
+      "presentationId": "octamorph",
+      "presentationVersion": "central-development-5",
+      "productNameMessageKey": "auth.product.octamorph",
+      "logoAssets": {"kind": "modeSafe", "assetId": "octamorph-mark-v1"},
+      "artworkAssetId": null,
+      "themePairingId": "octamorph-iris",
+      "layout": "centeredCard"
+    }
+  ],
+  "executableAssetCount": 0,
+  "serviceWorkerAssetCount": 0,
+  "scriptSha256": [],
+  "styleSha256": []
+}

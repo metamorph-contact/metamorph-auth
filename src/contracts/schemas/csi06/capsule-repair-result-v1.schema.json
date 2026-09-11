@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CapsuleRepairResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapsuleRepairCheckV1"
+          },
+          "maxItems": 8
+        },
+        "kind": {
+          "type": "string",
+          "const": "homeChecks"
+        },
+        "repairHandle": {
+          "$ref": "#/$defs/CapsuleRepairHandle"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "repairHandle",
+        "checks"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "capsuleGeneration": {
+          "$ref": "#/$defs/VersionU64"
+        },
+        "kind": {
+          "type": "string",
+          "const": "repaired"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "browserAccountId",
+        "capsuleGeneration"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "reauthenticate"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion"
+      ]
+    }
+  ],
+  "$defs": {
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "CapsuleGenerationRecoveryCapability": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "CapsuleRepairCheckV1": {
+      "type": "object",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/CapsuleGenerationRecoveryCapability"
+        },
+        "identityApiOrigin": {
+          "$ref": "#/$defs/Origin"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "identityApiOrigin",
+        "capability"
+      ]
+    },
+    "CapsuleRepairHandle": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "VersionU64": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "^[1-9][0-9]{0,19}$"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrowserAnchorRequestV1",
+  "type": "object",
+  "properties": {
+    "head": {
+      "$ref": "#/$defs/BrowserHeadReferenceV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "verificationContext": {
+      "$ref": "#/$defs/VerificationContext"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "head",
+    "verificationContext"
+  ],
+  "$defs": {
+    "BrowserHeadId": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "BrowserHeadReferenceV1": {
+      "type": "object",
+      "properties": {
+        "browserHeadId": {
+          "$ref": "#/$defs/BrowserHeadId"
+        },
+        "browserInitializationId": {
+          "$ref": "#/$defs/BrowserInitializationId"
+        },
+        "placement": {
+          "$ref": "#/$defs/ControllerPlacementV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "browserHeadId",
+        "browserInitializationId",
+        "placement"
+      ]
+    },
+    "BrowserInitializationId": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "ControllerPlacementV1": {
+      "type": "object",
+      "properties": {
+        "algorithmVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "catalogDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "controllerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "algorithmVersion",
+        "catalogVersion",
+        "catalogDigest",
+        "controllerRegionId"
+      ]
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "VerificationContext": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}
