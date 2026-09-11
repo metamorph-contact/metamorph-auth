@@ -1,10 +1,15 @@
-# Metamorph SaaS identity UI
+# Metamorph Auth
 
 This repository owns the common identity frontend. CSI-05 installs its catalog
 contracts, immutable presentation inventory, translations, and approved assets.
 CSI-06 adds generated identity-controller request/response contracts and JSON
 schemas under the `csi06` directories. React pages and application scaffolding
 belong to CSI-11.
+
+Repository documentation and update rules are defined in
+[`docs/README.md`](docs/README.md). The repository remains
+development-in-progress until the human operator explicitly changes that
+status.
 
 Do not hand-edit `src/contracts/generated` or `src/contracts/schemas`; regenerate
 catalog artifacts through the `identity_catalog export-contracts` command and
