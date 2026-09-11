@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrowserGenerationCancellationResultV1",
+  "type": "object",
+  "properties": {
+    "outcome": {
+      "$ref": "#/$defs/BrowserGenerationCancellationOutcome"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "state": {
+      "$ref": "#/$defs/BrowserGenerationCancellationResultStateV1"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "state",
+    "outcome"
+  ],
+  "$defs": {
+    "BrowserGenerationCancellationOutcome": {
+      "type": "string",
+      "maxLength": 5120,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "BrowserGenerationCancellationResultStateV1": {
+      "type": "string",
+      "enum": [
+        "cancelled",
+        "alreadyDone",
+        "retryRequired"
+      ]
+    }
+  }
+}

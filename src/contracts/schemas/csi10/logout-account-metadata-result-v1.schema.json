@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LogoutAccountMetadataResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "$ref": "#/$defs/AvatarV1"
+        },
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 1
+        },
+        "homeTenantLabel": {
+          "type": "string",
+          "maxLength": 256,
+          "minLength": 1
+        },
+        "homeTenantType": {
+          "$ref": "#/$defs/HomeTenantTypeV1"
+        },
+        "kind": {
+          "type": "string",
+          "const": "current"
+        },
+        "primaryEmail": {
+          "type": "string",
+          "maxLength": 320,
+          "minLength": 3
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "sessionExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "browserAccountId",
+        "displayName",
+        "primaryEmail",
+        "avatar",
+        "homeTenantLabel",
+        "homeTenantType",
+        "sessionExpiresAt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "kind": {
+          "type": "string",
+          "const": "invalid"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "browserAccountId"
+      ]
+    }
+  ],
+  "$defs": {
+    "AvatarV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "color"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "pictureId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "pictureId",
+            "url",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "HomeTenantTypeV1": {
+      "type": "string",
+      "enum": [
+        "organization",
+        "individual"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

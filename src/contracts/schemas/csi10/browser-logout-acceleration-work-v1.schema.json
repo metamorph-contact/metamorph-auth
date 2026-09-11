@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrowserLogoutAccelerationWorkV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "capability": {
+          "$ref": "#/$defs/HomeLogoutCapability"
+        },
+        "homeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "identityApiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "kind": {
+          "type": "string",
+          "const": "account"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "browserAccountId",
+        "homeRegionId",
+        "identityApiOrigin",
+        "capability"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "apiOrigin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "cancellationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "capability": {
+          "$ref": "#/$defs/BrowserGenerationCancellationCapability"
+        },
+        "kind": {
+          "type": "string",
+          "const": "cancelAuthority"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "cancellationId",
+        "apiOrigin",
+        "capability"
+      ]
+    }
+  ],
+  "$defs": {
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "BrowserGenerationCancellationCapability": {
+      "type": "string",
+      "maxLength": 12288,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "HomeLogoutCapability": {
+      "type": "string",
+      "maxLength": 12288,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

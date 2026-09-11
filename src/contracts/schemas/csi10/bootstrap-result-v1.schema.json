@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BootstrapResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "accountSlotId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "csrfEpoch": {
+          "$ref": "#/$defs/VersionU64"
+        },
+        "csrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "kind": {
+          "type": "string",
+          "const": "returnSameTab"
+        },
+        "principal": {
+          "$ref": "#/$defs/PrincipalSummaryV1"
+        },
+        "regionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "returnMode": {
+          "$ref": "#/$defs/ProductReturnModeV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "session": {
+          "$ref": "#/$defs/SessionSummaryV1"
+        },
+        "tabTransactionId": {
+          "$ref": "#/$defs/Secret32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "regionId",
+        "accountSlotId",
+        "returnMode",
+        "tabTransactionId",
+        "session",
+        "principal",
+        "csrfToken",
+        "csrfEpoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "accountSlotId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "csrfEpoch": {
+          "$ref": "#/$defs/VersionU64"
+        },
+        "csrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "kind": {
+          "type": "string",
+          "const": "returnFreshTab"
+        },
+        "principal": {
+          "$ref": "#/$defs/PrincipalSummaryV1"
+        },
+        "regionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "returnMode": {
+          "$ref": "#/$defs/ProductReturnModeV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "session": {
+          "$ref": "#/$defs/SessionSummaryV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "regionId",
+        "accountSlotId",
+        "returnMode",
+        "session",
+        "principal",
+        "csrfToken",
+        "csrfEpoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "accountSlotId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "csrfEpoch": {
+          "$ref": "#/$defs/VersionU64"
+        },
+        "csrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "kind": {
+          "type": "string",
+          "const": "ordinary"
+        },
+        "principal": {
+          "$ref": "#/$defs/PrincipalSummaryV1"
+        },
+        "regionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "session": {
+          "$ref": "#/$defs/SessionSummaryV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "regionId",
+        "accountSlotId",
+        "session",
+        "principal",
+        "csrfToken",
+        "csrfEpoch"
+      ]
+    }
+  ],
+  "$defs": {
+    "AvatarV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "color"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "pictureId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "pictureId",
+            "url",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "PrincipalSummaryV1": {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "$ref": "#/$defs/AvatarV1"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "avatar"
+      ]
+    },
+    "ProductReturnModeV1": {
+      "type": "string",
+      "enum": [
+        "sameTab",
+        "freshTab"
+      ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "SessionSummaryV1": {
+      "type": "object",
+      "properties": {
+        "absoluteExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "authenticatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "idleExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "authenticatedAt",
+        "idleExpiresAt",
+        "absoluteExpiresAt"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "VersionU64": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "^[1-9][0-9]{0,19}$"
+    }
+  }
+}

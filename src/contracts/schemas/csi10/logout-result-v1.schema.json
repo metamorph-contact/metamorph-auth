@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "RelayResumptionResultV1",
+  "title": "LogoutResultV1",
   "oneOf": [
     {
       "type": "object",
@@ -11,32 +11,13 @@
         },
         "kind": {
           "type": "string",
-          "const": "relay"
+          "const": "recoverable"
         },
-        "navigationUri": {
-          "type": "string"
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
         },
-        "schemaVersion": {
-          "type": "integer",
-          "format": "uint16",
-          "maximum": 65535,
-          "minimum": 0
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "schemaVersion",
-        "navigationUri",
-        "expiresAt"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "const": "terminal"
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
         },
         "recoveryAction": {
           "$ref": "#/$defs/RecoveryActionV1"
@@ -46,17 +27,73 @@
           "format": "uint16",
           "maximum": 65535,
           "minimum": 0
+        },
+        "state": {
+          "$ref": "#/$defs/ProductLogoutRecoverableStateV1"
         }
       },
       "additionalProperties": false,
       "required": [
         "kind",
         "schemaVersion",
+        "operationId",
+        "state",
+        "logoutCsrfToken",
+        "expiresAt",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "terminal"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "state": {
+          "$ref": "#/$defs/ProductLogoutTerminalStateV1"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "operationId",
+        "state",
         "recoveryAction"
       ]
     }
   ],
   "$defs": {
+    "ProductLogoutRecoverableStateV1": {
+      "type": "string",
+      "enum": [
+        "prepared"
+      ]
+    },
+    "ProductLogoutTerminalStateV1": {
+      "type": "string",
+      "enum": [
+        "notCommitted",
+        "retryRequired",
+        "revoked",
+        "alreadyDone",
+        "committedPendingEnforcement",
+        "failed"
+      ]
+    },
     "RecoveryActionV1": {
       "type": "string",
       "enum": [
@@ -79,6 +116,17 @@
         "refreshCatalog",
         "none"
       ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     }
   }
 }

@@ -1,0 +1,671 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrowserLogoutResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LogoutDisplayAccountV1"
+          },
+          "maxItems": 8
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "pendingAccountCount": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 8,
+          "minimum": 0
+        },
+        "pendingCancellationCount": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 8,
+          "minimum": 0
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "prepared"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "accounts",
+        "pendingAccountCount",
+        "pendingCancellationCount",
+        "logoutCsrfToken",
+        "expiresAt",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "accelerationWork": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BrowserLogoutAccelerationWorkV1"
+          },
+          "maxItems": 2,
+          "minItems": 1
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "remainingAccountCount": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 8,
+          "minimum": 0
+        },
+        "remainingCancellationCount": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 8,
+          "minimum": 0
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "partial"
+        },
+        "workPageId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "workPageId",
+        "accelerationWork",
+        "remainingAccountCount",
+        "remainingCancellationCount",
+        "logoutCsrfToken",
+        "expiresAt",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LogoutAccountTerminalV1"
+          },
+          "maxItems": 8
+        },
+        "cancellations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LogoutCancellationTerminalV1"
+          },
+          "maxItems": 8
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "complete"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "accounts",
+        "cancellations",
+        "logoutCsrfToken",
+        "expiresAt",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "acknowledged"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "clearsSourceAnchor": {
+          "type": "boolean"
+        },
+        "completionMode": {
+          "$ref": "#/$defs/BrowserLogoutCompletionModeV1"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "pageId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "remainingPages": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 4,
+          "minimum": 0
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "cleanupPage"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "pageId",
+        "remainingPages",
+        "clearsSourceAnchor",
+        "completionMode",
+        "logoutCsrfToken",
+        "expiresAt",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "retired"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "deliveryState": {
+          "$ref": "#/$defs/BrowserLogoutDeliveryStatusV1"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "detached"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "deliveryState",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "notCommittedAccount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "browserAccountId",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "sourceBrowserHeadId": {
+          "$ref": "#/$defs/BrowserHeadId"
+        },
+        "state": {
+          "type": "string",
+          "const": "notCommittedBrowserAll"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "sourceBrowserHeadId",
+        "recoveryAction"
+      ]
+    }
+  ],
+  "$defs": {
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "BrowserGenerationCancellationCapability": {
+      "type": "string",
+      "maxLength": 12288,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "BrowserHeadId": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "BrowserLogoutAccelerationWorkV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "browserAccountId": {
+              "$ref": "#/$defs/BrowserAccountId"
+            },
+            "capability": {
+              "$ref": "#/$defs/HomeLogoutCapability"
+            },
+            "homeRegionId": {
+              "$ref": "#/$defs/CatalogId"
+            },
+            "identityApiOrigin": {
+              "$ref": "#/$defs/Origin"
+            },
+            "kind": {
+              "type": "string",
+              "const": "account"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "browserAccountId",
+            "homeRegionId",
+            "identityApiOrigin",
+            "capability"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "apiOrigin": {
+              "$ref": "#/$defs/Origin"
+            },
+            "cancellationId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "capability": {
+              "$ref": "#/$defs/BrowserGenerationCancellationCapability"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cancelAuthority"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cancellationId",
+            "apiOrigin",
+            "capability"
+          ]
+        }
+      ]
+    },
+    "BrowserLogoutCompletionModeV1": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "detachPendingDelivery"
+      ]
+    },
+    "BrowserLogoutDeliveryStatusV1": {
+      "type": "string",
+      "enum": [
+        "continuingInBackground"
+      ]
+    },
+    "BrowserLogoutScopeV1": {
+      "type": "string",
+      "enum": [
+        "identityAccount",
+        "identityBrowserAll"
+      ]
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "HomeLogoutCapability": {
+      "type": "string",
+      "maxLength": 12288,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "LogoutAccountTerminalStateV1": {
+      "type": "string",
+      "enum": [
+        "revoked",
+        "alreadyDone",
+        "authorityExpired"
+      ]
+    },
+    "LogoutAccountTerminalV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "browserAccountId": {
+              "$ref": "#/$defs/BrowserAccountId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "done"
+            },
+            "state": {
+              "$ref": "#/$defs/LogoutAccountTerminalStateV1"
+            },
+            "terminalEvidenceDigest": {
+              "$ref": "#/$defs/Digest32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "browserAccountId",
+            "state",
+            "terminalEvidenceDigest"
+          ]
+        }
+      ]
+    },
+    "LogoutCancellationTerminalStateV1": {
+      "type": "string",
+      "enum": [
+        "cancelled",
+        "alreadyDone",
+        "authorityExpired"
+      ]
+    },
+    "LogoutCancellationTerminalV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cancellationId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "kind": {
+              "type": "string",
+              "const": "done"
+            },
+            "state": {
+              "$ref": "#/$defs/LogoutCancellationTerminalStateV1"
+            },
+            "terminalEvidenceDigest": {
+              "$ref": "#/$defs/Digest32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cancellationId",
+            "state",
+            "terminalEvidenceDigest"
+          ]
+        }
+      ]
+    },
+    "LogoutDisplayAccountV1": {
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "homeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "browserAccountId",
+        "homeRegionId"
+      ]
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "finishFirstActivation",
+        "repairProductSession",
+        "reauthenticate",
+        "retainCurrentSession",
+        "retryLogout",
+        "acknowledgeComplete",
+        "acknowledgeCleanupPage",
+        "signInFresh",
+        "retainAccountCapsule",
+        "restoreSource",
+        "refreshCatalog",
+        "none"
+      ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

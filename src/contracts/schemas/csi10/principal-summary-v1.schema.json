@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrincipalSummaryV1",
+  "type": "object",
+  "properties": {
+    "avatar": {
+      "$ref": "#/$defs/AvatarV1"
+    },
+    "displayName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "displayName",
+    "avatar"
+  ],
+  "$defs": {
+    "AvatarV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "color"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "pictureId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "pictureId",
+            "url",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

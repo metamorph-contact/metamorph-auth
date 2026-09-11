@@ -221,7 +221,16 @@
         "useExistingAccount",
         "restartWithRequiredAssurance",
         "restartProductAuth",
+        "finishFirstActivation",
+        "repairProductSession",
         "reauthenticate",
+        "retainCurrentSession",
+        "retryLogout",
+        "acknowledgeComplete",
+        "acknowledgeCleanupPage",
+        "signInFresh",
+        "retainAccountCapsule",
+        "restoreSource",
         "refreshCatalog",
         "none"
       ]

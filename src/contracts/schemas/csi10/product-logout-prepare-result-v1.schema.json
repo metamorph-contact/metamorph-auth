@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "RelayResumptionResultV1",
+  "title": "ProductLogoutPrepareResultV1",
   "oneOf": [
     {
       "type": "object",
@@ -9,34 +9,37 @@
           "type": "string",
           "format": "date-time"
         },
-        "kind": {
-          "type": "string",
-          "const": "relay"
+        "logoutCsrfToken": {
+          "$ref": "#/$defs/Secret32"
         },
-        "navigationUri": {
-          "type": "string"
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
         },
         "schemaVersion": {
           "type": "integer",
           "format": "uint16",
           "maximum": 65535,
           "minimum": 0
+        },
+        "state": {
+          "type": "string",
+          "const": "prepared"
         }
       },
       "additionalProperties": false,
       "required": [
-        "kind",
+        "state",
         "schemaVersion",
-        "navigationUri",
+        "operationId",
+        "logoutCsrfToken",
         "expiresAt"
       ]
     },
     {
       "type": "object",
       "properties": {
-        "kind": {
-          "type": "string",
-          "const": "terminal"
+        "prepareAttemptId": {
+          "$ref": "#/$defs/Secret32"
         },
         "recoveryAction": {
           "$ref": "#/$defs/RecoveryActionV1"
@@ -46,12 +49,17 @@
           "format": "uint16",
           "maximum": 65535,
           "minimum": 0
+        },
+        "state": {
+          "type": "string",
+          "const": "notCommitted"
         }
       },
       "additionalProperties": false,
       "required": [
-        "kind",
+        "state",
         "schemaVersion",
+        "prepareAttemptId",
         "recoveryAction"
       ]
     }
@@ -79,6 +87,17 @@
         "refreshCatalog",
         "none"
       ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     }
   }
 }

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HomeLogoutRequestV1",
+  "description": "Direct, capability-authenticated identity-home logout delivery. The\nbrowser carries no account-session bearer on this request.",
+  "type": "object",
+  "properties": {
+    "capability": {
+      "$ref": "#/$defs/HomeLogoutCapability"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "capability"
+  ],
+  "$defs": {
+    "HomeLogoutCapability": {
+      "type": "string",
+      "maxLength": 12288,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

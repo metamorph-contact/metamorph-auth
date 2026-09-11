@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LogoutCancellationTerminalV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "cancellationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "kind": {
+          "type": "string",
+          "const": "done"
+        },
+        "state": {
+          "$ref": "#/$defs/LogoutCancellationTerminalStateV1"
+        },
+        "terminalEvidenceDigest": {
+          "$ref": "#/$defs/Digest32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "cancellationId",
+        "state",
+        "terminalEvidenceDigest"
+      ]
+    }
+  ],
+  "$defs": {
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "LogoutCancellationTerminalStateV1": {
+      "type": "string",
+      "enum": [
+        "cancelled",
+        "alreadyDone",
+        "authorityExpired"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

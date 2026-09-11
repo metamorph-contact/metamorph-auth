@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProductLogoutTerminalStateV1",
+  "type": "string",
+  "enum": [
+    "notCommitted",
+    "retryRequired",
+    "revoked",
+    "alreadyDone",
+    "committedPendingEnforcement",
+    "failed"
+  ]
+}

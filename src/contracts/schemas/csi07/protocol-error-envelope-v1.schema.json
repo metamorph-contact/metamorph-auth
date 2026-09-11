@@ -40,6 +40,13 @@
         "auth.account_session.invalid",
         "auth.account_establishment.superseded",
         "auth.destination.capacity",
+        "auth.callback.invalid",
+        "auth.callback.superseded",
+        "auth.product_session.provisional",
+        "auth.product_session.stale_cookie",
+        "auth.product_session.invalid",
+        "auth.logout.retry_required",
+        "auth.logout.failed",
         "auth.code.invalid",
         "auth.code.expired",
         "auth.code.superseded",
@@ -120,6 +127,23 @@
             "kind",
             "retryAfterSeconds"
           ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "callbackOperationId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "kind": {
+              "type": "string",
+              "const": "callbackOperation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "callbackOperationId"
+          ]
         }
       ]
     },
@@ -172,7 +196,16 @@
         "useExistingAccount",
         "restartWithRequiredAssurance",
         "restartProductAuth",
+        "finishFirstActivation",
+        "repairProductSession",
         "reauthenticate",
+        "retainCurrentSession",
+        "retryLogout",
+        "acknowledgeComplete",
+        "acknowledgeCleanupPage",
+        "signInFresh",
+        "retainAccountCapsule",
+        "restoreSource",
         "refreshCatalog",
         "none"
       ]

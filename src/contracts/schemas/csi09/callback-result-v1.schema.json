@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "RelayResumptionResultV1",
+  "title": "CallbackResultV1",
   "oneOf": [
     {
       "type": "object",
@@ -11,7 +11,7 @@
         },
         "kind": {
           "type": "string",
-          "const": "relay"
+          "const": "completed"
         },
         "navigationUri": {
           "type": "string"
@@ -34,12 +34,16 @@
     {
       "type": "object",
       "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "kind": {
           "type": "string",
-          "const": "terminal"
+          "const": "resumeFinalization"
         },
-        "recoveryAction": {
-          "$ref": "#/$defs/RecoveryActionV1"
+        "navigationUri": {
+          "type": "string"
         },
         "schemaVersion": {
           "type": "integer",
@@ -52,33 +56,9 @@
       "required": [
         "kind",
         "schemaVersion",
-        "recoveryAction"
+        "navigationUri",
+        "expiresAt"
       ]
     }
-  ],
-  "$defs": {
-    "RecoveryActionV1": {
-      "type": "string",
-      "enum": [
-        "retrySameOperation",
-        "retryCredentials",
-        "enterCredentials",
-        "useExistingAccount",
-        "restartWithRequiredAssurance",
-        "restartProductAuth",
-        "finishFirstActivation",
-        "repairProductSession",
-        "reauthenticate",
-        "retainCurrentSession",
-        "retryLogout",
-        "acknowledgeComplete",
-        "acknowledgeCleanupPage",
-        "signInFresh",
-        "retainAccountCapsule",
-        "restoreSource",
-        "refreshCatalog",
-        "none"
-      ]
-    }
-  }
+  ]
 }

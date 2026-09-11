@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "RelayResumptionResultV1",
+  "title": "ProductSessionRepairResultV1",
   "oneOf": [
     {
       "type": "object",
@@ -11,10 +11,10 @@
         },
         "kind": {
           "type": "string",
-          "const": "relay"
+          "const": "repaired"
         },
-        "navigationUri": {
-          "type": "string"
+        "regionId": {
+          "$ref": "#/$defs/CatalogId"
         },
         "schemaVersion": {
           "type": "integer",
@@ -27,7 +27,7 @@
       "required": [
         "kind",
         "schemaVersion",
-        "navigationUri",
+        "regionId",
         "expiresAt"
       ]
     },
@@ -36,10 +36,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "const": "terminal"
-        },
-        "recoveryAction": {
-          "$ref": "#/$defs/RecoveryActionV1"
+          "const": "restartRequired"
         },
         "schemaVersion": {
           "type": "integer",
@@ -51,34 +48,16 @@
       "additionalProperties": false,
       "required": [
         "kind",
-        "schemaVersion",
-        "recoveryAction"
+        "schemaVersion"
       ]
     }
   ],
   "$defs": {
-    "RecoveryActionV1": {
+    "CatalogId": {
       "type": "string",
-      "enum": [
-        "retrySameOperation",
-        "retryCredentials",
-        "enterCredentials",
-        "useExistingAccount",
-        "restartWithRequiredAssurance",
-        "restartProductAuth",
-        "finishFirstActivation",
-        "repairProductSession",
-        "reauthenticate",
-        "retainCurrentSession",
-        "retryLogout",
-        "acknowledgeComplete",
-        "acknowledgeCleanupPage",
-        "signInFresh",
-        "retainAccountCapsule",
-        "restoreSource",
-        "refreshCatalog",
-        "none"
-      ]
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
     }
   }
 }

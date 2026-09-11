@@ -1,53 +1,68 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "PreparationRecoveryV1",
+  "title": "BootstrapRequestV1",
   "oneOf": [
     {
       "type": "object",
       "properties": {
-        "expiresAt": {
-          "type": "string",
-          "format": "date-time"
+        "expectedTabTransactionId": {
+          "$ref": "#/$defs/Secret32"
         },
         "kind": {
           "type": "string",
-          "const": "prepared"
+          "const": "returnSameTab"
         },
-        "navigationUri": {
-          "type": "string"
+        "returnReceipt": {
+          "$ref": "#/$defs/ProductSuccessReceipt"
         },
-        "operationId": {
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "returnReceipt",
+        "expectedTabTransactionId"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "returnFreshTab"
+        },
+        "returnReceipt": {
+          "$ref": "#/$defs/ProductSuccessReceipt"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "returnReceipt"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "accountSlotId": {
           "$ref": "#/$defs/Uuid7"
         },
-        "schemaVersion": {
-          "type": "integer",
-          "format": "uint16",
-          "maximum": 65535,
-          "minimum": 0
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "schemaVersion",
-        "operationId",
-        "navigationUri",
-        "expiresAt"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "expiresAt": {
-          "type": "string",
-          "format": "date-time"
-        },
         "kind": {
           "type": "string",
-          "const": "notStarted"
-        },
-        "navigationUri": {
-          "type": "string"
+          "const": "ordinary"
         },
         "schemaVersion": {
           "type": "integer",
@@ -60,58 +75,22 @@
       "required": [
         "kind",
         "schemaVersion",
-        "navigationUri",
-        "expiresAt"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "const": "terminal"
-        },
-        "recoveryAction": {
-          "$ref": "#/$defs/RecoveryActionV1"
-        },
-        "schemaVersion": {
-          "type": "integer",
-          "format": "uint16",
-          "maximum": 65535,
-          "minimum": 0
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "schemaVersion",
-        "recoveryAction"
+        "accountSlotId"
       ]
     }
   ],
   "$defs": {
-    "RecoveryActionV1": {
+    "ProductSuccessReceipt": {
       "type": "string",
-      "enum": [
-        "retrySameOperation",
-        "retryCredentials",
-        "enterCredentials",
-        "useExistingAccount",
-        "restartWithRequiredAssurance",
-        "restartProductAuth",
-        "finishFirstActivation",
-        "repairProductSession",
-        "reauthenticate",
-        "retainCurrentSession",
-        "retryLogout",
-        "acknowledgeComplete",
-        "acknowledgeCleanupPage",
-        "signInFresh",
-        "retainAccountCapsule",
-        "restoreSource",
-        "refreshCatalog",
-        "none"
-      ]
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
     },
     "Uuid7": {
       "type": "string",
