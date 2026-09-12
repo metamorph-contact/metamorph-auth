@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmailLinkPreviewResultV1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "challengeKind": {
+          "$ref": "#/$defs/EmailChallengeKindV1"
+        },
+        "email": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "type": "string",
+          "const": "ready"
+        },
+        "preview": {
+          "$ref": "#/$defs/EmailLinkPreview"
+        },
+        "productNameMessageKey": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "schemaVersion",
+        "challengeKind",
+        "email",
+        "productNameMessageKey",
+        "preview",
+        "expiresAt"
+      ]
+    }
+  ],
+  "$defs": {
+    "EmailChallengeKindV1": {
+      "type": "string",
+      "enum": [
+        "signupVerification",
+        "passwordRecovery"
+      ]
+    },
+    "EmailLinkPreview": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

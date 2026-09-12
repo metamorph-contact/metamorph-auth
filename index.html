@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      /* First executable: stage and erase protocol fragments before any fetch. */
+      (function () {
+        "use strict";
+        var hash = window.location.hash;
+        var bytes = new TextEncoder().encode(hash).byteLength;
+        var staged = bytes <= 16384 ? hash : "#invalid";
+        if (staged !== "#invalid" && hash !== "") {
+          try {
+            var parameters = new URLSearchParams(hash.slice(1));
+            var kind = parameters.get("kind");
+            if (kind === "initial" || kind === "relocation") {
+              var recoveryKey = "metamorph.auth.start-recovery.v1";
+              sessionStorage.removeItem(recoveryKey);
+              var expected = [
+                "v",
+                "kind",
+                "projection",
+                "controller",
+                "catalog",
+                "digest",
+                "recovery",
+                "start",
+              ];
+              var names = Array.from(parameters.keys());
+              var recovery = parameters.get("recovery");
+              if (
+                names.length !== expected.length ||
+                names.some(function (name, index) {
+                  return name !== expected[index];
+                }) ||
+                parameters.get("v") !== "1" ||
+                !/^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$/.test(
+                  parameters.get("projection") || "",
+                ) ||
+                !/^[A-Za-z0-9._-]{1,64}$/.test(
+                  parameters.get("catalog") || "",
+                ) ||
+                !/^[A-Za-z0-9_-]{43}$/.test(parameters.get("digest") || "") ||
+                !/^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}$/.test(
+                  recovery || "",
+                ) ||
+                recovery.length > 3072
+              ) {
+                staged = "#invalid";
+              } else {
+                var retained = JSON.stringify({
+                  schemaVersion: 1,
+                  projection: parameters.get("projection"),
+                  catalog: parameters.get("catalog"),
+                  digest: parameters.get("digest"),
+                  recovery: recovery,
+                  receivedAt: new Date().toISOString(),
+                });
+                sessionStorage.setItem(recoveryKey, retained);
+                if (sessionStorage.getItem(recoveryKey) !== retained)
+                  staged = "#invalid";
+              }
+            }
+          } catch (_) {
+            staged = "#invalid";
+          }
+        }
+        Object.defineProperty(window, "__MM_AUTH_FRAGMENT_V1__", {
+          value: staged,
+          configurable: true,
+          enumerable: false,
+          writable: false,
+        });
+        if (hash !== "") {
+          window.history.replaceState(
+            window.history.state,
+            "",
+            window.location.pathname + window.location.search,
+          );
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Metamorph identity</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

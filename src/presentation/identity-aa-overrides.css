@@ -1,0 +1,64 @@
+/* Identity is a WCAG 2.2 AA surface. Polymorph's general theme admission uses
+   APCA; these scoped role overrides close the stricter identity pairings
+   without changing the generic design-system contract for product UIs. */
+[data-system='octamorph'][data-palette='iris'][data-mode='light'] {
+  --pm-accent-bg: #7048d0;
+  --pm-accent-bg-hover: #683fc3;
+  --pm-accent-bg-active: #5f35b5;
+  --pm-accent-contrast: #ffffff;
+  --pm-danger-solid: #c6282e;
+  --pm-danger-solid-hover: #b92329;
+  --pm-danger-solid-active: #a61e24;
+  --pm-danger-contrast: #ffffff;
+  --pm-text-secondary: #6f6f74;
+  --pm-text-muted: #6f6f74;
+  --pm-danger-border: #c6282e;
+  --pm-border-default: #8f8f94;
+  --pm-border-field: #8f8f94;
+  --pm-border-focus: #7048d0;
+  --pm-border-focus-solid: #7048d0;
+}
+
+[data-system='octamorph'][data-palette='iris'][data-mode='dark'] {
+  --pm-accent-bg: #8b65f8;
+  --pm-accent-bg-hover: #9677fa;
+  --pm-accent-bg-active: #a287fb;
+  --pm-accent-contrast: #0a0a0c;
+  --pm-danger-solid: #b6706b;
+  --pm-danger-solid-hover: #bf7b75;
+  --pm-danger-solid-active: #c88782;
+  --pm-danger-contrast: #0a0a0c;
+  --pm-text-muted: #b1b0b6;
+  --pm-danger-border: #b6706b;
+  --pm-border-default: #68686b;
+  --pm-border-field: #68686b;
+  --pm-border-focus: #a78bfa;
+  --pm-border-focus-solid: #a78bfa;
+}
+
+[data-system='shadcn'][data-palette='neutral'][data-mode='light'] {
+  --pm-danger-solid: #9b4f4a;
+  --pm-danger-solid-hover: #934540;
+  --pm-danger-solid-active: #873a36;
+  --pm-danger-contrast: #ffffff;
+  --pm-text-secondary: #666666;
+  --pm-text-muted: #666666;
+  --pm-danger-border: #9b4f4a;
+  --pm-border-default: #8f8f8f;
+  --pm-border-field: #8f8f8f;
+  --pm-border-focus: #737373;
+  --pm-border-focus-solid: #737373;
+}
+
+[data-system='shadcn'][data-palette='neutral'][data-mode='dark'] {
+  --pm-danger-solid: #b6706b;
+  --pm-danger-solid-hover: #bf7b75;
+  --pm-danger-solid-active: #c88782;
+  --pm-danger-contrast: #0a0a0a;
+  --pm-text-muted: #b1b1b1;
+  --pm-danger-border: #b6706b;
+  --pm-border-default: #686868;
+  --pm-border-field: #686868;
+  --pm-border-focus: #a3a3a3;
+  --pm-border-focus-solid: #a3a3a3;
+}

@@ -1,35 +1,23 @@
-import Ajv2020, { type ValidateFunction } from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
+import type { ValidateFunction } from "ajv";
 
-import projectionSchema from "./schemas/signed-auth-projection-v1.schema.json" with {
-  type: "json",
-};
-import keySetSchema from "./schemas/signed-browser-verification-key-set-v1.schema.json" with {
-  type: "json",
-};
+import {
+  browserKeySet as generatedKeySetValidator,
+  catalogProjection as generatedProjectionValidator,
+} from "./runtime-validators.generated.ts";
 import type { SignedAuthProjectionV1 } from "./generated/SignedAuthProjectionV1";
 import type { SignedBrowserVerificationKeySetV1 } from "./generated/SignedBrowserVerificationKeySetV1";
 
-const ajv = new Ajv2020({ allErrors: true, strict: true });
-addFormats(ajv);
-ajv.addFormat("uint16", {
-  type: "number",
-  validate: (value: number) =>
-    Number.isInteger(value) && value >= 0 && value <= 65_535,
-});
-
-const projectionValidator = ajv.compile(
-  projectionSchema,
-) as ValidateFunction<SignedAuthProjectionV1>;
-const keySetValidator = ajv.compile(
-  keySetSchema,
-) as ValidateFunction<SignedBrowserVerificationKeySetV1>;
+const projectionValidator = generatedProjectionValidator as ValidateFunction<SignedAuthProjectionV1>;
+const keySetValidator = generatedKeySetValidator as ValidateFunction<SignedBrowserVerificationKeySetV1>;
 const MAX_PROJECTION_BYTES = 256 * 1024;
 const MAX_KEY_SET_BYTES = 128 * 1024;
 
 export class IdentityCatalogDecodeError extends Error {
   constructor(kind: "auth projection" | "browser verification key set", validator: ValidateFunction) {
-    super(`Invalid ${kind}: ${ajv.errorsText(validator.errors, { separator: "; " })}`);
+    const details = validator.errors?.slice(0, 8).map((error) =>
+      `${error.instancePath || "/"} ${error.message ?? "is invalid"}`,
+    ).join("; ");
+    super(`Invalid ${kind}${details === undefined ? "" : `: ${details}`}`);
     this.name = "IdentityCatalogDecodeError";
   }
 }
@@ -88,6 +76,11 @@ function decodeBoundedJson<T>(
   }
   rejectDuplicateObjectKeys(text);
   return decode(JSON.parse(text) as unknown);
+}
+
+/** Shared strict JSON ingress for generated protocol schemas. */
+export function decodeBoundedJsonText(text: string, maxBytes: number): unknown {
+  return decodeBoundedJson(text, maxBytes, (value) => value);
 }
 
 function rejectDuplicateObjectKeys(text: string): void {

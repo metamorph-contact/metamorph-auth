@@ -1,0 +1,201 @@
+@import '@polymorph/ui/base.css';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+@import '@fontsource-variable/fira-code';
+
+html,
+body,
+#root {
+  min-block-size: 100%;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+}
+
+[data-page-progress] {
+  block-size: 2px !important;
+}
+
+.identity-shell {
+  opacity: 1;
+  transition: opacity var(--pm-motion-duration-surface-exit) var(--pm-motion-easing-exit);
+}
+
+.identity-shell[data-leaving='true'] {
+  opacity: 0;
+}
+
+.identity-controls {
+  border: 0;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.identity-status {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.identity-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pm-space-3);
+  color: var(--pm-text-primary);
+  font-family: var(--pm-display-sm-family);
+  font-size: var(--pm-text-2xl-size);
+  line-height: 1;
+}
+
+.identity-brand img {
+  inline-size: 3rem;
+  block-size: 3rem;
+  object-fit: contain;
+}
+
+.identity-artwork {
+  display: block;
+  inline-size: min(100%, 34rem);
+  max-block-size: 34rem;
+  object-fit: contain;
+}
+
+.identity-inline-actions,
+.identity-account-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pm-space-2);
+}
+
+.identity-account {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--pm-space-3);
+  align-items: center;
+  text-align: start;
+}
+
+.identity-account-copy {
+  min-inline-size: 0;
+}
+
+.identity-account-name,
+.identity-account-email {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identity-account-tenant {
+  display: block;
+  overflow: hidden;
+  color: var(--pm-text-secondary);
+  font-size: var(--pm-text-sm-size);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identity-account-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pm-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.identity-account-name {
+  color: var(--pm-text-primary);
+  font-weight: 600;
+}
+
+.identity-account-email {
+  color: var(--pm-text-secondary);
+  font-size: var(--pm-text-sm-size);
+}
+
+.identity-back {
+  border: 0;
+  background: transparent;
+  color: var(--pm-text-secondary);
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--pm-control-height-sm);
+  block-size: var(--pm-control-height-sm);
+  border-radius: var(--pm-radius-control);
+  cursor: pointer;
+}
+
+.identity-back:not(:disabled):hover {
+  color: var(--pm-text-primary);
+  background: var(--pm-bg-subtle);
+}
+
+.identity-back:focus-visible {
+  outline: var(--pm-focus-width) solid var(--pm-border-focus);
+  outline-offset: var(--pm-focus-offset);
+}
+
+.identity-back:disabled {
+  cursor: not-allowed;
+  color: var(--pm-text-disabled);
+}
+
+[dir='rtl'] .identity-back svg {
+  transform: scaleX(-1);
+}
+
+.identity-picture-confirmed {
+  display: grid;
+  gap: var(--pm-space-3);
+}
+
+.identity-picture-preview {
+  display: block;
+  inline-size: 8rem;
+  block-size: 8rem;
+  margin-inline: auto;
+  border: 1px solid var(--pm-border-default);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.identity-picture-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pm-space-2);
+}
+
+.identity-unavailable-accounts {
+  display: grid;
+  gap: var(--pm-space-3);
+}
+
+@media (width <= 30rem) {
+  .identity-account {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .identity-account > button {
+    grid-column: 1 / -1;
+    inline-size: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity-shell {
+    transition: none;
+  }
+}

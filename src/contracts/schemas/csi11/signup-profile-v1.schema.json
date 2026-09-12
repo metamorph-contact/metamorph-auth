@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupProfileV1",
+  "type": "object",
+  "properties": {
+    "avatarColor": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "handle": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "firstName",
+    "handle",
+    "avatarColor"
+  ]
+}

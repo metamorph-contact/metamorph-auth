@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "identity-ui-development-5",
+  "releaseId": "identity-ui-development-7",
   "presentationSchemaVersions": [1],
   "catalogRootPins": [
     {
@@ -60,6 +60,16 @@
       "width": 226,
       "height": 224,
       "admission": "reviewedImmutable"
+    },
+    {
+      "assetId": "octamorph-auth-account-v1",
+      "relativePath": "public/auth-assets/octamorph-auth-account.v1.webp",
+      "mediaType": "imageWebp",
+      "sha256": "TnBLAUz1g45Bh560tP-l0fFNuqZglhfV2xTHm0_P3Ic",
+      "sizeBytes": 72896,
+      "width": 720,
+      "height": 824,
+      "admission": "reviewedImmutable"
     }
   ],
   "localeMessageKeys": {
@@ -75,7 +85,7 @@
     {
       "schemaVersion": 1,
       "presentationId": "catalog-test",
-      "presentationVersion": "central-development-5",
+      "presentationVersion": "central-development-6",
       "productNameMessageKey": "auth.product.catalog-test",
       "logoAssets": {"kind": "modeSafe", "assetId": "catalog-test-mark-v1"},
       "artworkAssetId": null,
@@ -85,16 +95,16 @@
     {
       "schemaVersion": 1,
       "presentationId": "octamorph",
-      "presentationVersion": "central-development-5",
+      "presentationVersion": "central-development-6",
       "productNameMessageKey": "auth.product.octamorph",
       "logoAssets": {"kind": "modeSafe", "assetId": "octamorph-mark-v1"},
-      "artworkAssetId": null,
+      "artworkAssetId": "octamorph-auth-account-v1",
       "themePairingId": "octamorph-iris",
-      "layout": "centeredCard"
+      "layout": "splitArtwork"
     }
   ],
-  "executableAssetCount": 0,
+  "executableAssetCount": 1,
   "serviceWorkerAssetCount": 0,
-  "scriptSha256": [],
+  "scriptSha256": ["sha256-P50hVfHQuMziYK7QXrlsRakv2EsHRmGI5Bw/o6CuZdo="],
   "styleSha256": []
 }

@@ -1,0 +1,478 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupCompletionResultV1",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/SignupProgressV1"
+    },
+    {
+      "$ref": "#/$defs/AccountEstablishmentResultV1"
+    }
+  ],
+  "$defs": {
+    "AccountEstablishmentOutcome": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "AccountEstablishmentResultV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "established"
+            },
+            "operationId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "outcome": {
+              "$ref": "#/$defs/AccountEstablishmentOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "operationId",
+            "outcome",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "credentialRejected"
+            },
+            "recoveryAction": {
+              "$ref": "#/$defs/RecoveryActionV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "recoveryAction"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "notCommitted"
+            },
+            "recoveryAction": {
+              "$ref": "#/$defs/RecoveryActionV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "recoveryAction"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "retryRequired"
+            },
+            "retryAfterSeconds": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "retryAfterSeconds",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "useExisting"
+            },
+            "operationId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "outcome": {
+              "$ref": "#/$defs/AccountEstablishmentOutcome"
+            },
+            "recoveryAction": {
+              "$ref": "#/$defs/RecoveryActionV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "operationId",
+            "outcome",
+            "recoveryAction",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "stepUpRequired"
+            },
+            "policyCode": {
+              "type": "string"
+            },
+            "recoveryAction": {
+              "$ref": "#/$defs/RecoveryActionV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "policyCode",
+            "recoveryAction"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "superseded"
+            },
+            "recoveryAction": {
+              "$ref": "#/$defs/RecoveryActionV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "recoveryAction"
+          ]
+        }
+      ]
+    },
+    "RecoveryActionV1": {
+      "type": "string",
+      "enum": [
+        "retrySameOperation",
+        "retryCredentials",
+        "enterCredentials",
+        "useExistingAccount",
+        "restartWithRequiredAssurance",
+        "restartProductAuth",
+        "finishFirstActivation",
+        "repairProductSession",
+        "reauthenticate",
+        "retainCurrentSession",
+        "retryLogout",
+        "acknowledgeComplete",
+        "acknowledgeCleanupPage",
+        "signInFresh",
+        "retainAccountCapsule",
+        "restoreSource",
+        "refreshCatalog",
+        "none"
+      ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "SignupContinueNextStepV1": {
+      "type": "string",
+      "enum": [
+        "resolveSignup",
+        "organizationDetails",
+        "setPassword",
+        "completeProfile",
+        "finalizing",
+        "finishAuthentication"
+      ]
+    },
+    "SignupHandoff": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupHandoffNextStepV1": {
+      "type": "string",
+      "enum": [
+        "continueInRegion"
+      ]
+    },
+    "SignupProgressV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "csrfToken": {
+              "$ref": "#/$defs/Secret32"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "verificationPending"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupVerificationNextStepV1"
+            },
+            "resendAvailableAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "csrfToken",
+            "resendAvailableAt",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "csrfToken": {
+              "$ref": "#/$defs/Secret32"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "continue"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupContinueNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "tenantResolution": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SignupTenantResolutionV1"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "csrfToken",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "handoff": {
+              "$ref": "#/$defs/SignupHandoff"
+            },
+            "kind": {
+              "type": "string",
+              "const": "handoff"
+            },
+            "navigationUri": {
+              "type": "string"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupHandoffNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "tenantResolution": {
+              "$ref": "#/$defs/SignupTenantResolutionV1"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "tenantResolution",
+            "nextStep",
+            "handoff",
+            "navigationUri",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "signInRequired"
+            },
+            "navigationUri": {
+              "type": "string"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupSignInNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "navigationUri",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "SignupSignInNextStepV1": {
+      "type": "string",
+      "enum": [
+        "signIn"
+      ]
+    },
+    "SignupTenantResolutionV1": {
+      "type": "string",
+      "enum": [
+        "individualNew",
+        "organizationNew",
+        "organizationJoin"
+      ]
+    },
+    "SignupVerificationNextStepV1": {
+      "type": "string",
+      "enum": [
+        "checkEmail"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

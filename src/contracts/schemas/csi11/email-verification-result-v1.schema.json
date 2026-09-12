@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmailVerificationResultV1",
+  "type": "object",
+  "properties": {
+    "controllerApiOrigin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "kind": {
+      "$ref": "#/$defs/EmailVerificationResultKindV1"
+    },
+    "navigationUri": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "signup": {
+      "$ref": "#/$defs/SignupProgressV1"
+    },
+    "verifiedOutcome": {
+      "$ref": "#/$defs/VerifiedSignupOutcome"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "signup",
+    "verifiedOutcome",
+    "controllerApiOrigin",
+    "navigationUri",
+    "expiresAt"
+  ],
+  "$defs": {
+    "EmailVerificationResultKindV1": {
+      "type": "string",
+      "enum": [
+        "verified"
+      ]
+    },
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "SignupContinueNextStepV1": {
+      "type": "string",
+      "enum": [
+        "resolveSignup",
+        "organizationDetails",
+        "setPassword",
+        "completeProfile",
+        "finalizing",
+        "finishAuthentication"
+      ]
+    },
+    "SignupHandoff": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupHandoffNextStepV1": {
+      "type": "string",
+      "enum": [
+        "continueInRegion"
+      ]
+    },
+    "SignupProgressV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "csrfToken": {
+              "$ref": "#/$defs/Secret32"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "verificationPending"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupVerificationNextStepV1"
+            },
+            "resendAvailableAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "csrfToken",
+            "resendAvailableAt",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "csrfToken": {
+              "$ref": "#/$defs/Secret32"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "continue"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupContinueNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "tenantResolution": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SignupTenantResolutionV1"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "csrfToken",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "handoff": {
+              "$ref": "#/$defs/SignupHandoff"
+            },
+            "kind": {
+              "type": "string",
+              "const": "handoff"
+            },
+            "navigationUri": {
+              "type": "string"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupHandoffNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            },
+            "tenantResolution": {
+              "$ref": "#/$defs/SignupTenantResolutionV1"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "tenantResolution",
+            "nextStep",
+            "handoff",
+            "navigationUri",
+            "expiresAt"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "kind": {
+              "type": "string",
+              "const": "signInRequired"
+            },
+            "navigationUri": {
+              "type": "string"
+            },
+            "nextStep": {
+              "$ref": "#/$defs/SignupSignInNextStepV1"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "signupId": {
+              "$ref": "#/$defs/Uuid7"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "schemaVersion",
+            "signupId",
+            "nextStep",
+            "navigationUri",
+            "expiresAt"
+          ]
+        }
+      ]
+    },
+    "SignupSignInNextStepV1": {
+      "type": "string",
+      "enum": [
+        "signIn"
+      ]
+    },
+    "SignupTenantResolutionV1": {
+      "type": "string",
+      "enum": [
+        "individualNew",
+        "organizationNew",
+        "organizationJoin"
+      ]
+    },
+    "SignupVerificationNextStepV1": {
+      "type": "string",
+      "enum": [
+        "checkEmail"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "VerifiedSignupOutcome": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

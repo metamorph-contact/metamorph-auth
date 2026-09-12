@@ -25,6 +25,21 @@
       "minLength": 1,
       "pattern": "^[A-Za-z0-9._-]{1,64}$"
     },
+    "PasswordFieldV1": {
+      "type": "string",
+      "enum": [
+        "password"
+      ]
+    },
+    "PasswordViolationV1": {
+      "type": "string",
+      "enum": [
+        "tooShort",
+        "tooLong",
+        "compromised",
+        "tenantPolicy"
+      ]
+    },
     "ProtocolErrorCodeV1": {
       "type": "string",
       "enum": [
@@ -36,10 +51,13 @@
         "auth.catalog.stale",
         "auth.credentials.invalid",
         "auth.credentials.rate_limited",
+        "auth.password.policy",
         "auth.account.temporarily_unavailable",
         "auth.account_session.invalid",
         "auth.account_establishment.superseded",
         "auth.destination.capacity",
+        "auth.destination.not_started",
+        "auth.destination.superseded",
         "auth.callback.invalid",
         "auth.callback.superseded",
         "auth.product_session.provisional",
@@ -126,6 +144,31 @@
           "required": [
             "kind",
             "retryAfterSeconds"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "$ref": "#/$defs/PasswordFieldV1"
+            },
+            "kind": {
+              "type": "string",
+              "const": "passwordPolicy"
+            },
+            "violations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PasswordViolationV1"
+              },
+              "maxItems": 8
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "field",
+            "violations"
           ]
         },
         {

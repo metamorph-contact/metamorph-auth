@@ -47,12 +47,80 @@
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },
-    "BrowserGenerationCancellationResultStateV1": {
-      "type": "string",
-      "enum": [
-        "cancelled",
-        "alreadyDone",
-        "retryRequired"
+    "BrowserGenerationCancellationResultV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/BrowserGenerationCancellationOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "cancelled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/BrowserGenerationCancellationOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "alreadyDone"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/BrowserGenerationCancellationOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "retryRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        }
       ]
     },
     "BrowserLogoutOutcomeV1": {
@@ -67,19 +135,15 @@
               "type": "string",
               "const": "account"
             },
-            "outcome": {
-              "$ref": "#/$defs/HomeLogoutOutcome"
-            },
-            "state": {
-              "$ref": "#/$defs/HomeLogoutResultStateV1"
+            "result": {
+              "$ref": "#/$defs/HomeLogoutResultV1"
             }
           },
           "additionalProperties": false,
           "required": [
             "kind",
             "browserAccountId",
-            "state",
-            "outcome"
+            "result"
           ]
         },
         {
@@ -92,19 +156,15 @@
               "type": "string",
               "const": "cancelAuthority"
             },
-            "outcome": {
-              "$ref": "#/$defs/BrowserGenerationCancellationOutcome"
-            },
-            "state": {
-              "$ref": "#/$defs/BrowserGenerationCancellationResultStateV1"
+            "result": {
+              "$ref": "#/$defs/BrowserGenerationCancellationResultV1"
             }
           },
           "additionalProperties": false,
           "required": [
             "kind",
             "cancellationId",
-            "state",
-            "outcome"
+            "result"
           ]
         }
       ]
@@ -115,12 +175,80 @@
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },
-    "HomeLogoutResultStateV1": {
-      "type": "string",
-      "enum": [
-        "revoked",
-        "alreadyDone",
-        "retryRequired"
+    "HomeLogoutResultV1": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/HomeLogoutOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "revoked"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/HomeLogoutOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "alreadyDone"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "$ref": "#/$defs/HomeLogoutOutcome"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "state": {
+              "type": "string",
+              "const": "retryRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "schemaVersion",
+            "outcome"
+          ]
+        }
       ]
     },
     "Secret32": {

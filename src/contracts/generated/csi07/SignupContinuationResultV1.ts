@@ -2,4 +2,14 @@
 import type { Origin } from "./Origin";
 import type { SignupContinuationBindingV1 } from "./SignupContinuationBindingV1";
 
-export type SignupContinuationResultV1 = { schemaVersion: number, protocol: SignupContinuationBindingV1, identityApiOrigin: Origin, expiresAt: string, };
+export type SignupContinuationResultV1 = { schemaVersion: number,
+/**
+ * Clear, non-authorizing path selector for the exact protected
+ * continuation. The browser must not decode the capability to discover it.
+ */
+signupId: string, protocol: SignupContinuationBindingV1,
+/**
+ * Present only for an organization-join continuation that must be
+ * consumed by the destination identity region before normal signup steps.
+ */
+handoff: string | null, identityApiOrigin: Origin, expiresAt: string, };

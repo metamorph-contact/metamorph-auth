@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmailVerificationRequestV1",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "$ref": "#/$defs/VerificationConfirmationBindingV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "token": {
+      "$ref": "#/$defs/LookupCredentialV1"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "token",
+    "protocol"
+  ],
+  "$defs": {
+    "BrowserAnchorProof": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "EmailLinkPreview": {
+      "type": "string",
+      "maxLength": 2048,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "HomeVerificationContext": {
+      "type": "string",
+      "maxLength": 4096,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "LookupCredentialV1": {
+      "type": "string",
+      "maxLength": 49,
+      "minLength": 46,
+      "pattern": "^k[1-9a-z][0-9a-z]{0,3}\\.[A-Za-z0-9_-]{43}$"
+    },
+    "VerificationConfirmationBindingV1": {
+      "type": "object",
+      "properties": {
+        "anchorProof": {
+          "$ref": "#/$defs/BrowserAnchorProof"
+        },
+        "context": {
+          "$ref": "#/$defs/HomeVerificationContext"
+        },
+        "preview": {
+          "$ref": "#/$defs/EmailLinkPreview"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "anchorProof",
+        "preview"
+      ]
+    }
+  }
+}

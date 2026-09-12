@@ -1,0 +1,14 @@
+{
+  "actions.back": "Back",
+  "actions.cancel": "Cancel",
+  "actions.continue": "Continue",
+  "actions.retry": "Try again",
+  "actions.signIn": "Sign in",
+  "actions.signUp": "Sign up",
+  "actions.useAnother": "Use another account",
+  "password.hide": "Hide password",
+  "password.show": "Show password",
+  "toast.dismiss": "Dismiss",
+  "toast.notification": "Notification",
+  "toast.viewport": "Notifications (F8)"
+}

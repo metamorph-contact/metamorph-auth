@@ -1,0 +1,13 @@
+{
+  "imageEditor.alt": "Profile picture preview",
+  "imageEditor.browse": "Choose image",
+  "imageEditor.confirm": "Use image",
+  "imageEditor.flip": "Flip",
+  "imageEditor.hint": "Choose, drop, or paste an image. Move and resize it before saving.",
+  "imageEditor.loadError": "That image could not be read. Choose another file.",
+  "imageEditor.reset": "Reset",
+  "imageEditor.rotate": "Rotate",
+  "imageEditor.stage": "Image position. Use the arrow keys to move it, and plus or minus to zoom.",
+  "imageEditor.title": "Edit profile picture",
+  "imageEditor.zoom": "Zoom"
+}

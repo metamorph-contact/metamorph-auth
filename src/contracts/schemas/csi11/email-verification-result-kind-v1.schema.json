@@ -1,10 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HomeLogoutResultStateV1",
+  "title": "EmailVerificationResultKindV1",
   "type": "string",
   "enum": [
-    "revoked",
-    "alreadyDone",
-    "retryRequired"
+    "verified"
   ]
 }

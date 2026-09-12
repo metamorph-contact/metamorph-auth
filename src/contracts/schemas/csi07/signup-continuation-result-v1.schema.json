@@ -7,6 +7,17 @@
       "type": "string",
       "format": "date-time"
     },
+    "handoff": {
+      "description": "Present only for an organization-join continuation that must be\nconsumed by the destination identity region before normal signup steps.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SignupHandoff"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "identityApiOrigin": {
       "$ref": "#/$defs/Origin"
     },
@@ -18,11 +29,16 @@
       "format": "uint16",
       "maximum": 65535,
       "minimum": 0
+    },
+    "signupId": {
+      "description": "Clear, non-authorizing path selector for the exact protected\ncontinuation. The browser must not decode the capability to discover it.",
+      "$ref": "#/$defs/Uuid7"
     }
   },
   "additionalProperties": false,
   "required": [
     "schemaVersion",
+    "signupId",
     "protocol",
     "identityApiOrigin",
     "expiresAt"
@@ -61,6 +77,17 @@
       "maxLength": 6144,
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupHandoff": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     }
   }
 }

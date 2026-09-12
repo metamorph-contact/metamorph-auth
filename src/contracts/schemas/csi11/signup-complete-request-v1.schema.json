@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupCompleteRequestV1",
+  "type": "object",
+  "properties": {
+    "completeAttemptId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "profile": {
+      "$ref": "#/$defs/SignupProfileV1"
+    },
+    "protocol": {
+      "$ref": "#/$defs/SignupContinuationBindingV1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "completeAttemptId",
+    "profile",
+    "protocol"
+  ],
+  "$defs": {
+    "RemoteOperationRegistrationProof": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupContinuationBindingV1": {
+      "type": "object",
+      "properties": {
+        "continuationCapability": {
+          "$ref": "#/$defs/SignupContinuationCapability"
+        },
+        "registrationProof": {
+          "$ref": "#/$defs/RemoteOperationRegistrationProof"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "continuationCapability",
+        "registrationProof"
+      ]
+    },
+    "SignupContinuationCapability": {
+      "type": "string",
+      "maxLength": 6144,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "SignupProfileV1": {
+      "type": "object",
+      "properties": {
+        "avatarColor": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "handle": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "firstName",
+        "handle",
+        "avatarColor"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

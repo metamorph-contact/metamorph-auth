@@ -3,4 +3,9 @@ import type { BrowserAccountId } from "./BrowserAccountId";
 import type { CatalogId } from "./CatalogId";
 import type { Origin } from "./Origin";
 
-export type AccountReferenceV1 = { browserAccountId: BrowserAccountId, homeRegionId: CatalogId, identityApiOrigin: Origin, metadataCapability: string, expiresAt: string, };
+export type AccountReferenceV1 = { browserAccountId: BrowserAccountId,
+/**
+ * Non-secret selector that binds a home validation outcome to the exact
+ * capsule generation shown by the controller.
+ */
+capsuleGeneration: string, homeRegionId: CatalogId, identityApiOrigin: Origin, metadataCapability: string, expiresAt: string, };

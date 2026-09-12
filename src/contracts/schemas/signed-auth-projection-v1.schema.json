@@ -88,6 +88,9 @@
         "presentation": {
           "$ref": "#/$defs/PresentationManifestV1"
         },
+        "productDisplayName": {
+          "type": "string"
+        },
         "productId": {
           "$ref": "#/$defs/CatalogId"
         },
@@ -147,6 +150,9 @@
         "surfaceId": {
           "$ref": "#/$defs/CatalogId"
         },
+        "tenantBootstrap": {
+          "$ref": "#/$defs/ProductTenantBootstrapV1"
+        },
         "verificationKeySetDigest": {
           "$ref": "#/$defs/Digest32"
         },
@@ -169,6 +175,8 @@
         "authProjectionId",
         "clientId",
         "productId",
+        "productDisplayName",
+        "tenantBootstrap",
         "surfaceId",
         "productUiOrigin",
         "registeredCallbacks",
@@ -388,6 +396,22 @@
         "logoAssets",
         "themePairingId",
         "layout"
+      ]
+    },
+    "ProductTenantBootstrapV1": {
+      "type": "object",
+      "properties": {
+        "defaultSpaceName": {
+          "type": "string"
+        },
+        "defaultSpaceNameKey": {
+          "$ref": "#/$defs/MessageKey"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultSpaceName",
+        "defaultSpaceNameKey"
       ]
     },
     "RegisteredCallbackV1": {
