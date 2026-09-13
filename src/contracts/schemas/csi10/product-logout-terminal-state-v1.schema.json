@@ -4,10 +4,8 @@
   "type": "string",
   "enum": [
     "notCommitted",
-    "retryRequired",
     "revoked",
     "alreadyDone",
-    "committedPendingEnforcement",
     "failed"
   ]
 }

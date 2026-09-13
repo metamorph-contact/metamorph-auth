@@ -87,10 +87,8 @@
       "type": "string",
       "enum": [
         "notCommitted",
-        "retryRequired",
         "revoked",
         "alreadyDone",
-        "committedPendingEnforcement",
         "failed"
       ]
     },
@@ -98,6 +96,7 @@
       "type": "string",
       "enum": [
         "retrySameOperation",
+        "retryInput",
         "retryCredentials",
         "enterCredentials",
         "useExistingAccount",

@@ -97,12 +97,11 @@ const Select = lazy(async () => ({ default: (await signupControls()).Select }))
 function protocolMessage(error: unknown): string {
   if (!(error instanceof ProtocolError)) return 'errors.unknown'
   if (error.code === 'auth.credentials.invalid') return 'errors.auth_invalid_credentials'
-  if (error.code === 'auth.sign_in.invalid_credentials') return 'errors.auth_invalid_credentials'
   if (error.code === 'auth.credentials.rate_limited' || error.code === 'auth.flow.limit') return 'errors.auth_rate_limited'
-  if (error.code === 'auth.sign_in.throttled' || error.code === 'auth.signup.throttled') return 'errors.auth_rate_limited'
-  if (error.code === 'auth.signup.handle_unavailable') return 'errors.handle_unavailable'
-  if (error.code === 'auth.password.policy_failed' || error.code === 'auth.password.policy') return 'errors.password_policy'
-  if (error.code === 'auth.signup.organization_name_invalid') return 'errors.organization_invalid'
+  if (error.code === 'auth.product_session.account_limit') return 'errors.account_limit'
+  if (error.code === 'auth.password.policy') return 'errors.password_policy'
+  if (error.code === 'auth.signup.handle.unavailable') return 'errors.handle_unavailable'
+  if (error.code === 'auth.signup.organization_name.invalid') return 'errors.organization_invalid'
   if (error.code === 'auth.dependency.unavailable' || error.code === 'auth_unavailable') return 'errors.auth_unavailable'
   if (error.code === 'auth_invalid_response' || error.code === 'auth_outcome_uncertain') return 'errors.auth_unavailable'
   if (error.code === 'auth.account_session.invalid' || error.code === 'auth.product_session.invalid') return 'errors.session_expired'
@@ -127,10 +126,10 @@ type FieldErrors = Partial<Record<IdentityField, string>>
 
 function protocolField(error: unknown): IdentityField | undefined {
   if (!(error instanceof ProtocolError)) return undefined
-  if (error.code === 'auth.signup.handle_unavailable') return 'handle'
-  if (error.code === 'auth.signup.organization_name_invalid') return 'organization'
-  if (error.code === 'auth.password.policy_failed' || error.code === 'auth.password.policy') return 'password'
-  if (error.code === 'auth.credentials.invalid' || error.code === 'auth.sign_in.invalid_credentials') return 'password'
+  if (error.code === 'auth.password.policy') return 'password'
+  if (error.code === 'auth.credentials.invalid') return 'password'
+  if (error.code === 'auth.signup.handle.unavailable') return 'handle'
+  if (error.code === 'auth.signup.organization_name.invalid') return 'organization'
   const field = error.details !== undefined && 'field' in error.details ? error.details.field : undefined
   if (field === 'email' || field === 'password' || field === 'handle') return field
   if (field === 'displayName') return 'organization'
@@ -384,6 +383,7 @@ function AuthorizePage() {
   const [lastName, setLastName] = useState('')
   const [handle, setHandle] = useState('')
   const [picture, setPicture] = useState<Blob>()
+  const pictureUploadAttempt = useRef<string | undefined>(undefined)
   const pictureUrl = useBlobUrl(picture)
   const pictureConfirmationRef = useRef<HTMLDivElement>(null)
   const [avatarColor, setAvatarColor] = useState('#7c3aed')
@@ -404,6 +404,7 @@ function AuthorizePage() {
   } | undefined>(undefined)
   const signupStartAttempt = useRef<SignupStartAttempt | undefined>(undefined)
   const recoveryStartAttempt = useRef<PasswordRecoveryStartAttempt | undefined>(undefined)
+  const operationPending = useRef(false)
 
   usePagehideScrub(() => {
     setSignInPassword('')
@@ -443,9 +444,8 @@ function AuthorizePage() {
       return
     }
     const recoverableInput = error instanceof ProtocolError && [
-      'auth.credentials.invalid', 'auth.sign_in.invalid_credentials', 'auth.credentials.rate_limited',
-      'auth.sign_in.throttled', 'auth.signup.throttled', 'auth.signup.handle_unavailable',
-      'auth.password.policy_failed', 'auth.signup.organization_name_invalid', 'auth.idempotency_conflict',
+      'auth.credentials.invalid', 'auth.credentials.rate_limited', 'auth.password.policy',
+      'auth.signup.handle.unavailable', 'auth.signup.organization_name.invalid',
     ].includes(error.code)
     if (!(error instanceof ProtocolError) || (!error.retryable && !recoverableInput)) void move({ kind: 'error' })
   }
@@ -488,12 +488,10 @@ function AuthorizePage() {
           startupCatalog = catalog
           armBfcacheRecovery(catalog)
           installPresentationTheme(catalog.presentation.themePairingId)
-          clearStartRecovery(entryState.receipt.recovery)
           await navigateAfterFade(catalog, catalogProductReturnUri(catalog, 'authStartRecovery'), setLeaving)
           return
         }
         const loaded = await loadReady(params, entryState.fragment, (catalog) => { startupCatalog = catalog })
-        clearStartRecovery(entryState.fragment.recovery)
         if (!live) return
         setReady(loaded)
         const accountLogout = readAccountLogoutPending()
@@ -571,9 +569,13 @@ function AuthorizePage() {
 
   const product = t(ready.catalog.presentation.productNameMessageKey)
   const run = async (work: () => Promise<void>) => {
-    if (pending) return
+    if (pending || operationPending.current) return
+    operationPending.current = true
     setPending(true)
-    try { await work() } catch (error) { fail(error) } finally { setPending(false) }
+    try { await work() } catch (error) { fail(error) } finally {
+      operationPending.current = false
+      setPending(false)
+    }
   }
 
   if (step.kind === 'error') {
@@ -694,7 +696,7 @@ function AuthorizePage() {
           throw error
         }
       }) }}>
-        <FormField label={t('auth.region.label')} required><Suspense fallback={<span role="status"><Text tone="secondary">{t('auth.loading')}</Text></span>}><Select options={options} value={region} onChange={(value) => value !== null && setRegion(value)} /></Suspense></FormField>
+        <Suspense fallback={<span role="status"><Text tone="secondary">{t('auth.loading')}</Text></span>}><FormField label={t('auth.region.label')} required><Select options={options} value={region} onChange={(value) => value !== null && setRegion(value)} /></FormField></Suspense>
         <Button type="submit" label={t('actions.signUp')} loading={pending} disabled={region === ''} />
       </FormStack>
     </Presentation>
@@ -831,13 +833,17 @@ function AuthorizePage() {
       {done && !all && <Button label={t('actions.continue')} onClick={() => void run(async () => {
         await move(accountStep(await loadAccounts(ready.flow)))
       })} />}
+      {done && all && <Button label={t('actions.continue')} onClick={() => void run(async () => {
+        await navigateAfterFade(ready.catalog, catalogProductReturnUri(ready.catalog, 'authStartRecovery'), setLeaving)
+      })} />}
     </Presentation>
   }
 
   if (step.kind === 'pictureUploadFailed') {
     const continueAfterPicture = async (upload: boolean) => {
       if (upload && picture !== undefined && step.signup.progress.kind === 'continue') {
-        await uploadSignupPicture(step.signup.home, step.signup.continuation, step.signup.progress.csrfToken, picture)
+        pictureUploadAttempt.current ??= randomUuid7()
+        await uploadSignupPicture(step.signup.home, step.signup.continuation, step.signup.progress.csrfToken, picture, pictureUploadAttempt.current)
       }
       const uri = await continueAccountEstablishment(ready.flow, step.establishment)
       if (uri !== null) await navigateAfterFade(ready.catalog, uri, setLeaving)
@@ -889,7 +895,8 @@ function AuthorizePage() {
     if (result.kind === 'established' || result.kind === 'useExisting') {
       if (picture !== undefined && progress.kind === 'continue') {
         try {
-          await uploadSignupPicture(signup.home, signup.continuation, progress.csrfToken, picture)
+          pictureUploadAttempt.current ??= randomUuid7()
+          await uploadSignupPicture(signup.home, signup.continuation, progress.csrfToken, picture, pictureUploadAttempt.current)
         } catch {
           await move({ kind: 'pictureUploadFailed', signup, establishment: result })
           return
@@ -948,6 +955,7 @@ function AuthorizePage() {
           zoom: t('imageEditor.zoom'), cancel: t('actions.cancel'), confirm: t('imageEditor.confirm'),
           alt: t('imageEditor.alt'), stage: t('imageEditor.stage'), loadError: t('imageEditor.loadError'),
         }} id="identity-picture-editor" onConfirm={(blob) => {
+          pictureUploadAttempt.current = undefined
           setPicture(blob)
           requestAnimationFrame(() => pictureConfirmationRef.current?.focus({ preventScroll: true }))
         }} /> : <div ref={pictureConfirmationRef} className="identity-picture-confirmed" tabIndex={-1} role="group" aria-label={t('auth.signup.pictureSelected')}>
@@ -955,10 +963,12 @@ function AuthorizePage() {
           <Text tone="secondary"><span role="status" aria-live="polite">{t('auth.signup.pictureSelected')}</span></Text>
           <div className="identity-picture-actions">
             <Button disabled={signupMutationUncertain} label={t('auth.signup.changePicture')} variant="outline" tone="neutral" onClick={() => {
+              pictureUploadAttempt.current = undefined
               setPicture(undefined)
               requestAnimationFrame(() => document.querySelector<HTMLElement>('#identity-picture-editor button')?.focus({ preventScroll: true }))
             }} />
             <Button disabled={signupMutationUncertain} label={t('auth.signup.removePicture')} variant="ghost" tone="neutral" onClick={() => {
+              pictureUploadAttempt.current = undefined
               setPicture(undefined)
               requestAnimationFrame(() => document.querySelector<HTMLElement>('#identity-picture-editor button')?.focus({ preventScroll: true }))
             }} />
@@ -1061,18 +1071,20 @@ function EmailLinkLogoutRecovery({ catalog, resume, detach, canDetach, leaving }
 }) {
   const { t } = useTranslation()
   const [working, setWorking] = useState(false)
+  const operationPending = useRef(false)
+  const run = (operation: () => Promise<void>) => {
+    if (working || operationPending.current) return
+    operationPending.current = true
+    setWorking(true)
+    void operation().catch(() => toast.danger(t('errors.auth_unavailable'))).finally(() => {
+      operationPending.current = false
+      setWorking(false)
+    })
+  }
   return <Presentation catalog={catalog} transitionKey="email-link-logout" pending={working} leaving={leaving} title={t('auth.logout.progressTitle')} description={t('auth.logout.emailLinkDescription')}>
     <Stack gap={3}>
-      <Button label={t('auth.logout.continue')} loading={working} onClick={() => {
-        if (working) return
-        setWorking(true)
-        void resume().catch(() => toast.danger(t('errors.auth_unavailable'))).finally(() => setWorking(false))
-      }} />
-      {canDetach && <Button label={t('auth.logout.detach')} variant="ghost" tone="neutral" onClick={() => {
-        if (working) return
-        setWorking(true)
-        void detach().catch(() => toast.danger(t('errors.auth_unavailable'))).finally(() => setWorking(false))
-      }} />}
+      <Button label={t('auth.logout.continue')} loading={working} onClick={() => run(resume)} />
+      {canDetach && <Button label={t('auth.logout.detach')} variant="ghost" tone="neutral" onClick={() => run(detach)} />}
     </Stack>
   </Presentation>
 }
@@ -1091,6 +1103,8 @@ function VerifyEmailPage() {
   const [leaving, setLeaving] = useState(false)
   const [previewFailure, setPreviewFailure] = useState<'temporary' | 'invalid'>()
   const [previewAttempt, setPreviewAttempt] = useState(0)
+  const [expired, setExpired] = useState(false)
+  const confirmationPending = useRef(false)
   useEffect(() => {
     if (value === undefined) return
     let live = true
@@ -1101,12 +1115,19 @@ function VerifyEmailPage() {
         if (result.challengeKind !== 'signupVerification' || result.productNameMessageKey !== value.catalog.presentation.productNameMessageKey) {
           throw new Error('Email preview presentation mismatch')
         }
-        if (live) { setPreview(result); setPreviewFailure(undefined) }
+        if (live) { setPreview(result); setPreviewFailure(undefined); setExpired(false) }
       }).catch((caught) => {
         if (live) setPreviewFailure(caught instanceof ProtocolError && caught.retryable ? 'temporary' : 'invalid')
       }).finally(() => { if (live) setPending(false) })
     return () => { live = false }
   }, [value, previewAttempt])
+  useEffect(() => {
+    if (preview === undefined) return
+    const remaining = Date.parse(preview.expiresAt) - Date.now()
+    if (!Number.isFinite(remaining) || remaining <= 0) { setExpired(true); return }
+    const timer = window.setTimeout(() => setExpired(true), Math.min(remaining, 2_147_483_647))
+    return () => window.clearTimeout(timer)
+  }, [preview])
   if (logout !== undefined) return <EmailLinkLogoutRecovery catalog={logout.catalog} resume={resumeLogout} detach={detachLogout}
     canDetach={logout.result?.state === 'partial'} leaving={logoutLeaving} />
   if (failure !== undefined) return <GenericPage
@@ -1119,11 +1140,21 @@ function VerifyEmailPage() {
     {previewFailure === 'temporary' && <Button label={t('actions.retry')} loading={pending} onClick={() => void afterPageFade(setLeaving, () => { setPreviewFailure(undefined); setPending(true); setPreviewAttempt((attempt) => attempt + 1) })} />}
   </Presentation>
   if (value === undefined || preview === undefined) return <GenericPage />
+  if (expired) return <Presentation catalog={value.catalog} transitionKey="verify-email-expired" pending={false} leaving={leaving} title={t('auth.linkExpired.title')} description={t('auth.linkExpired.description')}>
+    <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+  </Presentation>
   const confirm = () => void (async () => {
+    if (pending || confirmationPending.current) return
+    confirmationPending.current = true
     setPending(true)
     try {
       await navigateAfterFade(value.catalog, await confirmSignupEmail(value.catalog, value.head, fragment, preview), setLeaving)
-    } catch (caught) { toast.danger(t(protocolMessage(caught))); setPending(false) }
+    } catch (caught) {
+      toast.danger(t(protocolMessage(caught)))
+      setPending(false)
+    } finally {
+      confirmationPending.current = false
+    }
   })()
   return <Presentation catalog={value.catalog} transitionKey="verify-email" pending={pending} leaving={leaving} title={t('auth.signup.verifyTitle')} description={<>{t('auth.signup.verifyDescription')} <bdi dir="auto">{preview.email}</bdi></>}>
     <Button label={t('auth.signup.verify')} loading={pending} onClick={confirm} />
@@ -1146,9 +1177,11 @@ function RecoverPasswordPage() {
   const [leaving, setLeaving] = useState(false)
   const [previewFailure, setPreviewFailure] = useState<'temporary' | 'invalid'>()
   const [previewAttempt, setPreviewAttempt] = useState(0)
-  const completionAttempt = useRef<{ id: string; password: string } | undefined>(undefined)
+  const [completionAttemptId, setCompletionAttemptId] = useState<string>()
+  const [expired, setExpired] = useState(false)
+  const completionPending = useRef(false)
   usePagehideScrub(() => {
-    completionAttempt.current = undefined
+    setCompletionAttemptId(undefined)
     setPassword('')
   })
   useEffect(() => {
@@ -1161,12 +1194,29 @@ function RecoverPasswordPage() {
         if (result.challengeKind !== 'passwordRecovery' || result.productNameMessageKey !== value.catalog.presentation.productNameMessageKey) {
           throw new Error('Recovery preview presentation mismatch')
         }
-        if (live) { setPreview(result); setPreviewFailure(undefined) }
+        if (live) { setPreview(result); setPreviewFailure(undefined); setExpired(false) }
       }).catch((caught) => {
         if (live) setPreviewFailure(caught instanceof ProtocolError && caught.retryable ? 'temporary' : 'invalid')
       }).finally(() => { if (live) setPending(false) })
     return () => { live = false }
   }, [value, previewAttempt])
+  useEffect(() => {
+    if (preview === undefined) return
+    const remaining = Date.parse(preview.expiresAt) - Date.now()
+    if (!Number.isFinite(remaining) || remaining <= 0) {
+      setExpired(true)
+      setCompletionAttemptId(undefined)
+      setPassword('')
+      return
+    }
+    const timer = window.setTimeout(() => {
+      setExpired(true)
+      setCompletionAttemptId(undefined)
+      setPassword('')
+      setPending(false)
+    }, Math.min(remaining, 2_147_483_647))
+    return () => window.clearTimeout(timer)
+  }, [preview])
   if (logout !== undefined) return <EmailLinkLogoutRecovery catalog={logout.catalog} resume={resumeLogout} detach={detachLogout}
     canDetach={logout.result?.state === 'partial'} leaving={logoutLeaving} />
   if (failure !== undefined) return <GenericPage
@@ -1179,21 +1229,33 @@ function RecoverPasswordPage() {
     {previewFailure === 'temporary' && <Button label={t('actions.retry')} loading={pending} onClick={() => void afterPageFade(setLeaving, () => { setPreviewFailure(undefined); setPending(true); setPreviewAttempt((attempt) => attempt + 1) })} />}
   </Presentation>
   if (value === undefined || preview === undefined) return <GenericPage />
+  if (expired) return <Presentation catalog={value.catalog} transitionKey="recover-password-expired" pending={false} leaving={leaving} title={t('auth.linkExpired.title')} description={t('auth.linkExpired.description')}>
+    <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+  </Presentation>
   const submit = (event: FormEvent) => {
     event.preventDefault()
+    if (pending || completionPending.current || !validBoundedText(password, 1_024)) return
+    completionPending.current = true
     setPending(true)
-    completionAttempt.current ??= { id: randomUuid7(), password }
-    const attempt = completionAttempt.current
+    const attemptId = completionAttemptId ?? randomUuid7()
+    setCompletionAttemptId(attemptId)
+    const submittedPassword = password
+    setPassword('')
     const home = value.catalog.projection.regions.find((region) => region.regionId === fragment.home)
-    if (home === undefined) { setPending(false); toast.danger(t('errors.invalid_request')); return }
+    if (home === undefined) {
+      completionPending.current = false
+      setPending(false)
+      toast.danger(t('errors.invalid_request'))
+      return
+    }
     void completeRecovery(identityApiForRegion(value.catalog, home.regionId, home.identityOrigin), {
       schemaVersion: 1,
       token: fragment.token,
-      newPassword: attempt.password,
-      completionAttemptId: attempt.id,
+      newPassword: submittedPassword,
+      completionAttemptId: attemptId,
       protocol: { context: fragment.context, preview: preview.preview },
     }).then((result) => {
-      completionAttempt.current = undefined
+      setCompletionAttemptId(undefined)
       setPassword('')
       return navigateAfterFade(value.catalog, result.navigationUri, setLeaving)
     }).catch((caught) => {
@@ -1203,20 +1265,20 @@ function RecoverPasswordPage() {
         focusField('password')
       }
       if (!(caught instanceof ProtocolError) || !caught.retryable) {
-        completionAttempt.current = undefined
+        setCompletionAttemptId(undefined)
         setPassword('')
       }
       setPending(false)
-    })
+    }).finally(() => { completionPending.current = false })
   }
-  return <Presentation catalog={value.catalog} transitionKey="recover-password" pending={pending} leaving={leaving} title={t('auth.recovery.title')} description={<bdi dir="auto">{preview.email}</bdi>}>
+  return <Presentation catalog={value.catalog} transitionKey="recover-password" pending={pending} leaving={leaving} title={t('auth.recovery.title')} description={<><bdi dir="auto">{preview.email}</bdi>{completionAttemptId !== undefined && <><br />{t('auth.recovery.retryDescription')}</>}</>}>
     <FormStack onSubmit={submit}>
-      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={completionAttempt.current !== undefined} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
+      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={pending} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
         const bounded = boundedPassword(value)
         if (bounded !== null) { setPassword(bounded); setPasswordError(undefined) }
       }} /></FormField>
-      <Button type="submit" label={t(completionAttempt.current === undefined ? 'actions.continue' : 'actions.retry')} loading={pending}
-        disabled={completionAttempt.current === undefined && !validBoundedText(password, 1_024)} />
+      <Button type="submit" label={t(completionAttemptId === undefined ? 'actions.continue' : 'actions.retry')} loading={pending}
+        disabled={!validBoundedText(password, 1_024)} />
     </FormStack>
   </Presentation>
 }
@@ -1281,6 +1343,7 @@ function LogoutPage() {
   const [failure, setFailure] = useState<FailureKind>()
   const [startupAttempt, setStartupAttempt] = useState(0)
   const [leaving, setLeaving] = useState(false)
+  const operationPending = useRef(false)
   useEffect(() => {
     let live = true
     void (async () => {
@@ -1325,9 +1388,13 @@ function LogoutPage() {
   if (catalog === undefined || head === undefined) return <GenericPage />
   const client = new BrowserLogoutClient(catalog, head)
   const run = async (work: () => Promise<void>) => {
-    if (pending) return
+    if (pending || operationPending.current) return
+    operationPending.current = true
     setPending(true)
-    try { await work() } catch { toast.danger(t('errors.auth_unavailable')) } finally { setPending(false) }
+    try { await work() } catch { toast.danger(t('errors.auth_unavailable')) } finally {
+      operationPending.current = false
+      setPending(false)
+    }
   }
   const moveLogout = (commit: () => void) => afterPageFade(setLeaving, commit)
   if (logoutPending !== undefined && result === undefined) {
@@ -1362,6 +1429,9 @@ function LogoutPage() {
       {done && result.scope === 'identityAccount' && <Button label={t('actions.continue')} onClick={() => void run(async () => {
         const options = await client.options()
         await moveLogout(() => { setResult(undefined); setAccounts(options) })
+      })} />}
+      {done && result.scope === 'identityBrowserAll' && <Button label={t('actions.continue')} onClick={() => void run(async () => {
+        await navigateAfterFade(catalog, catalogProductReturnUri(catalog, 'authStartRecovery'), setLeaving)
       })} />}
     </Presentation>
   }

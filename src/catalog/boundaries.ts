@@ -2,22 +2,17 @@ import type { LoadedIdentityCatalog } from './runtime'
 import type { ReturnPurposeV1 } from '../contracts/generated/ReturnPurposeV1'
 import { AuthApi } from '../protocol/http'
 
+const PRODUCT_RELAY_PATHS = new Set([
+  '/api/auth/v1/relays/relocation',
+  '/api/auth/v1/relays/preparation',
+])
+
 function exactOrigin(value: string): string {
   const url = new URL(value)
   if (url.href !== `${url.origin}/` || url.username || url.password || !['http:', 'https:'].includes(url.protocol)) {
     throw new Error('Invalid catalog origin')
   }
   return url.origin
-}
-
-function identitySecurity(catalog: LoadedIdentityCatalog) {
-  return {
-    catalogVersion: catalog.projection.catalogVersion,
-    identityRegions: catalog.projection.regions.map((region) => ({
-      regionId: region.regionId,
-      origin: exactOrigin(region.identityOrigin),
-    })),
-  }
 }
 
 export function identityApiForRegion(
@@ -31,7 +26,7 @@ export function identityApiForRegion(
   if (claimedOrigin !== undefined && exactOrigin(claimedOrigin) !== expected) {
     throw new Error('Identity origin does not match its catalog region')
   }
-  return new AuthApi(expected, identitySecurity(catalog))
+  return new AuthApi(expected)
 }
 
 export function admittedIdentityApi(catalog: LoadedIdentityCatalog, claimedOrigin: string): AuthApi {
@@ -39,7 +34,7 @@ export function admittedIdentityApi(catalog: LoadedIdentityCatalog, claimedOrigi
   if (!catalog.projection.regions.some((region) => exactOrigin(region.identityOrigin) === origin)) {
     throw new Error('Identity origin is not admitted by the verified catalog')
   }
-  return new AuthApi(origin, identitySecurity(catalog))
+  return new AuthApi(origin)
 }
 
 export function controllerApiForRegion(
@@ -53,7 +48,7 @@ export function controllerApiForRegion(
   if (claimedOrigin !== undefined && exactOrigin(claimedOrigin) !== expected) {
     throw new Error('Controller origin does not match its catalog region')
   }
-  return new AuthApi(expected, identitySecurity(catalog))
+  return new AuthApi(expected)
 }
 
 export function catalogProductReturnUri(catalog: LoadedIdentityCatalog, purpose: ReturnPurposeV1): string {
@@ -91,7 +86,10 @@ export function catalogNavigationUri(catalog: LoadedIdentityCatalog, value: stri
 
   const callbackOrigins = catalog.projection.regions
     .filter((region) => exactOrigin(region.productApiOrigin) === url.origin)
-  if (callbackOrigins.length > 0 && catalog.projection.registeredCallbacks.some((entry) => entry.path === url.pathname)) {
+  if (callbackOrigins.length > 0 && (
+    PRODUCT_RELAY_PATHS.has(url.pathname) ||
+    catalog.projection.registeredCallbacks.some((entry) => entry.path === url.pathname)
+  )) {
     return url.href
   }
   throw new Error('Navigation destination is not admitted by the verified catalog')

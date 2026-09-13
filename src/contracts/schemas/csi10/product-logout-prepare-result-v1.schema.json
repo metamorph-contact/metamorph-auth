@@ -69,6 +69,7 @@
       "type": "string",
       "enum": [
         "retrySameOperation",
+        "retryInput",
         "retryCredentials",
         "enterCredentials",
         "useExistingAccount",

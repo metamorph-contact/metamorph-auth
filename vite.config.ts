@@ -1,6 +1,14 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import { readFileSync } from "node:fs";
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
+import { dirname, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repositoryRoot = dirname(fileURLToPath(import.meta.url));
+const deploymentCatalog = JSON.parse(
+  readFileSync(resolve(repositoryRoot, '../metamorph-saas/config/central-identity/identity-catalog.development.json'), 'utf8'),
+) as { catalogVersion: string }
+const publicationRoot = resolve(repositoryRoot, 'catalog/publication', deploymentCatalog.catalogVersion)
 
 const release = JSON.parse(
   readFileSync(new URL('./catalog/identity-ui-release.development.json', import.meta.url), 'utf8'),
@@ -34,8 +42,58 @@ const securityHeaders = (development: boolean) => ({
   "X-Frame-Options": "DENY",
 });
 
+function catalogPublication(): Plugin {
+  const installMiddleware = (middlewares: { use: (handler: (request: { url?: string; headers: { host?: string } }, response: { setHeader: (name: string, value: string) => void; statusCode: number; end: (body?: string | Buffer) => void }, next: () => void) => void) => void }) => {
+    middlewares.use((request, response, next) => {
+      const pathname = new URL(request.url ?? '/', 'http://auth.identity.localhost').pathname
+      if (request.headers.host === 'assets.identity.localhost:1422' && pathname.startsWith('/auth-assets/')) {
+        response.setHeader('Access-Control-Allow-Origin', 'http://auth.identity.localhost:1422')
+        response.setHeader('Vary', 'Origin')
+      }
+      if (!pathname.includes('/auth-catalogs/') && !pathname.startsWith('/auth-keysets/')) {
+        next()
+        return
+      }
+      let decoded: string
+      try {
+        decoded = decodeURIComponent(pathname)
+      } catch {
+        response.statusCode = 400
+        response.end()
+        return
+      }
+      const path = resolve(publicationRoot, `.${decoded}`)
+      if (!path.startsWith(`${publicationRoot}${sep}`) || !existsSync(path) || !statSync(path).isFile()) {
+        response.statusCode = 404
+        response.end()
+        return
+      }
+      response.setHeader('Content-Type', 'application/json; charset=utf-8')
+      response.setHeader('Cache-Control', 'no-store')
+      response.setHeader('X-Content-Type-Options', 'nosniff')
+      response.end(readFileSync(path))
+    })
+  }
+  return {
+    name: 'metamorph-signed-catalog-publication',
+    configureServer(server) { installMiddleware(server.middlewares) },
+    configurePreviewServer(server) { installMiddleware(server.middlewares) },
+    writeBundle(options) {
+      const outputRoot = resolve(repositoryRoot, options.dir ?? 'dist')
+      const localeDirectories = readdirSync(publicationRoot, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && existsSync(resolve(publicationRoot, entry.name, 'auth-catalogs')))
+        .map((entry) => entry.name)
+      for (const directory of [...localeDirectories, 'auth-keysets']) {
+        const target = resolve(outputRoot, directory)
+        rmSync(target, { recursive: true, force: true })
+        cpSync(resolve(publicationRoot, directory), target, { recursive: true, errorOnExist: true })
+      }
+    },
+  }
+}
+
 export default defineConfig(({ command }) => ({
-  plugins: [react()],
+  plugins: [catalogPublication(), react()],
   resolve: {
     dedupe: ["react", "react-dom"],
   },

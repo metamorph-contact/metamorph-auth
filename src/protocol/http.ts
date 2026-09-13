@@ -1,7 +1,6 @@
 import type { ProtocolErrorEnvelopeV1 } from '../contracts/generated/csi07/ProtocolErrorEnvelopeV1'
 import type { RecoveryActionV1 } from '../contracts/generated/csi07/RecoveryActionV1'
 import type { ProtocolErrorDetailsV1 } from '../contracts/generated/csi07/ProtocolErrorDetailsV1'
-import { decodeBoundedJsonText } from '../contracts/decode'
 import { decodeProtocolResponse, type ResponseSchemaName } from './decode'
 
 const MAX_RESPONSE_BYTES = 256 * 1024
@@ -33,25 +32,6 @@ export class ProtocolError extends Error {
   }
 }
 
-interface AuthApiSecurityContext {
-  readonly catalogVersion: string
-  readonly identityRegions: readonly {
-    readonly regionId: string
-    readonly origin: string
-  }[]
-}
-
-type ErrorContract = 'protocol' | 'retained'
-
-function record(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-function exactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
-  const actual = Object.keys(value)
-  return actual.length === keys.length && keys.every((key) => Object.hasOwn(value, key))
-}
-
 function endpointAllows(path: string, code: string): boolean {
   const base = new Set(['auth.request.invalid', 'auth.origin.denied', 'auth.proof.invalid', 'auth.dependency.unavailable', 'auth.internal.invariant'])
   if (base.has(code)) return true
@@ -63,10 +43,12 @@ function endpointAllows(path: string, code: string): boolean {
   }
   return [
     'auth.flow.expired', 'auth.credentials.invalid', 'auth.credentials.rate_limited', 'auth.password.policy',
+    'auth.signup.organization_name.invalid', 'auth.signup.handle.unavailable',
     'auth.account.temporarily_unavailable', 'auth.account_session.invalid', 'auth.account_establishment.superseded',
     'auth.destination.capacity', 'auth.destination.not_started', 'auth.destination.superseded',
     'auth.callback.invalid', 'auth.callback.superseded', 'auth.product_session.provisional',
-    'auth.product_session.stale_cookie', 'auth.product_session.invalid', 'auth.code.invalid', 'auth.code.expired',
+    'auth.product_session.stale_cookie', 'auth.product_session.invalid', 'auth.product_session.account_limit',
+    'auth.code.invalid', 'auth.code.expired',
     'auth.code.superseded', 'auth.private_assertion.invalid', 'auth.private_assertion.replayed',
   ].includes(code)
 }
@@ -83,6 +65,8 @@ function protocolError(envelope: ProtocolErrorEnvelopeV1, status: number, path: 
     ['auth.credentials.invalid', [401, 'retryCredentials', 'empty']],
     ['auth.credentials.rate_limited', [429, 'retryCredentials', 'rateLimit']],
     ['auth.password.policy', [422, 'retryCredentials', 'passwordPolicy']],
+    ['auth.signup.organization_name.invalid', [422, 'retryInput', 'empty']],
+    ['auth.signup.handle.unavailable', [409, 'retryInput', 'empty']],
     ['auth.account.temporarily_unavailable', [503, 'retrySameOperation', 'empty']],
     ['auth.account_session.invalid', [401, 'reauthenticate', 'empty']],
     ['auth.account_establishment.superseded', [409, 'restartProductAuth', 'empty']],
@@ -94,6 +78,7 @@ function protocolError(envelope: ProtocolErrorEnvelopeV1, status: number, path: 
     ['auth.product_session.provisional', [409, 'finishFirstActivation', 'callbackOperation']],
     ['auth.product_session.stale_cookie', [409, 'repairProductSession', 'empty']],
     ['auth.product_session.invalid', [401, 'reauthenticate', 'empty']],
+    ['auth.product_session.account_limit', [409, 'none', 'flowLimit']],
     ['auth.logout.retry_required', [503, 'retryLogout', 'empty']],
     ['auth.logout.failed', [409, 'retryLogout', 'empty']],
     ['auth.code.invalid', [401, 'restartProductAuth', 'empty']],
@@ -117,60 +102,11 @@ function protocolError(envelope: ProtocolErrorEnvelopeV1, status: number, path: 
       new Set(error.details.violations).size !== error.details.violations.length)) return new ProtocolError('auth.internal.invariant')
   return new ProtocolError(
     error.code,
-    ['retrySameOperation', 'retryCredentials', 'retryLogout', 'refreshCatalog'].includes(error.recovery.action),
+    ['retrySameOperation', 'retryInput', 'retryCredentials', 'retryLogout', 'refreshCatalog'].includes(error.recovery.action),
     retryAfter,
     error.recovery.action,
     error.details,
   )
-}
-
-function retainedError(
-  text: string,
-  status: number,
-  security?: AuthApiSecurityContext,
-): { error: ProtocolError; correctionOrigin?: string } {
-  const value = decodeBoundedJsonText(text, MAX_RESPONSE_BYTES)
-  if (!record(value) || !exactKeys(value, ['schemaVersion', 'error']) || value.schemaVersion !== 1 || !record(value.error) ||
-      !exactKeys(value.error, ['code', 'message', 'details', 'correlationId']) || typeof value.error.code !== 'string' ||
-      typeof value.error.message !== 'string' || typeof value.error.correlationId !== 'string' || !record(value.error.details)) {
-    throw new Error('Invalid retained workflow error')
-  }
-  const code = value.error.code
-  const details = value.error.details
-  const emptyCodes = new Set([
-    'request.invalid', 'auth.authorization.invalid_request', 'auth.signup.verification_invalid',
-    'auth.signup.handoff_invalid', 'auth.password_recovery.invalid', 'auth.sign_in.invalid_credentials',
-    'auth.session.invalid', 'auth.csrf.invalid', 'auth.idempotency_conflict', 'auth.signup.state_conflict',
-    'auth.signup.organization_unavailable', 'auth.signup.publication_review_required', 'auth.region.unavailable',
-  ])
-  if (emptyCodes.has(code) && !(exactKeys(details, []) || (code === 'request.invalid' && exactKeys(details, ['field']) && typeof details.field === 'string'))) throw new Error('Invalid retained workflow details')
-  if (code === 'auth.signup.handle_unavailable' && !(exactKeys(details, ['field']) && details.field === 'handle')) throw new Error('Invalid retained workflow details')
-  if (code === 'auth.signup.organization_name_invalid' && !(exactKeys(details, ['field']) && details.field === 'displayName')) throw new Error('Invalid retained workflow details')
-  if (code === 'auth.password.policy_failed' && !(exactKeys(details, ['field', 'reason']) && details.field === 'password' && ['too_short', 'too_long', 'blocked', 'unavailable'].includes(String(details.reason)))) throw new Error('Invalid retained workflow details')
-  const throttled = code === 'auth.sign_in.throttled' || code === 'auth.signup.throttled'
-  if (throttled && !(exactKeys(details, []) || (exactKeys(details, ['retryAfterSeconds']) && Number.isInteger(details.retryAfterSeconds) && Number(details.retryAfterSeconds) >= 1 && Number(details.retryAfterSeconds) <= 900))) throw new Error('Invalid retained workflow details')
-  if (code === 'auth.profile.picture_invalid' || code === 'auth.profile.picture_unavailable') {
-    if (!exactKeys(details, [])) throw new Error('Invalid retained workflow details')
-  }
-  if (code === 'routing.wrong_region') {
-    if (status !== 421 || security === undefined || !exactKeys(details, ['destinationRegionId', 'destinationApiOrigin', 'catalogVersion']) ||
-        typeof details.destinationRegionId !== 'string' || typeof details.destinationApiOrigin !== 'string' ||
-        details.catalogVersion !== security.catalogVersion) {
-      throw new Error('Invalid route correction')
-    }
-    const correction = exactOrigin(details.destinationApiOrigin)
-    if (!security.identityRegions.some((region) =>
-      region.regionId === details.destinationRegionId && region.origin === correction)) {
-      throw new Error('Uncataloged route correction')
-    }
-    return { error: new ProtocolError(code, true), correctionOrigin: correction }
-  }
-  const known = emptyCodes.has(code) || throttled || code === 'auth.signup.handle_unavailable' ||
-    code === 'auth.signup.organization_name_invalid' || code === 'auth.password.policy_failed' ||
-    code === 'auth.profile.picture_invalid' || code === 'auth.profile.picture_unavailable'
-  if (!known) throw new Error('Unknown retained workflow error')
-  const retryAfter = typeof details.retryAfterSeconds === 'number' ? details.retryAfterSeconds : undefined
-  return { error: new ProtocolError(code, status >= 500 || throttled, retryAfter, undefined, Object.freeze({ ...details })) }
 }
 
 function exactOrigin(origin: string): string {
@@ -218,11 +154,9 @@ async function boundedResponseText(response: Response): Promise<string> {
 
 export class AuthApi {
   readonly origin: string
-  readonly security?: AuthApiSecurityContext
 
-  constructor(origin: string, security?: AuthApiSecurityContext) {
+  constructor(origin: string) {
     this.origin = exactOrigin(origin)
-    this.security = security
   }
 
   async post<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
@@ -237,18 +171,6 @@ export class AuthApi {
     return this.json('GET', path, undefined, schema, undefined, headers)
   }
 
-  async postRetained<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
-    return this.json('POST', path, body, schema, csrfToken, headers, 'retained')
-  }
-
-  async putRetained<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
-    return this.json('PUT', path, body, schema, csrfToken, headers, 'retained')
-  }
-
-  async getRetained<Response>(path: string, schema: ResponseSchemaName, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
-    return this.json('GET', path, undefined, schema, undefined, headers, 'retained')
-  }
-
   private async json<Request, Response>(
     method: 'GET' | 'POST' | 'PUT',
     path: string,
@@ -256,8 +178,6 @@ export class AuthApi {
     schema: ResponseSchemaName,
     csrfToken?: string,
     additionalHeaders: Readonly<Record<string, string>> = {},
-    errorContract: ErrorContract = 'protocol',
-    correctionUsed = false,
   ): Promise<Response> {
     const requestUrl = new URL(path, this.origin)
     if (!/^\/api\/auth\/v1\/[A-Za-z0-9/_-]+$/u.test(path) || requestUrl.origin !== this.origin ||
@@ -300,15 +220,6 @@ export class AuthApi {
     }
     if (!response.ok) {
       try {
-        if (errorContract === 'retained') {
-          const retained = retainedError(text, response.status, this.security)
-          if (!correctionUsed && retained.correctionOrigin !== undefined) {
-            return new AuthApi(retained.correctionOrigin, this.security).json(
-              method, path, body, schema, csrfToken, additionalHeaders, errorContract, true,
-            )
-          }
-          throw retained.error
-        }
         throw protocolError(decodeProtocolResponse<ProtocolErrorEnvelopeV1>('protocolError', text), response.status, path)
       } catch (error) {
         if (error instanceof ProtocolError) throw error

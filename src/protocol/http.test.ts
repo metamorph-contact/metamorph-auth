@@ -98,49 +98,36 @@ describe('authentication HTTP boundary', () => {
     )).rejects.toMatchObject({ code: 'auth.internal.invariant' })
   })
 
-  it('replays a retained request only to a catalog-pinned region correction', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({
-        schemaVersion: 1,
-        error: {
-          code: 'routing.wrong_region', message: 'safe', correlationId: '01890f3a-6e3a-7c15-8c65-450b85e12a01',
-          details: { destinationRegionId: 'us', destinationApiOrigin: 'https://identity.us.example', catalogVersion: 'v1' },
-        },
-      }), { status: 421, headers: { 'Content-Type': 'application/json' } }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ schemaVersion: 1, accepted: true }), {
-        status: 200, headers: { 'Content-Type': 'application/json' },
-      }))
-    vi.stubGlobal('fetch', fetchMock)
-    const api = new AuthApi('https://identity.eu.example', {
-      catalogVersion: 'v1',
-      identityRegions: [
-        { regionId: 'eu', origin: 'https://identity.eu.example' },
-        { regionId: 'us', origin: 'https://identity.us.example' },
-      ],
-    })
-    await expect(api.postRetained('/api/auth/v1/password-recovery-requests', { schemaVersion: 1 }, 'recoveryAccepted'))
-      .resolves.toMatchObject({ accepted: true })
-    expect(fetchMock).toHaveBeenCalledTimes(2)
-    expect(String(fetchMock.mock.calls[1]?.[0])).toContain('identity.us.example')
-  })
-
-  it('rejects a route correction whose region and origin do not form a catalog pair', async () => {
+  it('decodes the current protocol error on a retained signup or recovery endpoint', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
       schemaVersion: 1,
       error: {
-        code: 'routing.wrong_region', message: 'safe', correlationId: '01890f3a-6e3a-7c15-8c65-450b85e12a01',
-        details: { destinationRegionId: 'eu', destinationApiOrigin: 'https://identity.us.example', catalogVersion: 'v1' },
+        code: 'auth.dependency.unavailable', message: 'safe',
+        details: { kind: 'empty' },
+        correlationId: '01890f3a-6e3a-7c15-8c65-450b85e12a01',
+        recovery: { action: 'retrySameOperation' },
       },
-    }), { status: 421, headers: { 'Content-Type': 'application/json' } })))
-    const api = new AuthApi('https://identity.eu.example', {
-      catalogVersion: 'v1',
-      identityRegions: [
-        { regionId: 'eu', origin: 'https://identity.eu.example' },
-        { regionId: 'us', origin: 'https://identity.us.example' },
-      ],
-    })
-    await expect(api.postRetained(
+    }), { status: 503, headers: { 'Content-Type': 'application/json' } })))
+    await expect(new AuthApi('https://identity.eu.example').post(
       '/api/auth/v1/password-recovery-requests', { schemaVersion: 1 }, 'recoveryAccepted',
-    )).rejects.toMatchObject({ code: 'auth_outcome_uncertain', retryable: true })
+    )).rejects.toMatchObject({
+      code: 'auth.dependency.unavailable',
+      retryable: true,
+      recoveryAction: 'retrySameOperation',
+    })
+  })
+
+  it('rejects a protocol code with the wrong status on a retained endpoint', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      schemaVersion: 1,
+      error: {
+        code: 'auth.credentials.invalid', message: 'safe', details: { kind: 'empty' },
+        correlationId: '01890f3a-6e3a-7c15-8c65-450b85e12a01',
+        recovery: { action: 'retryCredentials' },
+      },
+    }), { status: 503, headers: { 'Content-Type': 'application/json' } })))
+    await expect(new AuthApi('https://identity.eu.example').post(
+      '/api/auth/v1/signups', { schemaVersion: 1 }, 'signupProgress',
+    )).rejects.toMatchObject({ code: 'auth.internal.invariant' })
   })
 })

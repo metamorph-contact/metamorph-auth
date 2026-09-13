@@ -18,7 +18,7 @@
   "$defs": {
     "EmailLinkPreview": {
       "type": "string",
-      "maxLength": 2048,
+      "maxLength": 8192,
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },

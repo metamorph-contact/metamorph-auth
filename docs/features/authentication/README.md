@@ -8,14 +8,18 @@ The frontend implements authorization entry, account choice, email/password
 sign-in, signup and verification, organization/individual continuation,
 profile name/handle/color/picture, recovery, destination finalization, and
 single-account/browser-wide logout. Product backends implement none of this
-protocol. CSI-13 defines the trusted product boundary, and CSI-15 exposes the
-SaaS routes through regional product API hosts and cuts over Octamorph.
+protocol. CSI-13 defines the trusted product boundary, CSI-15 exposes the SaaS
+routes through regional product API hosts and cuts over Octamorph, and CSI-16
+closes the focused post-cutover security/engineering review.
 
 Security invariants are catalog-pinned origins and navigation, protected
 fragment scrubbing before parsing, exact browser/tab recovery state, no
 credential persistence or logging, strict bounded/versioned response decoding,
-same-attempt response-loss recovery, required idempotency, bounded partial
-multi-home reads, and authoritative logout completion before local cleanup.
+same-attempt response-loss recovery without retaining passwords, required
+idempotency, bounded partial multi-home reads, and authoritative logout
+completion before local cleanup. Every endpoint uses the single current
+`ProtocolErrorV1` contract; pre-cutover retained error names and client methods
+are not accepted.
 
 Presentation follows system mode. Polymorph owns the fade choreography and
 two-pixel transition progress; internal transitions move focus to their new
@@ -25,6 +29,9 @@ admitted then generated into static first-party CSS. CSI-12 adds CSP-safe
 standalone runtime validators, short-lived exact recovery receipts, a scoped
 WCAG 2.2 AA identity contrast gate, responsive overflow checks, collision-safe
 translation bundles, and localized document/toast chrome.
+CSI-16 additionally scrubs and conceals the complete identity document before
+BFCache suspension and retains only the bounded non-authorizing receipt needed
+to recover destination completion after refresh.
 
 Generated DTOs and schemas come from `../metamorph-saas`; never edit them here.
 See [status](status.md) for current evidence and deferred work.

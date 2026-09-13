@@ -29,7 +29,7 @@
   "$defs": {
     "AccountAuthorizationCapability": {
       "type": "string",
-      "maxLength": 6144,
+      "maxLength": 32768,
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },

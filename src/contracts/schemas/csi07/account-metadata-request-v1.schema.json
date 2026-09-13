@@ -21,7 +21,7 @@
   "$defs": {
     "AccountMetadataCapability": {
       "type": "string",
-      "maxLength": 3072,
+      "maxLength": 16384,
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     }

@@ -1,6 +1,6 @@
 import type { BrowserHeadState } from '../browser/head-store'
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { admittedIdentityApi, controllerApiForRegion, identityApiForRegion } from '../catalog/boundaries'
+import { admittedIdentityApi, catalogNavigationUri, catalogProductReturnUri, controllerApiForRegion, identityApiForRegion } from '../catalog/boundaries'
 import type { AccountAuthorizationRequestV1 } from '../contracts/generated/csi07/AccountAuthorizationRequestV1'
 import type { AccountAuthorizationResultV1 } from '../contracts/generated/csi07/AccountAuthorizationResultV1'
 import type { AccountContinuationRequestV1 } from '../contracts/generated/csi07/AccountContinuationRequestV1'
@@ -373,7 +373,7 @@ export async function startSignup(flow: IdentityFlow, attempt: SignupStartAttemp
     email: attempt.email,
     protocol,
   }
-  const progress = await home.postRetained<SignupCreateRequestV1, SignupProgressV1>('/api/auth/v1/signups', request, 'signupProgress', undefined, { 'Idempotency-Key': issued.establishmentOperationId })
+  const progress = await home.post<SignupCreateRequestV1, SignupProgressV1>('/api/auth/v1/signups', request, 'signupProgress', undefined, { 'Idempotency-Key': issued.establishmentOperationId })
   if (progress.kind !== 'verificationPending' || progress.signupId !== registration.signupId) {
     throw new Error('Signup did not enter its registered verification operation')
   }
@@ -386,7 +386,7 @@ export async function resendSignup(started: StartedSignup, resendAttemptId: stri
     resendAttemptId,
     protocol: started.protocol,
   }
-  const progress = await started.home.postRetained<SignupResendRequestV1, SignupProgressV1>(
+  const progress = await started.home.post<SignupResendRequestV1, SignupProgressV1>(
     `/api/auth/v1/signups/${safeId(started.progress.signupId)}/verification-email`,
     request,
     'signupProgress',
@@ -405,11 +405,11 @@ export async function continueSignup(flow: IdentityFlow, attemptId: string): Pro
   )
   const home = admittedIdentityApi(flow.catalog, continuation.identityApiOrigin)
   const progress = continuation.handoff === null
-    ? await home.postRetained<SignupResolveRequestV1, SignupProgressV1>(
+    ? await home.post<SignupResolveRequestV1, SignupProgressV1>(
       `/api/auth/v1/signups/${safeId(continuation.signupId)}/resolve`,
       { schemaVersion: 1, resolveAttemptId: attemptId, protocol: continuation.protocol }, 'signupProgress',
     )
-    : await home.postRetained<SignupHandoffRequestV1, SignupProgressV1>(
+    : await home.post<SignupHandoffRequestV1, SignupProgressV1>(
       '/api/auth/v1/signup-handoffs',
       { schemaVersion: 1, handoff: continuation.handoff, protocol: continuation.protocol }, 'signupProgress',
     )
@@ -428,11 +428,11 @@ export async function updateSignup(
   if (progress.kind !== 'continue') throw new Error('Signup is not editable')
   if (progress.nextStep === 'organizationDetails' && input.organization !== undefined) {
     assertBoundedText(input.organization, 256, 'organization name')
-    return home.putRetained<SignupOrganizationRequestV1, SignupProgressV1>(`${base}/organization`, { schemaVersion: 1, displayName: input.organization, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
+    return home.put<SignupOrganizationRequestV1, SignupProgressV1>(`${base}/organization`, { schemaVersion: 1, displayName: input.organization, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
   }
   if (progress.nextStep === 'setPassword' && input.password !== undefined) {
     assertBoundedText(input.password, 1_024, 'password')
-    return home.putRetained<SignupPasswordRequestV1, SignupProgressV1>(`${base}/password`, { schemaVersion: 1, password: input.password, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
+    return home.put<SignupPasswordRequestV1, SignupProgressV1>(`${base}/password`, { schemaVersion: 1, password: input.password, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
   }
   if (progress.nextStep === 'completeProfile' && input.profile !== undefined) {
     assertBoundedText(input.profile.firstName, 128, 'first name')
@@ -440,12 +440,12 @@ export async function updateSignup(
     assertBoundedText(input.profile.handle, 64, 'handle')
     if (operationAttemptId === undefined) throw new Error('Missing signup completion attempt')
     const request: SignupCompleteRequestV1 = { schemaVersion: 1, completeAttemptId: operationAttemptId, profile: input.profile, protocol: continuation.protocol }
-    return home.postRetained<SignupCompleteRequestV1, SignupCompletionResultV1>(`${base}/complete`, request, 'signupCompletion', progress.csrfToken, { 'Idempotency-Key': request.completeAttemptId })
+    return home.post<SignupCompleteRequestV1, SignupCompletionResultV1>(`${base}/complete`, request, 'signupCompletion', progress.csrfToken, { 'Idempotency-Key': request.completeAttemptId })
   }
   if (progress.nextStep === 'finishAuthentication') {
     if (operationAttemptId === undefined) throw new Error('Missing signup finish attempt')
     const request: SignupFinishRequestV1 = { schemaVersion: 1, finishAttemptId: operationAttemptId, protocol: continuation.protocol }
-    const result = await home.postRetained<SignupFinishRequestV1, SignupCompletionResultV1>(`${base}/finish`, request, 'signupCompletion', progress.csrfToken, { 'Idempotency-Key': request.finishAttemptId })
+    const result = await home.post<SignupFinishRequestV1, SignupCompletionResultV1>(`${base}/finish`, request, 'signupCompletion', progress.csrfToken, { 'Idempotency-Key': request.finishAttemptId })
     return result
   }
   throw new Error('Signup input does not match the current step')
@@ -455,7 +455,7 @@ export async function refreshSignup(
   home: AuthApi,
   continuation: SignupContinuationResultV1,
 ): Promise<SignupProgressV1> {
-  return home.getRetained<SignupProgressV1>(
+  return home.get<SignupProgressV1>(
     `/api/auth/v1/signups/${safeId(continuation.signupId)}`,
     'signupProgress',
     { 'X-Metamorph-Signup-Context': continuation.protocol.continuationCapability },
@@ -494,20 +494,20 @@ export async function requestPasswordRecovery(
   attempt.continuation = continued
   const home = identityApiForRegion(flow.catalog, continued.regionId, continued.identityApiOrigin)
   const request: PasswordRecoveryRequestV1 = { schemaVersion: 1, email: attempt.email, protocol: { capability: continued.destinationCapability } }
-  return home.postRetained<PasswordRecoveryRequestV1, PasswordRecoveryAcceptedV1>(
+  return home.post<PasswordRecoveryRequestV1, PasswordRecoveryAcceptedV1>(
     '/api/auth/v1/password-recovery-requests', request, 'recoveryAccepted', undefined,
     { 'Idempotency-Key': continued.attemptId },
   )
 }
 
 export async function previewEmailLink(home: AuthApi, token: string, context: string): Promise<EmailLinkPreviewResultV1> {
-  return home.postRetained<EmailLinkPreviewRequestV1, EmailLinkPreviewResultV1>(
+  return home.post<EmailLinkPreviewRequestV1, EmailLinkPreviewResultV1>(
     '/api/auth/v1/email-verifications/preview', { schemaVersion: 1, token, context }, 'emailPreview',
   )
 }
 
 export async function verifyEmail(home: AuthApi, request: EmailVerificationRequestV1): Promise<EmailVerificationResultV1> {
-  return home.postRetained<EmailVerificationRequestV1, EmailVerificationResultV1>(
+  return home.post<EmailVerificationRequestV1, EmailVerificationResultV1>(
     '/api/auth/v1/email-verifications', request, 'emailVerification',
   )
 }
@@ -540,18 +540,22 @@ export async function confirmSignupEmail(
     { schemaVersion: 1, verifiedOutcome: verified.verifiedOutcome, anchorProof: anchor.anchorProof },
     'verifiedSignupTransfer',
   )
-  return transfer.navigationUri
+  const expectedReturn = catalogProductReturnUri(catalog, 'signupAdoption')
+  if (catalogNavigationUri(catalog, transfer.navigationUri) !== expectedReturn) {
+    throw new Error('Verified signup targets an unexpected product return')
+  }
+  return `${expectedReturn}#mm-auth=${transfer.adoptionReceipt}`
 }
 
 export async function resolveRecovery(home: AuthApi, request: PasswordRecoveryResolveRequestV1): Promise<EmailLinkPreviewResultV1> {
-  return home.postRetained<PasswordRecoveryResolveRequestV1, EmailLinkPreviewResultV1>(
+  return home.post<PasswordRecoveryResolveRequestV1, EmailLinkPreviewResultV1>(
     '/api/auth/v1/password-recoveries/resolve', request, 'emailPreview',
   )
 }
 
 export async function completeRecovery(home: AuthApi, request: PasswordRecoveryCompleteRequestV1): Promise<PasswordRecoveryCompletedV1> {
   assertBoundedText(request.newPassword, 1_024, 'password')
-  return home.postRetained<PasswordRecoveryCompleteRequestV1, PasswordRecoveryCompletedV1>(
+  return home.post<PasswordRecoveryCompleteRequestV1, PasswordRecoveryCompletedV1>(
     '/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined,
     { 'Idempotency-Key': request.completionAttemptId },
   )
@@ -588,6 +592,7 @@ export async function uploadSignupPicture(
   continuation: SignupContinuationResultV1,
   csrfToken: string,
   picture: Blob,
+  uploadAttemptId: string,
 ): Promise<void> {
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(picture.type) || picture.size > 5 * 1024 * 1024) {
     throw new Error('Invalid profile picture')
@@ -604,6 +609,7 @@ export async function uploadSignupPicture(
       'Content-Type': picture.type,
       'X-Metamorph-CSRF': csrfToken,
       'X-Metamorph-Signup-Continuation': continuation.protocol.continuationCapability,
+      'Idempotency-Key': uploadAttemptId,
     },
     body: picture,
   })

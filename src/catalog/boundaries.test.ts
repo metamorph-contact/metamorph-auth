@@ -28,4 +28,16 @@ describe('signed catalog boundaries', () => {
     expect(() => catalogNavigationUri(catalog, 'https://evil.example/en/auth/complete#receipt')).toThrow()
     expect(() => catalogNavigationUri(catalog, 'https://octamorph.example/not-registered')).toThrow()
   })
+
+  it('accepts only the three exact catalog-bound product relay documents', () => {
+    for (const path of [
+      '/api/auth/v1/relays/relocation',
+      '/api/auth/v1/relays/preparation',
+      '/api/auth/v1/relays/callback',
+    ]) {
+      expect(catalogNavigationUri(catalog, `https://api.eu.octamorph.example${path}#relay`)).toContain(path)
+    }
+    expect(() => catalogNavigationUri(catalog, 'https://api.eu.octamorph.example/api/auth/v1/callbacks')).toThrow()
+    expect(() => catalogNavigationUri(catalog, 'https://api.other.octamorph.example/api/auth/v1/relays/preparation')).toThrow()
+  })
 })

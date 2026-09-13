@@ -36,7 +36,11 @@ async function boundedText(url: URL, maxBytes: number): Promise<string> {
   } catch {
     throw new CatalogUnavailableError()
   }
-  if (!response.ok || response.type === 'opaque') throw new CatalogUnavailableError()
+  if (
+    !response.ok ||
+    response.type === 'opaque' ||
+    !/^application\/json(?:;|$)/iu.test(response.headers.get('content-type') ?? '')
+  ) throw new CatalogUnavailableError()
   const declared = Number(response.headers.get('content-length'))
   if (Number.isFinite(declared) && declared > maxBytes) throw new Error('Identity catalog exceeds its byte limit')
   if (response.body === null) throw new Error('Identity catalog response is empty')

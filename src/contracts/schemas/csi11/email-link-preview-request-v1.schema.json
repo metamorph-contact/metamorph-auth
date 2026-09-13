@@ -13,7 +13,7 @@
       "minimum": 0
     },
     "token": {
-      "$ref": "#/$defs/LookupCredentialV1"
+      "$ref": "#/$defs/Secret32"
     }
   },
   "additionalProperties": false,
@@ -29,11 +29,11 @@
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },
-    "LookupCredentialV1": {
+    "Secret32": {
       "type": "string",
-      "maxLength": 49,
-      "minLength": 46,
-      "pattern": "^k[1-9a-z][0-9a-z]{0,3}\\.[A-Za-z0-9_-]{43}$"
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
     }
   }
 }

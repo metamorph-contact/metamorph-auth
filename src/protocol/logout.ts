@@ -373,7 +373,9 @@ export class BrowserLogoutClient {
       const status: BrowserLogoutStatusRequestV1 = {
         schemaVersion: 1,
         operationId: pending.operationId,
-        proof: { kind: "operationCookie" },
+        // The source initialization survives the acknowledgement response-loss
+        // window in which the server has already deleted the operation cookie.
+        proof: { kind: "sourceInitialization", head: headReference(this.head) },
       };
       result = await this.api.post<
         BrowserLogoutStatusRequestV1,
