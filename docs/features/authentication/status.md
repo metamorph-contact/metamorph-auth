@@ -13,6 +13,11 @@ handling, browser-head and per-tab recovery stores, typed protocol clients,
 React/TanStack routes, localized product presentation, system theme/motion,
 signup profile editing, destination completion, and recoverable logout.
 
+The AC-1 identity-catalog publication now includes the signed
+`agentApiNamespace` field in its generated TypeScript, strict JSON Schema, and
+standalone validator. Metamorph Auth adds no agent route, UI, or product
+authorization grant.
+
 CSI-15 binds the UI release to the current signed deployment catalog, exposes
 the common UI through the composed SaaS runtime, and moves Octamorph product
 login/add-account/session/logout to the SaaS-owned regional product-auth

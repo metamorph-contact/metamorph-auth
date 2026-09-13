@@ -58,6 +58,9 @@
     "AuthProjectionV1": {
       "type": "object",
       "properties": {
+        "agentApiNamespace": {
+          "$ref": "#/$defs/RoutePrefix"
+        },
         "authProjectionId": {
           "$ref": "#/$defs/CatalogId"
         },
@@ -167,6 +170,7 @@
         "issuer",
         "commonUiOrigin",
         "immutableAssetOrigin",
+        "agentApiNamespace",
         "identityUiReleaseId",
         "identityUiReleaseDigest",
         "catalogVersion",
@@ -461,6 +465,12 @@
         "productCompletion",
         "signupAdoption"
       ]
+    },
+    "RoutePrefix": {
+      "type": "string",
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^/(?:[A-Za-z0-9._~-]+/)+$"
     },
     "Signature64": {
       "type": "string",

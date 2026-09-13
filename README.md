@@ -34,3 +34,9 @@ load from the cataloged same-site asset origin through anonymous CORS. Every
 HTML/React renderer must set `crossOrigin="anonymous"`; the browser sends the
 common-UI `Origin`, omits credentials, and requires the listener to return that
 exact allowed origin without credential permission.
+
+Agent-runtime AC-1 adds `agentApiNamespace` to the mechanically generated,
+signed auth projection and its standalone validator/publication. This frontend
+does not call that namespace and owns no agent behavior; future product
+adoption may consume the signed value from product code without inferring a
+route.
