@@ -17,10 +17,14 @@ Do not hand-edit `src/contracts/generated` or `src/contracts/schemas`; regenerat
 catalog artifacts through the `identity_catalog export-contracts` command and
 the current CSI snapshots through `identity_controller_contracts
 export-contracts`; CSI-06 remains immutable historical output. Then run `npm
-run check:contracts`. `generated/release-trust.ts` is the build-
-bound UI release/root trust input; never replace its values with fields from a
-downloaded projection or caller input. Browser code must use the bounded text
-decoders, which reject duplicate member names before strict schema validation,
+run check:contracts`. `generated/release-trust.ts` is the build-bound UI
+release/root trust input; never replace its values with fields from a
+downloaded projection or caller input. Packet `EA-00J` enterprise design
+contracts are generated into `src/contracts/generated/enterprise-security-v1`;
+run `npm run check:ea00j` for the pinned manifest, fixture/schema rejection,
+and TypeScript checks. They do not replace the current CSI runtime client.
+Browser code must use the bounded text decoders, which reject duplicate member
+names before strict schema validation,
 then call `verifyCatalogPair` with only the protected transaction's catalog
 version/digest, projection, product, and current clock. Theme changes must pass
 the same `@polymorph/theme` admission used by the catalog authoring/check CLI.

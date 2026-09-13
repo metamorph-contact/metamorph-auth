@@ -20,9 +20,11 @@
     "check:csi09-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi09-generated-contracts ../metamorph-auth",
     "check:csi10-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi10-generated-contracts ../metamorph-auth",
     "check:csi11-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi11-generated-contracts ../metamorph-auth",
+    "check:ea00j-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-enterprise-security-contract --bin enterprise_security_contracts -- check",
+    "check:ea00j": "npm run check:ea00j-generated && node scripts/check-enterprise-security-contracts.mjs && tsc -b",
     "check:themes": "tsx scripts/check-theme-admission.mjs catalog/identity-ui-release.development.json",
     "check:contrast": "node scripts/check-identity-contrast.mjs",
-    "check:contracts": "npm run check:generated && npm run check:csi07-generated && npm run check:csi08-generated && npm run check:csi09-generated && npm run check:csi10-generated && npm run check:csi11-generated && npm run check:themes && npm run check:contrast && npm run check:catalog-publication && npm run check:validators && tsc -b && node scripts/check-contracts.mjs"
+    "check:contracts": "npm run check:generated && npm run check:csi07-generated && npm run check:csi08-generated && npm run check:csi09-generated && npm run check:csi10-generated && npm run check:csi11-generated && npm run check:ea00j && npm run check:themes && npm run check:contrast && npm run check:catalog-publication && npm run check:validators && tsc -b && node scripts/check-contracts.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fira-code": "5.2.7",

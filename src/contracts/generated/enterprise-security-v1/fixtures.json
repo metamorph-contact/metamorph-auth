@@ -1,0 +1,330 @@
+{
+  "auditEvent": {
+    "action": "execute",
+    "actionAssuranceClass": null,
+    "actor": {
+      "identity": {
+        "serviceId": "fixture-service"
+      },
+      "kind": "system"
+    },
+    "authenticationEvidenceRevision": null,
+    "authorizationCatalogVersion": "development-5",
+    "awareAt": null,
+    "causationEventId": null,
+    "clientId": null,
+    "correlationId": "018f0000-0000-7000-8000-000000000001",
+    "details": {
+      "kind": "security_decision",
+      "value": {
+        "reason": "policy"
+      }
+    },
+    "detectedAt": null,
+    "eventCatalogVersion": "development-1",
+    "eventCategory": "authentication",
+    "eventId": "018f0000-0000-7000-8000-000000000001",
+    "eventType": "authentication.security.denied",
+    "mutationId": "018f0000-0000-7000-8000-000000000001",
+    "occurredAt": "2026-01-01T00:00:00Z",
+    "operationKey": "admin.members.force_reset",
+    "policyRevision": null,
+    "productId": null,
+    "providerRevision": null,
+    "realmId": "fixture-realm",
+    "reason": "policy",
+    "regionId": "fixture-region",
+    "result": "denied",
+    "schemaVersion": 2,
+    "scopeKind": "user",
+    "securityCatalogVersion": "development-1",
+    "sourceIp": null,
+    "sourceIpProvenance": null,
+    "sourceKind": "internal_command",
+    "sourceServiceId": "fixture-service",
+    "subjectUserId": "018f0000-0000-7000-8000-000000000001",
+    "surfaceId": null,
+    "target": {
+      "id": "018f0000-0000-7000-8000-000000000001",
+      "kind": "user"
+    },
+    "tenantId": "018f0000-0000-7000-8000-000000000001"
+  },
+  "errorEnvelopes": [
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.assurance.required"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.assurance.phishing_resistance_required"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.assurance.recent_authentication_required"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.ceremony.expired"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.ceremony.mismatch"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.method.disabled"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.provider.unavailable"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.provider.not_ready"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.policy.changed"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.route.retry",
+        "detail": {
+          "catalogVersion": "development-1",
+          "ownerRegionId": "fixture-region",
+          "realmId": "fixture-realm",
+          "routeEpoch": "1"
+        }
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.recovery.limited"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.owner.unavailable",
+        "detail": {
+          "retryAfterSeconds": 1
+        }
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.operation.partial_result",
+        "detail": {
+          "failedCount": 1,
+          "operation": {
+            "acceptedAt": "2026-01-01T00:00:00Z",
+            "nextPollAfterSeconds": null,
+            "operationId": "018f0000-0000-7000-8000-000000000001",
+            "revision": "1",
+            "state": "queued"
+          }
+        }
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.operation.conflict",
+        "detail": {
+          "currentRevision": "1"
+        }
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.emergency.not_ready"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.request.invalid"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.request.unauthorized"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.request.forbidden"
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.request.rate_limited",
+        "detail": {
+          "retryAfterSeconds": 1
+        }
+      },
+      "schemaVersion": 1
+    },
+    {
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "error": {
+        "code": "security.dependency.unavailable",
+        "detail": {
+          "retryAfterSeconds": 1
+        }
+      },
+      "schemaVersion": 1
+    }
+  ],
+  "fixtureIds": [
+    "FIX-OP-SCHEMA",
+    "FIX-OP-ROUNDTRIP",
+    "FIX-EVENT-SCHEMA",
+    "FIX-CATALOG-BINDINGS",
+    "FIX-MANIFEST-DRIFT",
+    "FIX-ERROR-ALL",
+    "FIX-ERROR-UNKNOWN-FIELD",
+    "FIX-ERROR-UNKNOWN-ENUM",
+    "FIX-ID-BOUNDARY",
+    "FIX-EVENT-ROUNDTRIP",
+    "FIX-EVENT-SEMANTIC-REJECTION",
+    "FIX-EVENT-WIRE-MAX",
+    "FIX-OPTION-NULL-ABSENT"
+  ],
+  "integrationEvent": {
+    "causationEventId": null,
+    "eventId": "018f0000-0000-7000-8000-000000000001",
+    "mutationId": "018f0000-0000-7000-8000-000000000001",
+    "occurredAt": "2026-01-01T00:00:00Z",
+    "operationKey": "runtime.session.revoke",
+    "payload": {
+      "data": {
+        "alertId": "018f0000-0000-7000-8000-000000000001",
+        "incidentId": null,
+        "severity": "high"
+      },
+      "kind": "security_alert"
+    },
+    "realmId": "fixture-realm",
+    "regionId": "fixture-region",
+    "schemaVersion": 1,
+    "sourceRevision": "1",
+    "sourceServiceId": "fixture-service",
+    "tenantId": "018f0000-0000-7000-8000-000000000001"
+  },
+  "operation": {
+    "key": "profile.emails.list",
+    "request": {
+      "page": {
+        "cursor": null,
+        "limit": 25
+      },
+      "schemaVersion": 1
+    },
+    "response": {
+      "accountRevision": "1",
+      "page": {
+        "items": [],
+        "nextCursor": null,
+        "partialFailures": []
+      },
+      "schemaVersion": 1
+    }
+  },
+  "semanticRejection": {
+    "auditDeniedMarkedSucceeded": {
+      "action": "execute",
+      "actionAssuranceClass": null,
+      "actor": {
+        "identity": {
+          "serviceId": "fixture-service"
+        },
+        "kind": "system"
+      },
+      "authenticationEvidenceRevision": null,
+      "authorizationCatalogVersion": "development-5",
+      "awareAt": null,
+      "causationEventId": null,
+      "clientId": null,
+      "correlationId": "018f0000-0000-7000-8000-000000000001",
+      "details": {
+        "kind": "none"
+      },
+      "detectedAt": null,
+      "eventCatalogVersion": "development-1",
+      "eventCategory": "authentication",
+      "eventId": "018f0000-0000-7000-8000-000000000001",
+      "eventType": "authentication.security.denied",
+      "mutationId": "018f0000-0000-7000-8000-000000000001",
+      "occurredAt": "2026-01-01T00:00:00Z",
+      "operationKey": "admin.members.force_reset",
+      "policyRevision": null,
+      "productId": null,
+      "providerRevision": null,
+      "realmId": "fixture-realm",
+      "reason": null,
+      "regionId": "fixture-region",
+      "result": "succeeded",
+      "schemaVersion": 2,
+      "scopeKind": "user",
+      "securityCatalogVersion": "development-1",
+      "sourceIp": null,
+      "sourceIpProvenance": null,
+      "sourceKind": "internal_command",
+      "sourceServiceId": "fixture-service",
+      "subjectUserId": "018f0000-0000-7000-8000-000000000001",
+      "surfaceId": null,
+      "target": {
+        "id": "018f0000-0000-7000-8000-000000000001",
+        "kind": "user"
+      },
+      "tenantId": "018f0000-0000-7000-8000-000000000001"
+    },
+    "expectedRustDecodeError": "invalid_semantics"
+  },
+  "source": "metamorph-saas/crates/enterprise-security-contract::error::SecurityErrorV1 + events"
+}
