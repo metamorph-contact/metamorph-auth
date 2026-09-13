@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { admitTheme } from "@polymorph/theme/admit";
+import { admitTheme } from "@polymorph/theme";
 
 const uiRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = resolve(process.argv[2] ?? "catalog/identity-ui-release.development.json");
