@@ -34,6 +34,9 @@ BFCache suspension and retains only the bounded non-authorizing receipt needed
 to recover destination completion after refresh.
 
 Generated DTOs and schemas come from `../metamorph-saas`; never edit them here.
+The [central first-party browser contract](../../../../metamorph-saas/docs/features/authentication/contracts/central-first-party-browser-v1.md)
+is the durable protocol boundary; CSI packet records are historical
+development rationale, not a competing wire contract.
 See [status](status.md) for current evidence and deferred work.
 
 The checked-in UI release and generated browser trust are build inputs, not

@@ -1,12 +1,13 @@
 # Shared Identity Frontend Status
 
 - Date: 2026-09-13
-- State: CSI-17 implemented and independently reviewed; human acceptance pending
+- State: CSI-17 development slice accepted by the human; CSI-18 documentation
+  reset implemented, long-running tests deferred
 - Repository: Development-in-progress
 - Contracts: Mutable
-- Human testing: Pending operator acceptance
+- Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
-- Octamorph cutover: Implemented; human testing pending CSI-17
+- Octamorph cutover: Implemented; development slice accepted by the human
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
