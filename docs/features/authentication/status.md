@@ -41,6 +41,11 @@ catalogs. Product and identity catalog version identifiers remain independent;
 their signed region/origin bindings must agree. Catalog responses require JSON
 MIME in addition to byte/UTF-8 bounds.
 
+The subsequent product completion correction removes the obsolete browser
+activation request/result DTO exports from the generated CSI-09 snapshot.
+Metamorph Auth does not call the product return-completion endpoint; its own
+presentation and identity flows are unchanged.
+
 CSI-11's three protocol/frontend reviewers and CSI-12's three visual/motion,
 accessibility, and internationalization/browser-concurrency reviewers are
 complete. Valid CSI-12 findings were addressed holistically: standalone CSP-
