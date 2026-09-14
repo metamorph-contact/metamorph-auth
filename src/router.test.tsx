@@ -51,24 +51,22 @@ describe('identity router presentation', () => {
       .rejects.toMatchObject({ isNotFound: true })
   })
 
-  it('admits every Packet I preview screen and rejects unrelated identity rows', async () => {
+  it('admits every Packet I preview screen and the Packet L inbox', async () => {
     const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
     for (const screenId of ['SCR-IDN-001', 'SCR-IDN-011', 'SCR-IDN-012', 'SCR-IDN-013', 'SCR-IDN-014', 'SCR-IDN-015', 'SCR-IDN-016', 'SCR-IDN-017']) {
       await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
         .resolves.toBeUndefined()
     }
     await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-009' } } as never)))
-      .rejects.toMatchObject({ isNotFound: true })
+      .resolves.toBeUndefined()
   })
 
-  it('admits Packet J ceremony previews without opening the gated inbox', async () => {
+  it('admits Packet J ceremony previews', async () => {
     const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
     for (const screenId of ['SCR-IDN-002', 'SCR-IDN-003', 'SCR-IDN-004', 'SCR-IDN-005', 'SCR-IDN-010']) {
       await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
         .resolves.toBeUndefined()
     }
-    await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-009' } } as never)))
-      .rejects.toMatchObject({ isNotFound: true })
   })
 
   it('reveals manual TOTP setup only on request and scrubs it on pagehide', async () => {
@@ -88,7 +86,7 @@ describe('identity router presentation', () => {
     await waitFor(() => expect(screen.queryByText('Fixture-only manual setup key')).toBeNull())
   })
 
-  it('keeps Packet K federation preview URLs inert and the inbox gated', async () => {
+  it('keeps Packet K federation preview URLs inert', async () => {
     const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
     for (const screenId of ['SCR-IDN-006', 'SCR-IDN-007', 'SCR-IDN-008', 'SCR-IDN-018']) {
       await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
@@ -107,6 +105,31 @@ describe('identity router presentation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'OIDC' }))
     expect(await screen.findByText(/OIDC start is configured/u)).toBeTruthy()
     expect(screen.queryByText(/IdP handoff would present/u)).toBeNull()
+  })
+
+  it('shows the Packet L teaser without details and keeps acceptance pending until status completes', async () => {
+    render(<PageTransitions><IdentityRouter /></PageTransitions>)
+    await act(async () => {
+      await router.navigate({
+        to: '/$locale/_preview/enterprise-security/$screenId',
+        params: { locale: 'en', screenId: 'SCR-IDN-009' },
+      })
+    })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Invitation inbox preview' })).toBeTruthy()
+    expect(await screen.findByText(/An invitation needs its original emailed link/u)).toBeTruthy()
+    expect(screen.queryByText('fixtureonlycompleteemailedtoken00000000000000000000')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Use simulated emailed link' }))
+    expect(await screen.findByText(/The simulated email link carries an invitation ID/u)).toBeTruthy()
+    expect(screen.queryByText(/The simulated link opened an offer from/u)).toBeNull()
+    const accepts = screen.getAllByRole('button', { name: 'Simulate accept' })
+    fireEvent.click(accepts[accepts.length - 1])
+    expect(await screen.findByText(/Acceptance was queued/u)).toBeTruthy()
+    expect(screen.getByText('The decision is pending at the owning region.')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Check decision status' }))
+    await waitFor(() => expect(screen.queryByText('Checking the owning region…')).toBeNull())
+    fireEvent.click(screen.getByRole('button', { name: 'Check decision status' }))
+    expect(await screen.findByText('The owning region confirmed the decision.')).toBeTruthy()
+    expect(screen.queryByText('fixtureonlycompleteemailedtoken00000000000000000000')).toBeNull()
   })
 
   it('scrubs an unexpected fragment before admitting a development preview', async () => {

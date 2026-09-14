@@ -1497,7 +1497,7 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
   beforeLoad: async ({ params }) => {
-    if (!/^SCR-IDN-(?:00[1-8]|010|01[1-8])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
+    if (!/^SCR-IDN-(?:00[1-9]|010|01[1-8])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
     // Preview routes never consume protected authentication or callback input.
     if (window.__MM_AUTH_FRAGMENT_V1__ !== undefined) delete window.__MM_AUTH_FRAGMENT_V1__
     if (window.location.hash !== '') {

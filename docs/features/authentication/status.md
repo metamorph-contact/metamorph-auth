@@ -8,9 +8,10 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
-- Plan 01: `EA-01K` development-only federation and activation preview and
-  focused checks complete; `EA-01L` recipient inbox is blocked on
-  authorization-owned `DEL-OWN-001` DTOs and typed fixtures
+- Plan 01: `EA-01A`–`EA-01L` development-only previews implemented across all
+  57 screens; the recipient inbox now consumes authorization-owned generated
+  DTOs and typed fixtures. Human preview exercise is pending. Its production
+  route remains gated on `VER-OWN-001` guarded handlers.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -89,6 +90,18 @@ emergency entry, JIT profile completion, and human SCIM activation. It never
 follows a provider URL or consumes a callback proof; the preview guard scrubs
 unexpected fragments. The typed fixture distinguishes identity verification
 from target access. Focused type, fixture/router/fragment, generated-contract,
-and production-exclusion checks pass. Packet L's recipient inbox cannot start:
-authorization has not published the required `DEL-OWN-001` generated DTOs and
-typed safe fixtures. No inbox preview or live route is registered.
+and production-exclusion checks pass. Packet L later consumed the separate
+authorization recipient DTO/fixture pack published by `AUTH-RI-A`.
+
+Packet L adds a fourth development-only lazy preview for the recipient inbox.
+It uses closed generated authorization DTOs for controller bootstrap,
+identity-home list/detail, accept/reject, and operation status, with synthetic
+typed fixtures. The teaser omits tenant, inviter, target, and invitation ID;
+the simulated emailed token stays in memory and never appears in a URL or
+rendered text. The emailed-link preview gives no full offer detail until a
+confirmed decision; tokenless detail is denied. Pinned decisions, token-required
+claims, pending receipts,
+completed/rejected history, local skip, stale and uncertain states have focused
+fixture/router checks. The production build excludes the preview and fixture
+marker. No live recipient endpoint or grant path is registered; that remains
+`AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.

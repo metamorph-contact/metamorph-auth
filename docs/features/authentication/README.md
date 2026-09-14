@@ -55,9 +55,12 @@ credential adapter is inert in preview, and its fixtures cannot issue a
 credential result or action proof.
 
 Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
-a third development-only lazy module. The recipient inbox screen remains
-blocked until authorization publishes its generated DTOs and typed fixtures;
-the identity app has no guessed inbox client or route.
+a third development-only lazy module. Packet L's recipient inbox uses a fourth
+lazy module and the separately generated authorization recipient contract. It
+shows pinned offers, redacted claim-required teasers, queued decisions, local
+skip, and read-only completion without contacting a live invitation handler.
+Its development preview route is `/{locale}/_preview/enterprise-security/SCR-IDN-009`;
+production registration waits for the guarded authorization owner gate.
 
 The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
