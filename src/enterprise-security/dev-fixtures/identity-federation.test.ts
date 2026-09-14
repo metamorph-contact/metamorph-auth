@@ -28,7 +28,7 @@ describe('EA-01K federation and activation fixtures', () => {
   it('keeps verified email, identity completion, and target access distinct', async () => {
     const client = identityFederationFixture('ready', 'saml')
     expect(await client.load('SCR-IDN-008', new AbortController().signal))
-      .toMatchObject({ kind: 'jit-profile', verification: { nextStep: 'verify_email' }, completion: { nextStep: 'ready' } })
+      .toMatchObject({ kind: 'jit-profile', verification: { nextStep: 'verify_email' }, profileRequest: { profile: { handle: 'alex-example', firstName: 'Alex', avatarColor: '#7c3aed', approvedPictureRefId: null }, privacyAcknowledgement: null }, completion: { nextStep: 'ready' } })
     expect(await client.load('SCR-IDN-018', new AbortController().signal))
       .toMatchObject({ kind: 'scim-activation', verification: { nextStep: 'verify_email' }, activation: { nextStep: 'ready' } })
     const pending = await identityFederationFixture('partial', 'saml').load('SCR-IDN-018', new AbortController().signal)

@@ -5,6 +5,7 @@ import type { IdentityAcceptedV1 } from '../../contracts/generated/enterprise-se
 import type { IdentityCeremonyProgressV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityCeremonyProgressV1'
 import type { IdentityIdpSamlHandoffRedeemResultV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityIdpSamlHandoffRedeemResultV1'
 import type { IdentityMethodResolutionV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
+import type { IdentityProfileCompleteRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityProfileCompleteRequestV1'
 import { IdentityMethodPreviewError } from '../identity-client'
 import { federationIdentityScreens, type FederationIdentityScreen, type IdentityFederationClient } from '../identity-federation-client'
 import { identityPreviewStates, type IdentityPreviewState } from './identity-states'
@@ -22,6 +23,13 @@ const progress = (nextStep: IdentityCeremonyProgressV1['nextStep']): IdentityCer
 })
 const methods: IdentityMethodResolutionV1 = {
   schemaVersion: 1, continuationId: 'fixture-continuation', methods: ['federation'], expiresAt,
+}
+const profileRequest: IdentityProfileCompleteRequestV1 = {
+  ceremony: { schemaVersion: 1, attemptId: 'fixture-attempt', continuationId: 'fixture-continuation', expectedCeremonyRevision: '1' },
+  expectedProvisionalIdentityRevision: '1',
+  primaryEmailChallengeId: 'fixture-primary-email-challenge',
+  profile: { handle: 'alex-example', firstName: 'Alex', lastName: null, avatarColor: '#7c3aed', approvedPictureRefId: null },
+  privacyAcknowledgement: null,
 }
 const handoff: IdentityIdpSamlHandoffRedeemResultV1 = {
   schemaVersion: 1, targetTenantId: 'fixture-tenant', providerId: 'fixture-provider',
@@ -79,6 +87,7 @@ export function identityFederationFixture(state: IdentityPreviewState, protocol:
         case 'SCR-IDN-008': return {
           kind: 'jit-profile', emailStart: accepted,
           verification: progress('verify_email'),
+          profileRequest,
           completion: progress(state === 'partial' ? 'complete_profile' : 'ready'),
         }
         case 'SCR-IDN-018': return {

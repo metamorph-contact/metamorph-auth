@@ -55,7 +55,10 @@ credential adapter is inert in preview, and its fixtures cannot issue a
 credential result or action proof.
 
 Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
-a third development-only lazy module. Packet L's recipient inbox uses a fourth
+a third development-only lazy module. Its JIT sample carries the generated
+profile-completion request shape, including handle, first name, avatar fallback,
+and a null privacy handoff; it does not submit a profile or invent a receipt.
+Packet L's recipient inbox uses a fourth
 lazy module and the separately generated authorization recipient contract. It
 shows pinned offers, redacted claim-required teasers, queued decisions, local
 skip, and read-only completion without contacting a live invitation handler.

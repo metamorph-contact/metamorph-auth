@@ -120,6 +120,12 @@ export function FederationIdentityPreviewPage() {
               {visible.payload.kind === 'jit-profile' && <>
                 <Text>{t('security.preview.federation.jitEmail')}</Text>
                 <Text>{t('security.preview.federation.jitProfile')}</Text>
+                <Text>{t('security.preview.federation.jitProfileSample', {
+                  handle: visible.payload.profileRequest.profile.handle,
+                  firstName: visible.payload.profileRequest.profile.firstName,
+                  avatarColor: visible.payload.profileRequest.profile.avatarColor,
+                })}</Text>
+                <Text tone="secondary">{t('security.preview.federation.privacyHandoff')}</Text>
                 <Text tone="secondary">{t('security.preview.federation.pictureImport')}</Text>
               </>}
               {visible.payload.kind === 'scim-activation' && <>
