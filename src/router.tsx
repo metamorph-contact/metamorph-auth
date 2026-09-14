@@ -1497,7 +1497,13 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
   beforeLoad: async ({ params }) => {
-    if (!/^SCR-IDN-(?:00[1-5]|010|01[1-7])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
+    if (!/^SCR-IDN-(?:00[1-8]|010|01[1-8])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
+    // Preview routes never consume protected authentication or callback input.
+    if (window.__MM_AUTH_FRAGMENT_V1__ !== undefined) delete window.__MM_AUTH_FRAGMENT_V1__
+    if (window.location.hash !== '') {
+      window.history.replaceState(window.history.state, '', `${window.location.pathname}${window.location.search}`)
+      if (window.location.hash !== '') throw notFound()
+    }
     await setLocale(params.locale)
   },
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),

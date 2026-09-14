@@ -8,8 +8,9 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
-- Plan 01: `EA-01J` development-only ceremony preview and focused checks
-  complete; `EA-01K` is next
+- Plan 01: `EA-01K` development-only federation and activation preview and
+  focused checks complete; `EA-01L` recipient inbox is blocked on
+  authorization-owned `DEL-OWN-001` DTOs and typed fixtures
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -82,3 +83,12 @@ the fixture. Manual TOTP setup is first-display only and scrubbed on pagehide;
 code entry clears before dispatch. Ready, unavailable, replay/expiry, hold,
 approval, repudiation, and regional/provider states have focused fixture and
 route checks. Production still excludes every enterprise preview module.
+
+Packet K adds a third lazy development preview for SAML/OIDC, SSO-only and
+emergency entry, JIT profile completion, and human SCIM activation. It never
+follows a provider URL or consumes a callback proof; the preview guard scrubs
+unexpected fragments. The typed fixture distinguishes identity verification
+from target access. Focused type, fixture/router/fragment, generated-contract,
+and production-exclusion checks pass. Packet L's recipient inbox cannot start:
+authorization has not published the required `DEL-OWN-001` generated DTOs and
+typed safe fixtures. No inbox preview or live route is registered.

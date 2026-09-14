@@ -54,6 +54,11 @@ status previews use a second development-only lazy module. Its browser
 credential adapter is inert in preview, and its fixtures cannot issue a
 credential result or action proof.
 
+Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
+a third development-only lazy module. The recipient inbox screen remains
+blocked until authorization publishes its generated DTOs and typed fixtures;
+the identity app has no guessed inbox client or route.
+
 The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or

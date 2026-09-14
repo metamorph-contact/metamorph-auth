@@ -87,4 +87,36 @@ describe('identity router presentation', () => {
     fireEvent(window, new Event('pagehide'))
     await waitFor(() => expect(screen.queryByText('Fixture-only manual setup key')).toBeNull())
   })
+
+  it('keeps Packet K federation preview URLs inert and the inbox gated', async () => {
+    const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
+    for (const screenId of ['SCR-IDN-006', 'SCR-IDN-007', 'SCR-IDN-008', 'SCR-IDN-018']) {
+      await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
+        .resolves.toBeUndefined()
+    }
+    render(<PageTransitions><IdentityRouter /></PageTransitions>)
+    await act(async () => {
+      await router.navigate({
+        to: '/$locale/_preview/enterprise-security/$screenId',
+        params: { locale: 'en', screenId: 'SCR-IDN-006' },
+      })
+    })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Federated sign-in preview' })).toBeTruthy()
+    expect(await screen.findByText(/SAML start is configured/u)).toBeTruthy()
+    expect(screen.queryByText('https://idp.example.invalid/fixture-only')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'OIDC' }))
+    expect(await screen.findByText(/OIDC start is configured/u)).toBeTruthy()
+    expect(screen.queryByText(/IdP handoff would present/u)).toBeNull()
+  })
+
+  it('scrubs an unexpected fragment before admitting a development preview', async () => {
+    window.history.replaceState(null, '', '/en/_preview/enterprise-security/SCR-IDN-006#callback=untrusted')
+    Object.defineProperty(window, '__MM_AUTH_FRAGMENT_V1__', {
+      value: '#callback=untrusted', configurable: true, enumerable: false, writable: false,
+    })
+    const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
+    await guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-006' } } as never)
+    expect(window.location.hash).toBe('')
+    expect(window.__MM_AUTH_FRAGMENT_V1__).toBeUndefined()
+  })
 })
