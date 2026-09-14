@@ -8,8 +8,8 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
-- Plan 01: `EA-01A` development-only method preview and typed adapter seam
-  implemented; read-only packet review and fixes complete
+- Plan 01: `EA-01I` development-only core identity preview and CSI continuity
+  checks complete; `EA-01J` is next
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -64,10 +64,13 @@ Focused development checks are recorded in the SaaS
 No broad browser matrix, release security qualification, or production runtime
 claim is made yet.
 
-Plan 01 packet A adds only a lazy development preview for `SCR-IDN-001`.
-Ready, empty, loading, and retryable-error fixture states use the reviewed
-enterprise DTOs and stable error code. The production build excludes the
-preview path and fixture marker, and the live enterprise adapter currently
-rejects every call. Focused fixture, router, type, generated-contract, and
-production-build checks pass. The human has not yet exercised this preview;
-enterprise sign-in methods remain for the later wiring plans.
+Plan 01 packet I expands the lazy development preview to `SCR-IDN-001` and
+`SCR-IDN-011`–`SCR-IDN-017`. It uses a flow-scoped generated method DTO,
+generated target-admission data, and the existing CSI account/signup/email/
+organization/recovery/finalization response shapes. All twelve scenario states
+are deterministic. Preview selection has no credential, session, or return
+effect. The production build excludes the preview path and fixture marker;
+the enterprise live adapter still fails closed. Focused type, fixture/router,
+CSI continuity, generated-contract, and production-bundle checks pass. The
+human has not yet exercised these previews; live enterprise methods remain for
+the later wiring plans.

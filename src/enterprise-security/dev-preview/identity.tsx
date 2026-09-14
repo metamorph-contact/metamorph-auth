@@ -3,86 +3,134 @@ import { useParams } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import type { IdentityEntryRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityEntryRequestV1'
-import type { IdentityMethodResolutionV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
 import i18n from '../../i18n'
 import enterpriseSecurityEn from '../../i18n/locales/en/enterprise-security.json'
+import { IDENTITY_FIXTURE_MARKER } from '../dev-fixtures/identity-methods'
+import { identityCoreFixture } from '../dev-fixtures/identity-core'
+import { coreIdentityScreens, coreIdentityStates, type CoreIdentityPayload, type CoreIdentityScreen, type CoreIdentityState } from '../identity-core-client'
 import { IdentityMethodPreviewError } from '../identity-client'
-import { IDENTITY_FIXTURE_MARKER, identityMethodFixture, identityPreviewScenarios, type IdentityPreviewScenario } from '../dev-fixtures/identity-methods'
 
 i18n.addResourceBundle('en', 'enterprise-security', enterpriseSecurityEn)
 
-const previewRequest: IdentityEntryRequestV1 = {
-  schemaVersion: 1,
-  flowId: '018f0000-0000-7000-8000-000000000002',
-  realmId: 'fixture-realm',
-  clientRegistrationId: 'octamorph-browser',
-  routeHint: null,
+const screenNames: Record<CoreIdentityScreen, string> = {
+  'SCR-IDN-001': 'entry',
+  'SCR-IDN-011': 'accounts',
+  'SCR-IDN-012': 'signup',
+  'SCR-IDN-013': 'verification',
+  'SCR-IDN-014': 'organization',
+  'SCR-IDN-015': 'recovery',
+  'SCR-IDN-016': 'finalization',
+  'SCR-IDN-017': 'safeError',
+}
+
+type LoadState =
+  | { kind: 'loading'; screenId: CoreIdentityScreen; scenario: CoreIdentityState }
+  | { kind: 'result'; screenId: CoreIdentityScreen; scenario: CoreIdentityState; payload: CoreIdentityPayload }
+  | { kind: 'error'; screenId: CoreIdentityScreen; scenario: CoreIdentityState; code: string }
+
+function errorMessage(code: string): string {
+  if (code === 'security.owner.unavailable') return 'security.preview.error.ownerUnavailable'
+  if (code === 'security.policy.changed') return 'security.preview.error.stale'
+  if (code === 'security.assurance.required') return 'security.preview.error.assurance'
+  if (code === 'security.route.retry') return 'security.preview.error.region'
+  if (code === 'security.provider.unavailable') return 'security.preview.error.provider'
+  return 'security.preview.error.generic'
 }
 
 export function IdentitySecurityPreviewPage() {
-  const { screenId } = useParams({ strict: false }) as { screenId?: string }
+  const { locale, screenId: routeScreenId } = useParams({ strict: false }) as { locale?: string; screenId?: string }
   const { t } = useTranslation('enterprise-security')
-  const [scenario, setScenario] = useState<IdentityPreviewScenario>('SCR-IDN-001:ready')
-  const [state, setState] = useState<
-    { kind: 'loading' } |
-    { kind: 'result'; scenario: IdentityPreviewScenario; value: IdentityMethodResolutionV1 } |
-    { kind: 'error'; scenario: IdentityPreviewScenario; code: string }
-  >({ kind: 'loading' })
-  const visibleState = state.kind === 'loading' || state.scenario === scenario ? state : { kind: 'loading' as const }
-  const client = useMemo(() => identityMethodFixture(scenario), [scenario])
+  const screenId = coreIdentityScreens.find((candidate) => candidate === routeScreenId)
+  const [scenario, setScenario] = useState<CoreIdentityState>('ready')
+  const [selected, setSelected] = useState<string>()
+  const [loaded, setLoaded] = useState<LoadState>()
+  const client = useMemo(() => identityCoreFixture(scenario), [scenario])
 
   useEffect(() => {
+    if (screenId === undefined) return
     const controller = new AbortController()
-    void client.resolveMethods(previewRequest, controller.signal).then((value) => {
-      if (!controller.signal.aborted) setState({ kind: 'result', scenario, value })
+    setLoaded({ kind: 'loading', screenId, scenario })
+    void client.load(screenId, controller.signal).then((payload) => {
+      if (!controller.signal.aborted) setLoaded({ kind: 'result', screenId, scenario, payload })
     }).catch((error: unknown) => {
-      if (!controller.signal.aborted) setState({
-        kind: 'error',
-        scenario,
+      if (!controller.signal.aborted) setLoaded({
+        kind: 'error', screenId, scenario,
         code: error instanceof IdentityMethodPreviewError ? error.envelope.error.code : 'security.dependency.unavailable',
       })
     })
     return () => controller.abort()
-  }, [client, scenario])
+  }, [client, screenId, scenario])
 
+  useEffect(() => { setSelected(undefined) }, [screenId, scenario])
   useEffect(() => {
-    document.title = t('security.preview.identity.title')
+    if (screenId === undefined) return
+    document.title = t(`security.preview.identity.screen.${screenNames[screenId]}.title`)
     const frame = requestAnimationFrame(() => {
       const heading = document.querySelector<HTMLElement>('main h1')
       if (heading !== null) { heading.tabIndex = -1; heading.focus({ preventScroll: true }) }
     })
     return () => cancelAnimationFrame(frame)
-  }, [t])
+  }, [screenId, t])
 
-  if (screenId !== 'SCR-IDN-001') return null
+  if (screenId === undefined) return null
+  const visible = loaded?.screenId === screenId && loaded.scenario === scenario ? loaded : undefined
+  const title = t(`security.preview.identity.screen.${screenNames[screenId]}.title`)
+  const description = t(`security.preview.identity.screen.${screenNames[screenId]}.description`)
+  const readOnly = scenario === 'read-only' || scenario === 'assurance-challenge'
+
   return <div className="identity-shell" data-enterprise-fixture={IDENTITY_FIXTURE_MARKER}><AuthPage
-    title={t('security.preview.identity.title')}
-    description={t('security.preview.identity.description')}
-    transitionKey={`identity-preview-${scenario}`}
-    pending={visibleState.kind === 'loading' && scenario !== 'SCR-IDN-001:loading'}
+    title={title} description={description} transitionKey={`identity-preview-${screenId}-${scenario}`} pending={false}
   >
     <Stack gap={4}>
       <Text tone="secondary">{t('security.preview.simulated')}</Text>
+      <nav aria-label={t('security.preview.identity.screens')}>
+        <Stack gap={2}>{coreIdentityScreens.map((candidate) => <a
+          key={candidate}
+          href={`/${encodeURIComponent(locale ?? 'en')}/_preview/enterprise-security/${candidate}`}
+          aria-current={candidate === screenId ? 'page' : undefined}
+        >{t(`security.preview.identity.screen.${screenNames[candidate]}.title`)}</a>)}</Stack>
+      </nav>
       <div role="group" aria-label={t('security.preview.scenarios')}>
-        <Stack gap={2}>{identityPreviewScenarios.map((entry) => <Button
-          key={entry.id}
-          label={t(`security.preview.scenario.${entry.state}`)}
-          variant="outline"
-          tone="neutral"
-          pressed={scenario === entry.id}
-          onClick={() => setScenario(entry.id)}
+        <Stack gap={2}>{coreIdentityStates.map((state) => <Button
+          key={state}
+          label={t(`security.preview.scenario.${state}`)}
+          variant="outline" tone="neutral" pressed={scenario === state}
+          onClick={() => setScenario(state)}
         />)}</Stack>
       </div>
       <div role="status" aria-live="polite">
-        {visibleState.kind === 'loading' && <Text>{t('security.preview.loading')}</Text>}
-        {visibleState.kind === 'error' && <Text>{t(visibleState.code === 'security.owner.unavailable'
-          ? 'security.preview.error.ownerUnavailable'
-          : 'security.preview.error.generic')}</Text>}
-        {visibleState.kind === 'result' && <Text>{visibleState.value.methods.length === 0
-          ? t('security.preview.empty')
-          : t('security.preview.identity.methods', { methods: visibleState.value.methods.map((method) => t(`security.preview.method.${method}`)).join(', ') })}
-        </Text>}
+        {visible === undefined || visible.kind === 'loading' ? <Text>{t('security.preview.loading')}</Text>
+          : visible.kind === 'error' ? <Text>{t(errorMessage(visible.code))}</Text>
+            : <Stack gap={3}>
+              {scenario !== 'ready' && <Text tone="secondary">{t(`security.preview.state.${scenario}`)}</Text>}
+              {visible.payload.kind === 'empty' && <Text>{t('security.preview.identity.noResult')}</Text>}
+              {visible.payload.kind === 'entry' && <>
+                <Text>{visible.payload.resolution.methods.length === 0 ? t('security.preview.empty') : t('security.preview.identity.methodPrompt')}</Text>
+                <Text tone="secondary">{t('security.preview.identity.privacy')}</Text>
+                <Stack gap={2}>{visible.payload.resolution.methods.map((method) => <Button
+                  key={method} label={t(`security.preview.method.${method}`)}
+                  variant="outline" tone="neutral" disabled={readOnly}
+                  onClick={() => setSelected(method)}
+                />)}</Stack>
+              </>}
+              {visible.payload.kind === 'accounts' && <>
+                <Text>{visible.payload.accounts.accounts.length === 0 ? t('security.preview.identity.noAccounts') : t('security.preview.identity.chooseAccount')}</Text>
+                <Stack gap={2}>{visible.payload.accounts.accounts.map((account) => <Button
+                  key={account.reference.browserAccountId}
+                  label={`${account.summary.displayName} · ${account.summary.homeTenantLabel}`}
+                  variant="outline" tone="neutral" disabled={readOnly}
+                  onClick={() => setSelected(account.reference.browserAccountId)}
+                />)}</Stack>
+                {visible.payload.accounts.unavailableCount > 0 && <Text tone="secondary">{t('security.preview.identity.unavailableAccounts')}</Text>}
+                <Text tone="secondary">{t('security.preview.identity.perTab')}</Text>
+              </>}
+              {(visible.payload.kind === 'signup' || visible.payload.kind === 'organization') && <Text>{t(`security.preview.identity.progress.${visible.payload.progress.nextStep}`)}</Text>}
+              {visible.payload.kind === 'verification' && <Text>{t('security.preview.identity.verificationFor', { email: visible.payload.preview.email })}</Text>}
+              {visible.payload.kind === 'recovery' && <Text>{t('security.preview.identity.recoveryAccepted')}</Text>}
+              {visible.payload.kind === 'finalization' && <Text>{t('security.preview.identity.finalizationPending')}</Text>}
+              {visible.payload.kind === 'safe-error' && <Text>{t('security.preview.identity.safeRestart')}</Text>}
+              {selected !== undefined && <Text>{t('security.preview.identity.selectionOnly')}</Text>}
+            </Stack>}
       </div>
     </Stack>
   </AuthPage></div>

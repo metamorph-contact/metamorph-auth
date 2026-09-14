@@ -15,7 +15,7 @@ describe('EA-01A identity method fixtures', () => {
   it('returns typed deterministic ready and empty states', async () => {
     const signal = new AbortController().signal
     expect((await identityMethodFixture('SCR-IDN-001:ready').resolveMethods(request, signal)).methods)
-      .toEqual(['password', 'passkey', 'federation'])
+      .toEqual(['password', 'passkey', 'federation', 'social'])
     expect((await identityMethodFixture('SCR-IDN-001:empty').resolveMethods(request, signal)).methods)
       .toEqual([])
   })

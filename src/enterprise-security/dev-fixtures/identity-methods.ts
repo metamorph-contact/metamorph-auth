@@ -1,15 +1,14 @@
 import { buildSecurityErrorEnvelope } from '../../contracts/generated/enterprise-security-v1/fixtures.generated'
 import type { IdentityEntryRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityEntryRequestV1'
 import type { IdentityMethodResolutionV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
+import { coreIdentityStates, type CoreIdentityState } from '../identity-core-client'
 import { IdentityMethodPreviewError, type IdentityMethodClient } from '../identity-client'
 
 export const IDENTITY_FIXTURE_MARKER = 'EA01_FIXTURE_ONLY'
-export const identityPreviewScenarios = [
-  { id: 'SCR-IDN-001:ready', state: 'ready' },
-  { id: 'SCR-IDN-001:empty', state: 'empty' },
-  { id: 'SCR-IDN-001:loading', state: 'loading' },
-  { id: 'SCR-IDN-001:retryable-error', state: 'retryable-error' },
-] as const
+export const identityPreviewScenarios = coreIdentityStates.map((state) => ({
+  id: `SCR-IDN-001:${state}` as const,
+  state,
+}))
 export type IdentityPreviewScenario = (typeof identityPreviewScenarios)[number]['id']
 
 const continuationId = '018f0000-0000-7000-8000-000000000001'
@@ -36,13 +35,20 @@ export function identityMethodFixture(scenario: IdentityPreviewScenario): Identi
       if (request.schemaVersion !== 1 || request.flowId.length === 0 || request.realmId.length === 0) {
         throw new Error('Invalid method-resolution fixture request')
       }
-      if (scenario === 'SCR-IDN-001:loading') return waitUntilCancelled(signal)
+      const state: CoreIdentityState = scenario.slice('SCR-IDN-001:'.length) as CoreIdentityState
+      if (!coreIdentityStates.includes(state)) throw new Error('Unknown method fixture scenario')
+      if (state === 'loading') return waitUntilCancelled(signal)
       await wait(signal)
-      if (scenario === 'SCR-IDN-001:retryable-error') throw new IdentityMethodPreviewError(buildSecurityErrorEnvelope(11))
+      const errors: Partial<Record<CoreIdentityState, number>> = {
+        'retryable-error': 11, 'terminal-error': 15, 'stale-revision': 8,
+        'assurance-challenge': 0, 'regional-correction': 9, 'provider-outage': 6,
+      }
+      const index = errors[state]
+      if (index !== undefined) throw new IdentityMethodPreviewError(buildSecurityErrorEnvelope(index))
       return {
         schemaVersion: 1,
         continuationId,
-        methods: scenario === 'SCR-IDN-001:empty' ? [] : ['password', 'passkey', 'federation'],
+        methods: state === 'empty' ? [] : state === 'partial' ? ['password', 'federation'] : ['password', 'passkey', 'federation', 'social'],
         expiresAt: '2099-01-01T00:00:00Z',
       }
     },

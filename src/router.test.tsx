@@ -42,12 +42,22 @@ describe('identity router presentation', () => {
     })
     expect(router.state.location.pathname).toBe('/en/_preview/enterprise-security/SCR-IDN-001')
     expect(await screen.findByRole('heading', { level: 1, name: 'Authentication methods preview' })).toBeTruthy()
-    expect(await screen.findByText(/Available in this fixture:/u)).toBeTruthy()
+    expect(await screen.findByText(/Methods available for this flow:/u)).toBeTruthy()
   })
 
   it('rejects unsupported locales on the identity preview route', async () => {
     const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
     await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'zz', screenId: 'SCR-IDN-001' } } as never)))
+      .rejects.toMatchObject({ isNotFound: true })
+  })
+
+  it('admits every Packet I preview screen and rejects unrelated identity rows', async () => {
+    const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
+    for (const screenId of ['SCR-IDN-001', 'SCR-IDN-011', 'SCR-IDN-012', 'SCR-IDN-013', 'SCR-IDN-014', 'SCR-IDN-015', 'SCR-IDN-016', 'SCR-IDN-017']) {
+      await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
+        .resolves.toBeUndefined()
+    }
+    await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-009' } } as never)))
       .rejects.toMatchObject({ isNotFound: true })
   })
 })
