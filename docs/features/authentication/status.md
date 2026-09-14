@@ -122,8 +122,7 @@ checks pass. The adapter does not issue a session. The Plan 01 ceremony preview
 remains a development-only fixture; production ceremony requests, generated
 response validation, account-session/evidence composition, and the live route
 binding are deferred to the Plan 03 integrator after their Plan 02/00/04/11
-owners supply the required gates. The browser contract permits RS256 in some
-algorithm profiles, but the staged identity-home verifier currently accepts
-ES256/Ed25519 only; a live owner must negotiate to a supported profile or add
-RS256 verification before issuing such options. No passkey or factor-recovery
-route is live.
+owners supply the required gates. The staged identity-home verifier now accepts
+ES256, bounded RS256 and Ed25519; a live owner must still negotiate the
+effective-policy algorithm and attestation profile before issuing options.
+No passkey or factor-recovery route is live.
