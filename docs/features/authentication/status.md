@@ -1,6 +1,6 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-14
+- Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -105,3 +105,10 @@ completed/rejected history, local skip, stale and uncertain states have focused
 fixture/router checks. The production build excludes the preview and fixture
 marker. No live recipient endpoint or grant path is registered; that remains
 `AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.
+
+Plan 03 raises the common password client's raw UTF-8 admission bound to
+16 KiB for signup, recovery and sign-in, matching the identity-home verifier.
+Only those three password endpoints permit up to 128 KiB of JSON-escaped
+request framing; other requests retain the 64-KiB client limit. Focused client,
+HTTP and TypeScript checks pass. Live factor/profile clients remain gated on
+their identity-home ceremonies and action-proof/session integration.

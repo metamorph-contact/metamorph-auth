@@ -1,7 +1,7 @@
 {
-  "artifactDigestSha256": "275bc3496c0aee1e6e360d6ad503e2d57a610d4581c1c25a4269b8be85a857ef",
+  "artifactDigestSha256": "dc8bec7a0eb2ce4f49f050f75befabbf01c8109750103073c12e88394f9a3a32",
   "artifactHashes": {
-    "metamorph-auth/src/contracts/generated/enterprise-security-v1/catalog.generated.ts": "175a62b4ba30846ade710d10fccc167f7217ac2c7801d79a9a9e29cea3c1570c",
+    "metamorph-auth/src/contracts/generated/enterprise-security-v1/catalog.generated.ts": "91dcf6d93be1bbadef9beb433b9fed3e5ecae0af5b6b4a12178218b57b59aacb",
     "metamorph-auth/src/contracts/generated/enterprise-security-v1/fixtures.generated.ts": "a6a68718d7b068772ebee88715d43c01cadfc3dbc3bc37df224d71382947a83b",
     "metamorph-auth/src/contracts/generated/enterprise-security-v1/fixtures.json": "01042d3ceeeed615ef2f779fb0a253ddb1f7e477c399dc49f845bc8a6de77f46",
     "metamorph-auth/src/contracts/generated/enterprise-security-v1/operations.generated.ts": "7a086257ecbef78e33e02835a97b7bd7d7a8f43efa93b03442ea1513170d53cb",
@@ -1135,7 +1135,7 @@
     "metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/customer-audit.schema.json": "a01de69a4b32b7784404dcd02dc1bbed9dd16bca021c067269a218993eceb25e",
     "metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/integration.schema.json": "043b4def96f75cd12463dd7337a642d3a16222b7ec23f9ce94562e26a2bac453",
     "metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/fixtures.json": "01042d3ceeeed615ef2f779fb0a253ddb1f7e477c399dc49f845bc8a6de77f46",
-    "octamorph/apps/frontend/src/contracts/generated/enterprise-security-v1/catalog.generated.ts": "175a62b4ba30846ade710d10fccc167f7217ac2c7801d79a9a9e29cea3c1570c",
+    "octamorph/apps/frontend/src/contracts/generated/enterprise-security-v1/catalog.generated.ts": "91dcf6d93be1bbadef9beb433b9fed3e5ecae0af5b6b4a12178218b57b59aacb",
     "octamorph/apps/frontend/src/contracts/generated/enterprise-security-v1/fixtures.generated.ts": "a6a68718d7b068772ebee88715d43c01cadfc3dbc3bc37df224d71382947a83b",
     "octamorph/apps/frontend/src/contracts/generated/enterprise-security-v1/fixtures.json": "01042d3ceeeed615ef2f779fb0a253ddb1f7e477c399dc49f845bc8a6de77f46",
     "octamorph/apps/frontend/src/contracts/generated/enterprise-security-v1/operations.generated.ts": "7a086257ecbef78e33e02835a97b7bd7d7a8f43efa93b03442ea1513170d53cb",
@@ -1802,7 +1802,7 @@
     "metamorph-auth/src/contracts/generated/csi11/PasswordRecoveryCompletedV1.ts": "6474b69c8baa2d49fce06e2e2775a092fb1d0f4dde02b21a61c40d7dcb15f057",
     "metamorph-auth/src/contracts/generated/csi11/PasswordRecoveryRequestV1.ts": "93dee78394e00b83a787f9b9887db61d7d390cb2d1483053127793ec1e263c8f",
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-accepted-v1.schema.json": "1ff2aed6d9f808d869568a2da74eddf2df2d97079b6f6757d9d4ec01d5af40ab",
-    "metamorph-auth/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "f07209059c4a0c42685129d0efa003485c2969e7265590fe26870f06b419ba85",
+    "metamorph-auth/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "4ff38e46917240b5f7c121f057f364b65fad5c3d50f8fbab5c31a2abf28fa876",
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-completed-v1.schema.json": "d9c58ac1d25f5edcbbafd01c801fe7ec9b9af7ef0729def08852186e3c1f8f6c",
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "ddec4cd59520f464b8d07b00afdf028c2945c1183e780de4be7186fc08c4fe2a",
     "octamorph/apps/frontend/src/contracts/generated/csi11/PasswordRecoveryAcceptedV1.ts": "0f00c7a77c68a043b5f5f6bdfed4d1bd9db91ec5154e47e586dcfd1a9b744026",
@@ -1810,7 +1810,7 @@
     "octamorph/apps/frontend/src/contracts/generated/csi11/PasswordRecoveryCompletedV1.ts": "6474b69c8baa2d49fce06e2e2775a092fb1d0f4dde02b21a61c40d7dcb15f057",
     "octamorph/apps/frontend/src/contracts/generated/csi11/PasswordRecoveryRequestV1.ts": "93dee78394e00b83a787f9b9887db61d7d390cb2d1483053127793ec1e263c8f",
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-accepted-v1.schema.json": "1ff2aed6d9f808d869568a2da74eddf2df2d97079b6f6757d9d4ec01d5af40ab",
-    "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "f07209059c4a0c42685129d0efa003485c2969e7265590fe26870f06b419ba85",
+    "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "4ff38e46917240b5f7c121f057f364b65fad5c3d50f8fbab5c31a2abf28fa876",
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-completed-v1.schema.json": "d9c58ac1d25f5edcbbafd01c801fe7ec9b9af7ef0729def08852186e3c1f8f6c",
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "ddec4cd59520f464b8d07b00afdf028c2945c1183e780de4be7186fc08c4fe2a"
   },
@@ -2335,9 +2335,9 @@
     "metamorph-saas/crates/enterprise-security-contract/src/runtime_operations.rs": "5bc05c12afe014e63dc90a7f974c584a7c3a67039152bc80bf5d8a07e3851837",
     "metamorph-saas/crates/enterprise-security-contract/src/scim_protocol.rs": "fd8c6154af4b56b4e58232295f73faf221851299d1831c0cf953de43e465020e",
     "metamorph-saas/crates/enterprise-security-contract/src/session_activity.rs": "3136fa85642bdf3e7e58c5875892ca0560d28bf7b935d9928e5e97a8bb4cef8c",
-    "metamorph-saas/crates/identity-controller/src/api.rs": "de05fbe3f49ab75afd7086f0fa1d26a7075aed2e7e6629d63d25b30d1169d16c",
+    "metamorph-saas/crates/identity-controller/src/api.rs": "5ff45b3dd4689c0026dc61a9de39b7801007f3aba3a175a0ed0d430d31a81004",
     "metamorph-saas/crates/identity-controller/src/contracts.rs": "c3f6d5d163625ff3cd932fc32d98fdab31e5f91cf7f37023f8ddf2e1b354bf5a",
-    "metamorph-saas/docs/features/authentication/contracts/enterprise-security-catalog-v1.json": "e524cae5fb3c72bcc5f0513f41c7c5673c9136f2b502d6c3428ef5d364ae5f65",
+    "metamorph-saas/docs/features/authentication/contracts/enterprise-security-catalog-v1.json": "429027cdb6d8a800b9a95d3377332560fadd6514f132b43aa1a2f16cfb37625f",
     "metamorph-saas/docs/features/authentication/contracts/enterprise-security-event-effects-v1.json": "394348a651cd966272d95bb7f2769660cbbf558d50b92a1125befdfa7b2e2f90"
   }
 }

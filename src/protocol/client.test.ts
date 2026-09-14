@@ -1,11 +1,26 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { loadAccounts, startSignup, type IdentityFlow, type SignupStartAttempt } from './client'
-import { ProtocolError } from './http'
+import { completeRecovery, loadAccounts, startSignup, type IdentityFlow, type SignupStartAttempt } from './client'
+import { AuthApi, ProtocolError } from './http'
 
 const operationId = '01890f3a-6e3a-7c15-8c65-450b85e12a01'
 const expiresAt = '2030-01-01T00:00:00Z'
+
+describe('password ingress', () => {
+  it('allows a multibyte replacement above the old 1024-byte sign-in guard', async () => {
+    const post = vi.fn().mockResolvedValue({ schemaVersion: 1, kind: 'completed' })
+    const home = { post } as unknown as AuthApi
+    const request = { newPassword: '界'.repeat(384), completionAttemptId: operationId } as Parameters<typeof completeRecovery>[1]
+    await completeRecovery(home, request)
+    expect(post).toHaveBeenCalledWith(
+      '/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined,
+      { 'Idempotency-Key': operationId },
+    )
+    await expect(completeRecovery(home, { ...request, newPassword: '界'.repeat(5462) })).rejects.toThrow('Invalid password')
+    expect(post).toHaveBeenCalledTimes(1)
+  })
+})
 
 describe('identity workflow recovery', () => {
   afterEach(() => vi.unstubAllGlobals())
