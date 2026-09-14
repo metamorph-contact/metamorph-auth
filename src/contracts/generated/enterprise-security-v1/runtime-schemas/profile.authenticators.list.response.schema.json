@@ -1,0 +1,450 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ProfileAuthenticatorsPageV1. Do not edit.",
+  "$defs": {
+    "AuthenticatorCardV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "authenticator": {
+              "$ref": "#/$defs/WebAuthnAuthenticatorCardV1"
+            },
+            "kind": {
+              "const": "webauthn",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "authenticator"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "authenticator": {
+              "$ref": "#/$defs/TotpAuthenticatorCardV1"
+            },
+            "kind": {
+              "const": "totp",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "authenticator"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "DeviceLabelV1": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string"
+    },
+    "EffectivePasswordPolicyV1": {
+      "additionalProperties": false,
+      "properties": {
+        "compromiseSessionDisposition": {
+          "$ref": "#/$defs/PasswordSessionDispositionV1"
+        },
+        "maximumCharacters": {
+          "format": "uint16",
+          "maximum": 1024,
+          "minimum": 64,
+          "type": "integer"
+        },
+        "maximumUtf8Bytes": {
+          "format": "uint16",
+          "maximum": 16384,
+          "minimum": 1024,
+          "type": "integer"
+        },
+        "minimumCharacters": {
+          "format": "uint16",
+          "maximum": 128,
+          "minimum": 15,
+          "type": "integer"
+        },
+        "policyRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "routineSessionDisposition": {
+          "$ref": "#/$defs/PasswordSessionDispositionV1"
+        }
+      },
+      "required": [
+        "policyRevision",
+        "minimumCharacters",
+        "maximumCharacters",
+        "maximumUtf8Bytes",
+        "routineSessionDisposition",
+        "compromiseSessionDisposition"
+      ],
+      "type": "object"
+    },
+    "OpaqueCursorV1": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^[!-~]+$",
+      "type": "string"
+    },
+    "PageResultV1": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/AuthenticatorCardV1"
+          },
+          "maxItems": 100,
+          "type": "array"
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueCursorV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "partialFailures": {
+          "items": {
+            "$ref": "#/$defs/PartialOwnerFailureV1"
+          },
+          "maxItems": 16,
+          "type": "array"
+        }
+      },
+      "required": [
+        "items",
+        "partialFailures"
+      ],
+      "type": "object"
+    },
+    "PartialOwnerFailureCodeV1": {
+      "enum": [
+        "owner_unavailable",
+        "route_changed",
+        "deadline_exceeded"
+      ],
+      "type": "string"
+    },
+    "PartialOwnerFailureV1": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PartialOwnerFailureCodeV1"
+        },
+        "ownerRegionId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "retryCursor": {
+          "$ref": "#/$defs/OpaqueCursorV1"
+        }
+      },
+      "required": [
+        "ownerRegionId",
+        "retryCursor",
+        "code"
+      ],
+      "type": "object"
+    },
+    "PasswordSessionDispositionV1": {
+      "enum": [
+        "current_retained",
+        "other_sessions_revoked",
+        "all_sessions_revoked_reauthenticate"
+      ],
+      "type": "string"
+    },
+    "ProfilePasswordInfoV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "credentialRevision": {
+              "$ref": "#/$defs/RevisionV1"
+            },
+            "effectivePolicy": {
+              "$ref": "#/$defs/EffectivePasswordPolicyV1"
+            },
+            "state": {
+              "const": "active",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "credentialRevision",
+            "effectivePolicy"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "credentialRevision": {
+              "$ref": "#/$defs/RevisionV1"
+            },
+            "effectivePolicy": {
+              "$ref": "#/$defs/EffectivePasswordPolicyV1"
+            },
+            "state": {
+              "const": "force_change_required",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "credentialRevision",
+            "effectivePolicy"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "effectivePolicy": {
+              "$ref": "#/$defs/EffectivePasswordPolicyV1"
+            },
+            "state": {
+              "const": "unavailable",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "effectivePolicy"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "TotpAuthenticatorCardV1": {
+      "additionalProperties": false,
+      "properties": {
+        "authenticatorId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "confirmedAt": {
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeviceLabelV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastUsedAt": {
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recordRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "state": {
+          "$ref": "#/$defs/TotpAuthenticatorStateV1"
+        }
+      },
+      "required": [
+        "authenticatorId",
+        "state",
+        "createdAt",
+        "recordRevision"
+      ],
+      "type": "object"
+    },
+    "TotpAuthenticatorStateV1": {
+      "enum": [
+        "pending_confirmation",
+        "active",
+        "revoked",
+        "expired"
+      ],
+      "type": "string"
+    },
+    "WebAuthnAuthenticatorCardV1": {
+      "additionalProperties": false,
+      "properties": {
+        "backedUp": {
+          "type": "boolean"
+        },
+        "backupEligible": {
+          "type": "boolean"
+        },
+        "class": {
+          "$ref": "#/$defs/WebAuthnCredentialClassV1"
+        },
+        "counterState": {
+          "$ref": "#/$defs/WebAuthnCounterStateV1"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "credentialId": {
+          "$ref": "#/$defs/SecurityIdV1",
+          "description": "Opaque identity-home row ID, never raw WebAuthn credential ID."
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeviceLabelV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastUsedAt": {
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recordRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "state": {
+          "$ref": "#/$defs/WebAuthnCredentialStateV1"
+        },
+        "transports": {
+          "$ref": "#/$defs/WebAuthnTransportFlagsV1"
+        },
+        "userVerifiedAtEnrollment": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "credentialId",
+        "class",
+        "state",
+        "backupEligible",
+        "backedUp",
+        "userVerifiedAtEnrollment",
+        "transports",
+        "counterState",
+        "createdAt",
+        "recordRevision"
+      ],
+      "type": "object"
+    },
+    "WebAuthnCounterStateV1": {
+      "enum": [
+        "normal",
+        "anomaly_observed",
+        "unavailable"
+      ],
+      "type": "string"
+    },
+    "WebAuthnCredentialClassV1": {
+      "enum": [
+        "synced",
+        "device_bound",
+        "attested_hardware"
+      ],
+      "type": "string"
+    },
+    "WebAuthnCredentialStateV1": {
+      "enum": [
+        "pending_route",
+        "active",
+        "compromised",
+        "revoked"
+      ],
+      "type": "string"
+    },
+    "WebAuthnTransportFlagsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "ble": {
+          "type": "boolean"
+        },
+        "hybrid": {
+          "type": "boolean"
+        },
+        "internal": {
+          "type": "boolean"
+        },
+        "nfc": {
+          "type": "boolean"
+        },
+        "usb": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "usb",
+        "nfc",
+        "ble",
+        "internal",
+        "hybrid"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.authenticators.list:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accountRevision": {
+      "$ref": "#/$defs/RevisionV1"
+    },
+    "page": {
+      "$ref": "#/$defs/PageResultV1"
+    },
+    "password": {
+      "$ref": "#/$defs/ProfilePasswordInfoV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "accountRevision",
+    "password",
+    "page"
+  ],
+  "title": "ProfileAuthenticatorsPageV1",
+  "type": "object"
+}

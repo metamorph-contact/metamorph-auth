@@ -119,9 +119,13 @@ resident-key and user-verification options, rejects noncanonical or expired
 challenge input, passes the browser abort signal, and returns only credential
 evidence for identity-home verification. Focused adapter, fixture, and type
 checks pass. The adapter does not issue a session. The Plan 01 ceremony preview
-remains a development-only fixture; production ceremony requests, generated
-response validation, account-session/evidence composition, and the live route
-binding are deferred to the Plan 03 integrator after their Plan 02/00/04/11
+remains a development-only fixture. EA-00J now generates the 42 Plan 03
+response schemas and a typed response map for both browser consumers; this
+client uses precompiled validators under the production CSP and checks bounded,
+duplicate-free JSON against the exact schema and
+rejects unlisted fields and variants. Focused decoder checks pass. Production
+ceremony requests, account-session/evidence composition, and live route
+binding remain deferred to the Plan 03 integrator after their Plan 02/00/04/11
 owners supply the required gates. The staged identity-home verifier now accepts
 ES256, bounded RS256 and Ed25519; a live owner must still negotiate the
 effective-policy algorithm and attestation profile before issuing options.
