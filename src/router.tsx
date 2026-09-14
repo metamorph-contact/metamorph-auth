@@ -2,6 +2,8 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
+  notFound,
   Outlet,
   RouterProvider,
 } from '@tanstack/react-router'
@@ -36,7 +38,7 @@ import type { SignupContinuationResultV1 } from './contracts/generated/csi07/Sig
 import type { SignupProfileV1 } from './contracts/generated/csi11/SignupProfileV1'
 import type { SignupProgressV1 } from './contracts/generated/csi11/SignupProgressV1'
 import type { BrowserLogoutResultV1 } from './contracts/generated/csi10/BrowserLogoutResultV1'
-import { setLocale } from './i18n'
+import { isSupportedLocale, setLocale } from './i18n'
 import { afterPageFade, navigateAfterFade } from './navigation/step-transition'
 import { installPresentationTheme } from './presentation/theme'
 import {
@@ -1491,8 +1493,20 @@ const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${ba
 const verifyEmailRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/verify-email`, component: VerifyEmailPage })
 const recoverPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/recover-password`, component: RecoverPasswordPage })
 const logoutRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/logout`, component: LogoutPage })
-const routeTree = rootRoute.addChildren([authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute])
-const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })
+const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/$locale/_preview/enterprise-security/$screenId',
+  beforeLoad: async ({ params }) => {
+    if (params.screenId !== 'SCR-IDN-001' || !isSupportedLocale(params.locale)) throw notFound()
+    await setLocale(params.locale)
+  },
+  component: lazyRouteComponent(() => import('./enterprise-security/dev-preview/identity'), 'IdentitySecurityPreviewPage'),
+}) : null
+const routeTree = rootRoute.addChildren([
+  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
+])
+export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })
 
 declare module '@tanstack/react-router' {
   interface Register { router: typeof router }

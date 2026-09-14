@@ -39,6 +39,15 @@ is the durable protocol boundary; CSI packet records are historical
 development rationale, not a competing wire contract.
 See [status](status.md) for current evidence and deferred work.
 
+Plan 01 adds a development-only enterprise-method preview at
+`/{locale}/_preview/enterprise-security/SCR-IDN-001`. It consumes a generated
+request/response boundary and deterministic, non-secret fixtures in a lazy
+module; its feature-owned translation namespace loads with that module. The
+existing CSI sign-in and recovery routes remain the only production identity
+behavior. Enterprise method availability is not inferred from the fixture,
+and the future live adapter fails closed until its owning feature plan wires
+the guarded API.
+
 The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or

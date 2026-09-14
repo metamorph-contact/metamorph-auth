@@ -1,0 +1,18 @@
+{
+  "security.preview.identity.title": "Authentication methods preview",
+  "security.preview.identity.description": "Inspect the planned entry states using generated contract fixtures.",
+  "security.preview.simulated": "Development preview · Simulated data; no sign-in or policy change occurs.",
+  "security.preview.scenarios": "Fixture scenarios",
+  "security.preview.scenario.ready": "Available methods",
+  "security.preview.scenario.empty": "No available method",
+  "security.preview.scenario.loading": "Pending method lookup",
+  "security.preview.scenario.retryable-error": "Temporary error",
+  "security.preview.loading": "Loading simulated method availability…",
+  "security.preview.error.ownerUnavailable": "The identity service is temporarily unavailable in this fixture.",
+  "security.preview.error.generic": "This simulated request could not be completed.",
+  "security.preview.empty": "No method is available in this fixture. A live journey would stop here.",
+  "security.preview.identity.methods": "Available in this fixture: {{methods}}",
+  "security.preview.method.password": "Password",
+  "security.preview.method.passkey": "Passkey",
+  "security.preview.method.federation": "Organization sign-in"
+}

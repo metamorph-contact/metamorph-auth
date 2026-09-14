@@ -1,6 +1,6 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-13
+- Date: 2026-09-14
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -8,6 +8,8 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
+- Plan 01: `EA-01A` development-only method preview and typed adapter seam
+  implemented; read-only packet review and fixes complete
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -61,3 +63,11 @@ Focused development checks are recorded in the SaaS
 [`CSI-17 packet record`](../../../../metamorph-saas/docs/features/authentication/work/csi-17-operator-test-loop.md).
 No broad browser matrix, release security qualification, or production runtime
 claim is made yet.
+
+Plan 01 packet A adds only a lazy development preview for `SCR-IDN-001`.
+Ready, empty, loading, and retryable-error fixture states use the reviewed
+enterprise DTOs and stable error code. The production build excludes the
+preview path and fixture marker, and the live enterprise adapter currently
+rejects every call. Focused fixture, router, type, generated-contract, and
+production-build checks pass. The human has not yet exercised this preview;
+enterprise sign-in methods remain for the later wiring plans.

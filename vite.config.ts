@@ -92,8 +92,26 @@ function catalogPublication(): Plugin {
   }
 }
 
+function enterpriseFixtureBoundary(): Plugin {
+  return {
+    name: 'enterprise-fixture-production-boundary',
+    generateBundle(_options, bundle) {
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk') continue
+        for (const source of Object.keys(output.modules)) {
+          const normalized = source.replaceAll('\\', '/')
+          if (normalized.includes('/src/enterprise-security/dev-fixtures/') ||
+              normalized.includes('/src/enterprise-security/dev-preview/')) {
+            throw new Error(`Enterprise fixture reached production identity graph: ${source}`)
+          }
+        }
+      }
+    },
+  }
+}
+
 export default defineConfig(({ command }) => ({
-  plugins: [catalogPublication(), react()],
+  plugins: [catalogPublication(), enterpriseFixtureBoundary(), react()],
   resolve: {
     dedupe: ["react", "react-dom"],
   },
