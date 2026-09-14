@@ -4,7 +4,7 @@ import type { AdminProviderCommandGuardV1 } from "./AdminProviderCommandGuardV1"
 import type { ProviderImportFormatV1 } from "./ProviderImportFormatV1";
 import type { ProviderImportSourceV1 } from "./ProviderImportSourceV1";
 
-export type AdminProviderDiscoveryImportRequestV1 = { guard: AdminProviderCommandGuardV1, format: ProviderImportFormatV1, source: ProviderImportSourceV1, 
+export type AdminProviderDiscoveryImportRequestV1 = { guard: AdminProviderCommandGuardV1, format: ProviderImportFormatV1, source: ProviderImportSourceV1,
 /**
  * A false match with the current exact issuer/entity is a hard reject.
  */

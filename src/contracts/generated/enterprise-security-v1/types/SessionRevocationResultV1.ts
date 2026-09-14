@@ -3,7 +3,7 @@
 import type { OperationReceiptV1 } from "./OperationReceiptV1";
 import type { SessionRevocationScopeV1 } from "./SessionRevocationScopeV1";
 
-export type SessionRevocationResultV1 = { schemaVersion: 1, scope: SessionRevocationScopeV1, 
+export type SessionRevocationResultV1 = { schemaVersion: 1, scope: SessionRevocationScopeV1,
 /**
  * Local authoritative terminal/floor commit, not remote fanout receipt.
  */

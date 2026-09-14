@@ -1,6 +1,6 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-13
+- Date: 2026-09-14
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -8,6 +8,10 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
+- Plan 01: `EA-01A`–`EA-01L` development-only previews implemented across all
+  57 screens; the recipient inbox now consumes authorization-owned generated
+  DTOs and typed fixtures. Human preview exercise is pending. Its production
+  route remains gated on `VER-OWN-001` guarded handlers.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -61,3 +65,43 @@ Focused development checks are recorded in the SaaS
 [`CSI-17 packet record`](../../../../metamorph-saas/docs/features/authentication/work/csi-17-operator-test-loop.md).
 No broad browser matrix, release security qualification, or production runtime
 claim is made yet.
+
+Plan 01 packet I expands the lazy development preview to `SCR-IDN-001` and
+`SCR-IDN-011`–`SCR-IDN-017`. It uses a flow-scoped generated method DTO,
+generated target-admission data, and the existing CSI account/signup/email/
+organization/recovery/finalization response shapes. All twelve scenario states
+are deterministic. Preview selection has no credential, session, or return
+effect. The production build excludes the preview path and fixture marker;
+the enterprise live adapter still fails closed. Focused type, fixture/router,
+CSI continuity, generated-contract, and production-bundle checks pass. The
+human has not yet exercised these previews; live enterprise methods remain for
+the later wiring plans.
+
+Packet J adds separate lazy development previews for passkey, TOTP, recovery
+code, first-login/step-up, and factor-recovery status. Typed generated
+challenges and progress never become a verified credential or action proof in
+the fixture. Manual TOTP setup is first-display only and scrubbed on pagehide;
+code entry clears before dispatch. Ready, unavailable, replay/expiry, hold,
+approval, repudiation, and regional/provider states have focused fixture and
+route checks. Production still excludes every enterprise preview module.
+
+Packet K adds a third lazy development preview for SAML/OIDC, SSO-only and
+emergency entry, JIT profile completion, and human SCIM activation. It never
+follows a provider URL or consumes a callback proof; the preview guard scrubs
+unexpected fragments. The typed fixture distinguishes identity verification
+from target access. Focused type, fixture/router/fragment, generated-contract,
+and production-exclusion checks pass. Packet L later consumed the separate
+authorization recipient DTO/fixture pack published by `AUTH-RI-A`.
+
+Packet L adds a fourth development-only lazy preview for the recipient inbox.
+It uses closed generated authorization DTOs for controller bootstrap,
+identity-home list/detail, accept/reject, and operation status, with synthetic
+typed fixtures. The teaser omits tenant, inviter, target, and invitation ID;
+the simulated emailed token stays in memory and never appears in a URL or
+rendered text. The emailed-link preview gives no full offer detail until a
+confirmed decision; tokenless detail is denied. Pinned decisions, token-required
+claims, pending receipts,
+completed/rejected history, local skip, stale and uncertain states have focused
+fixture/router checks. The production build excludes the preview and fixture
+marker. No live recipient endpoint or grant path is registered; that remains
+`AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.

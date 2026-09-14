@@ -3,7 +3,7 @@
 import type { ActionProofRefV1 } from "./ActionProofRefV1";
 import type { RecoveryCodeDisplayAcknowledgmentV1 } from "./RecoveryCodeDisplayAcknowledgmentV1";
 
-export type ProfileRecoveryCodesRegenerateRequestV1 = { "phase": "begin", schemaVersion: 1, mutationId: string, expectedActiveSetRevision: string | null, action: ActionProofRefV1, } | { "phase": "confirm", schemaVersion: 1, mutationId: string, pendingSetId: string, expectedPendingSetRevision: string, action: ActionProofRefV1, 
+export type ProfileRecoveryCodesRegenerateRequestV1 = { "phase": "begin", schemaVersion: 1, mutationId: string, expectedActiveSetRevision: string | null, action: ActionProofRefV1, } | { "phase": "confirm", schemaVersion: 1, mutationId: string, pendingSetId: string, expectedPendingSetRevision: string, action: ActionProofRefV1,
 /**
  * One-use receipt delivered only with the first display of the codes.
  */

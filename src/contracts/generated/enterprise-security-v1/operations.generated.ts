@@ -1278,6 +1278,12 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/profile.sessions.revoke_others.response.schema.json",
     "responseType": "ProfileRevokeOtherSessionsResultV1"
   },
+  "runtime.authority_freshness.prove": {
+    "requestSchema": "generated/enterprise-security-v1/api/runtime.authority_freshness.prove.request.schema.json",
+    "requestType": "AuthorityFreshnessChallengeRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/runtime.authority_freshness.prove.response.schema.json",
+    "responseType": "AuthorityFreshnessChallengeResultV1"
+  },
   "runtime.freshness.challenge": {
     "requestSchema": "generated/enterprise-security-v1/api/runtime.freshness.challenge.request.schema.json",
     "requestType": "RuntimeFreshnessChallengeRequestV1",

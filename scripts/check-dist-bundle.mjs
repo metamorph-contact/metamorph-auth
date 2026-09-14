@@ -33,6 +33,9 @@ const builtFiles = await readdir(resolve(root, 'dist/assets'))
 const javascript = (await Promise.all(
   builtFiles.filter((name) => name.endsWith('.js')).map((name) => readFile(resolve(root, 'dist/assets', name), 'utf8')),
 )).join('\n')
+if (javascript.includes('EA01_FIXTURE_ONLY') || javascript.includes('_preview/enterprise-security')) {
+  throw new Error('Enterprise fixture or preview route leaked into the production identity bundle')
+}
 const functionCalls = [...javascript.matchAll(/\bFunction\s*\(/gu)]
 const onlyJitlessProbe = functionCalls.length <= 1 && functionCalls.every((match) =>
   javascript.slice(Math.max(0, match.index - 240), match.index).includes('jitless'),

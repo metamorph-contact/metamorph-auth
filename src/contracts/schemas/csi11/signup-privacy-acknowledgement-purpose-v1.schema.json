@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupPrivacyAcknowledgementPurposeV1",
+  "type": "string",
+  "enum": [
+    "required_notice",
+    "freely_given_consent"
+  ]
+}

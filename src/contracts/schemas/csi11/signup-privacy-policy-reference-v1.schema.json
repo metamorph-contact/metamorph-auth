@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignupPrivacyPolicyReferenceV1",
+  "type": "object",
+  "properties": {
+    "policyId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "policyVersion": {
+      "$ref": "#/$defs/VersionU64"
+    },
+    "presentationDigest": {
+      "$ref": "#/$defs/Digest32"
+    },
+    "purpose": {
+      "$ref": "#/$defs/SignupPrivacyAcknowledgementPurposeV1"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "policyId",
+    "policyVersion",
+    "purpose",
+    "presentationDigest"
+  ],
+  "$defs": {
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "SignupPrivacyAcknowledgementPurposeV1": {
+      "type": "string",
+      "enum": [
+        "required_notice",
+        "freely_given_consent"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "VersionU64": {
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "^[1-9][0-9]{0,19}$"
+    }
+  }
+}

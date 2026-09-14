@@ -6,7 +6,7 @@ import type { PasswordPolicySettingsV1 } from "./PasswordPolicySettingsV1";
 import type { SessionPolicySettingsV1 } from "./SessionPolicySettingsV1";
 import type { SocialPolicySettingsV1 } from "./SocialPolicySettingsV1";
 
-export type AuthenticationPolicyDocumentViewV1 = { methods: MethodPolicySettingsV1, password: PasswordPolicySettingsV1, mfa: MfaPolicySettingsV1, sessions: SessionPolicySettingsV1, social: SocialPolicySettingsV1, 
+export type AuthenticationPolicyDocumentViewV1 = { methods: MethodPolicySettingsV1, password: PasswordPolicySettingsV1, mfa: MfaPolicySettingsV1, sessions: SessionPolicySettingsV1, social: SocialPolicySettingsV1,
 /**
  * Plan 10's rule set is a versioned part of the same compiled policy.
  */

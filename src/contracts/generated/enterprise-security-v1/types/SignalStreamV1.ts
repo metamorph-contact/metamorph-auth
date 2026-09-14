@@ -3,7 +3,7 @@
 import type { SignalDeliveryModeV1 } from "./SignalDeliveryModeV1";
 import type { SignalStreamStateV1 } from "./SignalStreamStateV1";
 
-export type SignalStreamV1 = { streamId: string, transmitterId: string, 
+export type SignalStreamV1 = { streamId: string, transmitterId: string,
 /**
  * Poll-only transmitter-assigned SSF stream ID, distinct from the local
  * UUID. Push delivery uses the local registered endpoint instead.

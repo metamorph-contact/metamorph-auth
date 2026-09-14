@@ -3,7 +3,7 @@
 import type { SecurityOpsGuardV1 } from "./SecurityOpsGuardV1";
 import type { SignalSigningAlgorithmV1 } from "./SignalSigningAlgorithmV1";
 
-export type SignalKeyRotateRequestV1 = { guard: SecurityOpsGuardV1, transmitterId: string, expectedTransmitterRevision: string, oldKeyId: string, expectedOldKeyRevision: string, newKeyId: string, newAlgorithm: SignalSigningAlgorithmV1, newPublicKey: string, 
+export type SignalKeyRotateRequestV1 = { guard: SecurityOpsGuardV1, transmitterId: string, expectedTransmitterRevision: string, oldKeyId: string, expectedOldKeyRevision: string, newKeyId: string, newAlgorithm: SignalSigningAlgorithmV1, newPublicKey: string,
 /**
  * A signed non-action test SET proves the replacement key, issuer and
  * audience before promotion; it is never dispatched as a user event.

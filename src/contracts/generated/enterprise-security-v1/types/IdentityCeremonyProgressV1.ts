@@ -3,7 +3,7 @@
 import type { IdentityCeremonyStepV1 } from "./IdentityCeremonyStepV1";
 import type { IdentitySubjectReproofReceiptV1 } from "./IdentitySubjectReproofReceiptV1";
 
-export type IdentityCeremonyProgressV1 = { schemaVersion: 1, continuationId: string, ceremonyRevision: string, nextStep: IdentityCeremonyStepV1, 
+export type IdentityCeremonyProgressV1 = { schemaVersion: 1, continuationId: string, ceremonyRevision: string, nextStep: IdentityCeremonyStepV1,
 /**
  * Present only after a suspended home subject finishes a purpose-bound
  * fresh factor challenge. The receipt is a non-bearer reference; identity

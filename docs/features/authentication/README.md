@@ -39,6 +39,32 @@ is the durable protocol boundary; CSI packet records are historical
 development rationale, not a competing wire contract.
 See [status](status.md) for current evidence and deferred work.
 
+Plan 01 provides development-only core identity previews at
+`/{locale}/_preview/enterprise-security/{screenId}` for `SCR-IDN-001` and
+`SCR-IDN-011`–`SCR-IDN-017`. The lazy feature module uses generated enterprise
+method/admission DTOs and existing CSI response types with deterministic,
+non-secret fixture states. Its own translation namespace loads with the
+module. Existing CSI sign-in, signup, verification, recovery, and finalization
+routes remain the production behavior. Preview selections have no live effect;
+enterprise live adapters fail closed until their owning plans wire the guarded
+APIs.
+
+Packet J's passkey, authenticator-code, recovery-code, step-up, and recovery-
+status previews use a second development-only lazy module. Its browser
+credential adapter is inert in preview, and its fixtures cannot issue a
+credential result or action proof.
+
+Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
+a third development-only lazy module. Its JIT sample carries the generated
+profile-completion request shape, including handle, first name, avatar fallback,
+and a null privacy handoff; it does not submit a profile or invent a receipt.
+Packet L's recipient inbox uses a fourth
+lazy module and the separately generated authorization recipient contract. It
+shows pinned offers, redacted claim-required teasers, queued decisions, local
+skip, and read-only completion without contacting a live invitation handler.
+Its development preview route is `/{locale}/_preview/enterprise-security/SCR-IDN-009`;
+production registration waits for the guarded authorization owner gate.
+
 The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or

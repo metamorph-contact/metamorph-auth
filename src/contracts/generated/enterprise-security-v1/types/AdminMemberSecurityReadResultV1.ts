@@ -10,7 +10,7 @@ import type { TargetMembershipStatusV1 } from "./TargetMembershipStatusV1";
  * A guest response contains only this tenant's membership and target access
  * facts. It cannot include home password, authenticator, or session state.
  */
-export type AdminMemberSecurityReadResultV1 = { "memberKind": "owned_home", schemaVersion: 1, member: AdminMemberRefV1, homeStatus: HomeIdentityStatusV1, homeStatusRevision: string, membershipStatus: TargetMembershipStatusV1, membershipRevision: string, targetAccessSuspended: boolean, targetFloorRevision: string | null, passwordAuthenticatorState: PasswordAuthenticatorStateV1, 
+export type AdminMemberSecurityReadResultV1 = { "memberKind": "owned_home", schemaVersion: 1, member: AdminMemberRefV1, homeStatus: HomeIdentityStatusV1, homeStatusRevision: string, membershipStatus: TargetMembershipStatusV1, membershipRevision: string, targetAccessSuspended: boolean, targetFloorRevision: string | null, passwordAuthenticatorState: PasswordAuthenticatorStateV1,
 /**
  * CSI `users.credential_epoch`, even when no password row exists.
  */

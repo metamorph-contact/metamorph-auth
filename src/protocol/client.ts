@@ -55,6 +55,7 @@ import type { PasswordRecoveryCompletedV1 } from '../contracts/generated/csi11/P
 import type { PasswordRecoveryRequestV1 } from '../contracts/generated/csi11/PasswordRecoveryRequestV1'
 import type { PasswordRecoveryResolveRequestV1 } from '../contracts/generated/csi11/PasswordRecoveryResolveRequestV1'
 import type { SignupCompleteRequestV1 } from '../contracts/generated/csi11/SignupCompleteRequestV1'
+import type { SignupPrivacyAcknowledgementHandoffV1 } from '../contracts/generated/csi11/SignupPrivacyAcknowledgementHandoffV1'
 import type { SignupCompletionResultV1 } from '../contracts/generated/csi11/SignupCompletionResultV1'
 import type { SignupCreateRequestV1 } from '../contracts/generated/csi11/SignupCreateRequestV1'
 import type { SignupFinishRequestV1 } from '../contracts/generated/csi11/SignupFinishRequestV1'
@@ -421,7 +422,7 @@ export async function updateSignup(
   home: AuthApi,
   continuation: SignupContinuationResultV1,
   progress: SignupProgressV1,
-  input: { organization?: string; password?: string; profile?: SignupProfileV1 },
+  input: { organization?: string; password?: string; profile?: SignupProfileV1; privacyAcknowledgement?: SignupPrivacyAcknowledgementHandoffV1 },
   operationAttemptId?: string,
 ): Promise<SignupCompletionResultV1> {
   const base = `/api/auth/v1/signups/${safeId(continuation.signupId)}`
@@ -439,7 +440,7 @@ export async function updateSignup(
     if (input.profile.lastName !== null) assertBoundedText(input.profile.lastName, 128, 'last name')
     assertBoundedText(input.profile.handle, 64, 'handle')
     if (operationAttemptId === undefined) throw new Error('Missing signup completion attempt')
-    const request: SignupCompleteRequestV1 = { schemaVersion: 1, completeAttemptId: operationAttemptId, profile: input.profile, protocol: continuation.protocol }
+    const request: SignupCompleteRequestV1 = { schemaVersion: 1, completeAttemptId: operationAttemptId, profile: input.profile, privacyAcknowledgement: input.privacyAcknowledgement ?? null, protocol: continuation.protocol }
     return home.post<SignupCompleteRequestV1, SignupCompletionResultV1>(`${base}/complete`, request, 'signupCompletion', progress.csrfToken, { 'Idempotency-Key': request.completeAttemptId })
   }
   if (progress.nextStep === 'finishAuthentication') {

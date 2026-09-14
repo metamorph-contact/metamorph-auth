@@ -3,4 +3,4 @@
 import type { ScimFilterV1 } from "./ScimFilterV1";
 import type { ScimPageV1 } from "./ScimPageV1";
 
-export type ScimListRequestV1 = { schemaVersion: 1, filter: ScimFilterV1 | null, page: ScimPageV1, };
+export type ScimListRequestV1 = { schemaVersion: 1, filter: ScimFilterV1 | null, excludedAttributes: Array<"members">, page: ScimPageV1, };

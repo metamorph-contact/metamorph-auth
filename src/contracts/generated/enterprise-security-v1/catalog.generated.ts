@@ -1537,6 +1537,7 @@ export const enterpriseSecurityCatalog = {
           "runtime.product_child.revoke",
           "runtime.policy.publish",
           "runtime.freshness.challenge",
+          "runtime.authority_freshness.prove",
           "runtime.provider_derivation.reserve",
           "runtime.provider_derivation.activate",
           "runtime.signal.poll"
@@ -1658,7 +1659,8 @@ export const enterpriseSecurityCatalog = {
       "Bounds constrain configured tenant overrides; mandatory realm baseline values may be stronger. The password-only minimum of 15 characters matches CSI's live lower bound. Other defaults are development product choices, not an assertion that the current CSI runtime already enforces them.",
       "The compiler validates the whole effective policy after realm/tenant merging: password_minimum_characters must not exceed password_maximum_characters; session_idle_seconds must not exceed session_absolute_seconds; action_strong_seconds must not exceed action_recent_seconds. Reject an incoherent candidate with a distinct typed ordering issue before publication rather than silently clamping, swapping or accepting its individually in-range values. Effective action age is the minimum of the named class, realm baseline and target policy. A null session-cap default means unlimited until an administrator explicitly configures a numeric cap; it is not zero. A null remembered-device duration means off by default; a configured duration is 1–90 days, with no sub-day enabled value.",
       "Password maximum characters and maximum NFC UTF-8 bytes are separate limits. The existing CSI sign-in controller currently rejects passwords over 1024 bytes even though the password-policy loader permits a 16-KiB ceiling; Plan 03 must migrate and test every signup/change/recovery/sign-in ingress to the same effective byte bound before an override above 1024 bytes becomes selectable. Password composition, periodic expiry, routine password history, raw token-lifetime controls, attacker-triggerable permanent locks and security questions are not supported.",
-      "Existing users may enter bounded MFA rollout grace; first-login enrollment applies to new users, and grace never satisfies a separately sensitive action."
+      "Existing users may enter bounded MFA rollout grace; first-login enrollment applies to new users, and grace never satisfies a separately sensitive action.",
+      "separateMetamorphFactorAfterSso defaults false. When true, a verified SSO proof and a separate fresh Metamorph-controlled factor proof are both required; provider-reported MFA/AAL cannot satisfy the local-factor conjunct. The effective evidence records both sources, timestamps and revisions."
     ],
     "providerProtocols": [
       "saml",

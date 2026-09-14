@@ -4,7 +4,7 @@ import type { SignalKeyStateV1 } from "./SignalKeyStateV1";
 import type { SignalTransmitterConfigV1 } from "./SignalTransmitterConfigV1";
 import type { SignalTransmitterStateV1 } from "./SignalTransmitterStateV1";
 
-export type SignalTransmitterCardV1 = { configuration: SignalTransmitterConfigV1, state: SignalTransmitterStateV1, 
+export type SignalTransmitterCardV1 = { configuration: SignalTransmitterConfigV1, state: SignalTransmitterStateV1,
 /**
  * One staged replacement may coexist with primary and overlap keys.
  */

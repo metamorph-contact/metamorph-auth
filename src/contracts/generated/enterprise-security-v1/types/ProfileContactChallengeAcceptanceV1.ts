@@ -5,7 +5,7 @@
  * Uniform acceptance of a delivery attempt, not evidence that an email was
  * sent, a route is unclaimed, or the candidate belongs to this account.
  */
-export type ProfileContactChallengeAcceptanceV1 = { schemaVersion: 1, 
+export type ProfileContactChallengeAcceptanceV1 = { schemaVersion: 1,
 /**
  * The same opaque ID is supplied to verification whether this was a
  * real challenge or a non-enumerating decoy acceptance.

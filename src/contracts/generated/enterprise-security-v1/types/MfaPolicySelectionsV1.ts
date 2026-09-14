@@ -4,4 +4,4 @@ import type { MfaEnforcementV1 } from "./MfaEnforcementV1";
 import type { MfaPresentationPreferenceV1 } from "./MfaPresentationPreferenceV1";
 import type { PolicySelectionV1 } from "./PolicySelectionV1";
 
-export type MfaPolicySelectionsV1 = { enforcement: PolicySelectionV1<MfaEnforcementV1>, phishingResistantAuthentication: PolicySelectionV1<boolean>, highAssuranceHardwareBound: PolicySelectionV1<boolean>, recoveryCodesEnabled: PolicySelectionV1<boolean>, rolloutGraceSeconds: PolicySelectionV1<number>, defaultPresentation: PolicySelectionV1<MfaPresentationPreferenceV1>, };
+export type MfaPolicySelectionsV1 = { enforcement: PolicySelectionV1<MfaEnforcementV1>, separateMetamorphFactorAfterSso: PolicySelectionV1<boolean>, phishingResistantAuthentication: PolicySelectionV1<boolean>, highAssuranceHardwareBound: PolicySelectionV1<boolean>, recoveryCodesEnabled: PolicySelectionV1<boolean>, rolloutGraceSeconds: PolicySelectionV1<number>, defaultPresentation: PolicySelectionV1<MfaPresentationPreferenceV1>, };
