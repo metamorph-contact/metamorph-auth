@@ -4,11 +4,15 @@ import type { MfaEnforcementV1 } from "./MfaEnforcementV1";
 import type { MfaPresentationPreferenceV1 } from "./MfaPresentationPreferenceV1";
 import type { PolicySettingViewV1 } from "./PolicySettingViewV1";
 
-export type MfaPolicySettingsV1 = { enforcement: PolicySettingViewV1<MfaEnforcementV1>, 
+export type MfaPolicySettingsV1 = { enforcement: PolicySettingViewV1<MfaEnforcementV1>,
+/**
+ * Provider MFA never satisfies this separate local-factor requirement.
+ */
+separateMetamorphFactorAfterSso: PolicySettingViewV1<boolean>,
 /**
  * Tenant-wide requirement controlled by administrators, not admin-only.
  */
-phishingResistantAuthentication: PolicySettingViewV1<boolean>, highAssuranceHardwareBound: PolicySettingViewV1<boolean>, recoveryCodesEnabled: PolicySettingViewV1<boolean>, rolloutGraceSeconds: PolicySettingViewV1<number>, 
+phishingResistantAuthentication: PolicySettingViewV1<boolean>, highAssuranceHardwareBound: PolicySettingViewV1<boolean>, recoveryCodesEnabled: PolicySettingViewV1<boolean>, rolloutGraceSeconds: PolicySettingViewV1<number>,
 /**
  * Presentation preference only; the evaluator checks actual evidence.
  */

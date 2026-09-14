@@ -3,7 +3,7 @@
 import type { WebAuthnAttachmentV1 } from "./WebAuthnAttachmentV1";
 import type { WebAuthnTransportFlagsV1 } from "./WebAuthnTransportFlagsV1";
 
-export type WebAuthnRegistrationResponseV1 = { rawCredentialId: string, clientDataJson: string, attestationObject: string, transports: WebAuthnTransportFlagsV1, attachment: WebAuthnAttachmentV1 | null, 
+export type WebAuthnRegistrationResponseV1 = { rawCredentialId: string, clientDataJson: string, attestationObject: string, transports: WebAuthnTransportFlagsV1, attachment: WebAuthnAttachmentV1 | null,
 /**
  * Client hint only; never authority for credential class or hardware.
  */

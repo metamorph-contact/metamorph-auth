@@ -3,7 +3,7 @@
 import type { OperationReceiptV1 } from "./OperationReceiptV1";
 import type { RecoveryCodeSetSummaryV1 } from "./RecoveryCodeSetSummaryV1";
 
-export type ProfileRecoveryCodesRegenerateResultV1 = { "state": "first_display", schemaVersion: 1, pendingSetId: string, pendingSetRevision: string, expiresAt: string, 
+export type ProfileRecoveryCodesRegenerateResultV1 = { "state": "first_display", schemaVersion: 1, pendingSetId: string, pendingSetRevision: string, expiresAt: string,
 /**
  * Purpose-bound one-use receipt; identity home retains only its digest.
  */

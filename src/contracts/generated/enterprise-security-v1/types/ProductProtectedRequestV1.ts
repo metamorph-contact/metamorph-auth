@@ -3,4 +3,13 @@
 import type { ActionProofRefV1 } from "./ActionProofRefV1";
 import type { RuntimeSessionRefV1 } from "./RuntimeSessionRefV1";
 
-export type ProductProtectedRequestV1 = { session: RuntimeSessionRefV1, targetTenantId: string, resourceId: string, actionId: string, requestId: string, actionProof: ActionProofRefV1 | null, };
+export type ProductProtectedRequestV1 = { session: RuntimeSessionRefV1,
+/**
+ * The CSI-13 signed request-bound context, carried from the verified
+ * private product boundary without accepting a product-authored identity.
+ */
+identityContext: string,
+/**
+ * CSI-14's exact method/path/body/header binding digest.
+ */
+businessRequestBindingDigest: string, targetTenantId: string, resourceId: string, actionId: string, requestId: string, actionProof: ActionProofRefV1 | null, };

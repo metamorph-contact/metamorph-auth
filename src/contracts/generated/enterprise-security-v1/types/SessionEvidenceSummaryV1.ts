@@ -7,7 +7,7 @@ import type { IdentityAssuranceLevelV1 } from "./IdentityAssuranceLevelV1";
 import type { RecoveryAssuranceV1 } from "./RecoveryAssuranceV1";
 import type { SessionProviderRefV1 } from "./SessionProviderRefV1";
 
-export type SessionEvidenceSummaryV1 = { initialMethod: AuthenticatorClassV1, latestMethod: AuthenticatorClassV1, identityLevel: IdentityAssuranceLevelV1, authenticationLevel: AuthenticationAssuranceLevelV1, federationLevel: FederationAssuranceLevelV1, recovery: RecoveryAssuranceV1, phishingResistant: boolean, hardwareBound: boolean, 
+export type SessionEvidenceSummaryV1 = { initialMethod: AuthenticatorClassV1, latestMethod: AuthenticatorClassV1, identityLevel: IdentityAssuranceLevelV1, authenticationLevel: AuthenticationAssuranceLevelV1, federationLevel: FederationAssuranceLevelV1, recovery: RecoveryAssuranceV1, phishingResistant: boolean, hardwareBound: boolean,
 /**
  * Display-only most recent contributing provider. The canonical evidence
  * keeps its complete bounded provider-dependency set for logout checks.

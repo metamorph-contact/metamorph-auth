@@ -69,7 +69,7 @@ for (const name of readdirSync(path.join(docs, 'api'))) {
   }
   operationSchemaCount += 1;
 }
-assert.equal(operationSchemaCount, 236 * 2);
+assert.equal(operationSchemaCount, 237 * 2);
 for (const name of readdirSync(path.join(docs, 'events'))) {
   const schema = read(`events/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/${name}`);

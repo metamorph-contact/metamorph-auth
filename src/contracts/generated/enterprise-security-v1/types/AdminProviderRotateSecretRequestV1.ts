@@ -3,7 +3,7 @@
 import type { AdminProviderCommandGuardV1 } from "./AdminProviderCommandGuardV1";
 import type { ProviderSecretRotationV1 } from "./ProviderSecretRotationV1";
 
-export type AdminProviderRotateSecretRequestV1 = { guard: AdminProviderCommandGuardV1, expectedProviderRevision: string, material: ProviderSecretRotationV1, expectedPrimaryBindingRevision: string, 
+export type AdminProviderRotateSecretRequestV1 = { guard: AdminProviderCommandGuardV1, expectedProviderRevision: string, material: ProviderSecretRotationV1, expectedPrimaryBindingRevision: string,
 /**
  * Owner enforces CAT-SEC-005: <=30 days from overlap start and no later
  * than the old binding's own expiry. This is not a policy knob.

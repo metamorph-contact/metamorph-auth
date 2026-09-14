@@ -3,7 +3,7 @@
 import type { ActionProofRefV1 } from "./ActionProofRefV1";
 import type { VerifiedRoutePreconditionV1 } from "./VerifiedRoutePreconditionV1";
 
-export type AdminDomainAddRequestV1 = { schemaVersion: 1, mutationId: string, targetTenantId: string, domain: string, 
+export type AdminDomainAddRequestV1 = { schemaVersion: 1, mutationId: string, targetTenantId: string, domain: string,
 /**
  * CSI's signup-affiliation route is never this precondition.
  */

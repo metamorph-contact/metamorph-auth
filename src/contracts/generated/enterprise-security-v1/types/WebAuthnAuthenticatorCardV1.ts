@@ -5,7 +5,7 @@ import type { WebAuthnCredentialClassV1 } from "./WebAuthnCredentialClassV1";
 import type { WebAuthnCredentialStateV1 } from "./WebAuthnCredentialStateV1";
 import type { WebAuthnTransportFlagsV1 } from "./WebAuthnTransportFlagsV1";
 
-export type WebAuthnAuthenticatorCardV1 = { 
+export type WebAuthnAuthenticatorCardV1 = {
 /**
  * Opaque identity-home row ID, never raw WebAuthn credential ID.
  */

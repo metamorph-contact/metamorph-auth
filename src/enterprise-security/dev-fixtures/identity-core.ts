@@ -53,8 +53,8 @@ const accounts: DisplayAccountsResult = {
 }
 const admission: RuntimeTargetAdmitResultV1 = {
   schemaVersion: 1,
-  outcome: { disposition: 'allowed', rbacDecisionId: 'fixture-rbac', conditionalDecisionId: 'fixture-conditional' },
-  decisionId: 'fixture-decision', targetAccessRevision: '1', expiresAt,
+  outcome: { disposition: 'active', leaseId: 'fixture-lease', leaseRevision: '1', expiresAt },
+  decisionId: 'fixture-decision',
 }
 const signupPending: SignupProgressV1 = {
   kind: 'verificationPending', schemaVersion: 1, signupId: 'fixture-signup',
