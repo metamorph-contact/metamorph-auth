@@ -2285,7 +2285,7 @@
   },
   "schemaVersion": 1,
   "sourceInputs": {
-    "metamorph-saas/Cargo.lock": "7c3d49cfd431b4c590a27c937c15c4603264a03cc9e723453124241eb0c2974e",
+    "metamorph-saas/Cargo.lock": "cf172d9407c5e164bb684c74862ecd83cbe56aad3586e091fb89608ee34948aa",
     "metamorph-saas/config/authorization-catalog.json": "16509c4645ab07157f58faf056355859c74497caee847fba83ebb5c05975effc",
     "metamorph-saas/crates/enterprise-security-contract/Cargo.toml": "79acc642e98fb847ae573684c0c59d20a0826a1d3a2cf75f48fd908013dcde6b",
     "metamorph-saas/crates/enterprise-security-contract/src/admin_conditional.rs": "fe7305f8a19790703d089fcb014e4eee2b6fcd5ad650289bc00795e51e1d6400",
