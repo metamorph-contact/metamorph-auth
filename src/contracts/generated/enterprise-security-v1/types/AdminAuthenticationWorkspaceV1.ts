@@ -5,4 +5,9 @@ import type { DraftAuthenticationPolicyV1 } from "./DraftAuthenticationPolicyV1"
 import type { PendingAuthenticationPolicyV1 } from "./PendingAuthenticationPolicyV1";
 import type { ScheduledAuthenticationPolicyV1 } from "./ScheduledAuthenticationPolicyV1";
 
-export type AdminAuthenticationWorkspaceV1 = { schemaVersion: 1, targetTenantId: string, policyHeadRevision: string, realmBaselineRevision: string, authorizationCatalogVersion: string, active: ActiveAuthenticationPolicyV1, draft: DraftAuthenticationPolicyV1 | null, scheduled: ScheduledAuthenticationPolicyV1 | null, pendingCandidate: PendingAuthenticationPolicyV1 | null, };
+export type AdminAuthenticationWorkspaceV1 = { schemaVersion: 1, targetTenantId: string, policyHeadRevision: string, realmBaselineRevision: string, authorizationCatalogVersion: string, active: ActiveAuthenticationPolicyV1, draft: DraftAuthenticationPolicyV1 | null,
+/**
+ * True when the draft's pinned realm baseline or catalog no longer
+ * matches the active policy source. It cannot reuse prior validation.
+ */
+draftSourceStale: boolean, scheduled: ScheduledAuthenticationPolicyV1 | null, pendingCandidate: PendingAuthenticationPolicyV1 | null, };
