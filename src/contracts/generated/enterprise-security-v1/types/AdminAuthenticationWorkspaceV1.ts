@@ -7,7 +7,7 @@ import type { ScheduledAuthenticationPolicyV1 } from "./ScheduledAuthenticationP
 
 export type AdminAuthenticationWorkspaceV1 = { schemaVersion: 1, targetTenantId: string, policyHeadRevision: string, realmBaselineRevision: string, authorizationCatalogVersion: string, active: ActiveAuthenticationPolicyV1, draft: DraftAuthenticationPolicyV1 | null,
 /**
- * True when the draft's pinned realm baseline or catalog no longer
- * matches the active policy source. It cannot reuse prior validation.
+ * True when the draft's base policy revision, realm baseline, or catalog
+ * no longer matches the active source. It cannot reuse prior validation.
  */
 draftSourceStale: boolean, scheduled: ScheduledAuthenticationPolicyV1 | null, pendingCandidate: PendingAuthenticationPolicyV1 | null, };
