@@ -70,6 +70,7 @@ import type { SignupResolveRequestV1 } from '../contracts/generated/csi11/Signup
 import type { DestinationContinuationFragment, EmailVerificationFragment, InitialEntryFragment } from '../security/fragment'
 import type { AuthApi } from './http'
 import { randomSecret32, randomUuid7 } from './random'
+import { normalizeEmailForWire } from '../presentation/validation'
 
 export interface IdentityFlow {
   readonly catalog: LoadedIdentityCatalog
@@ -214,7 +215,8 @@ export async function continueAccountEstablishment(flow: IdentityFlow, result: A
 }
 
 export async function signIn(flow: IdentityFlow, email: string, password: string): Promise<{ result: AccountEstablishmentResultV1; navigationUri: string | null }> {
-  assertBoundedText(email, 254, 'email')
+  const canonicalEmail = normalizeEmailForWire(email)
+  if (canonicalEmail === null) throw new Error('Invalid email')
   assertBoundedText(password, 1_024, 'password')
   const capability = await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
@@ -223,7 +225,7 @@ export async function signIn(flow: IdentityFlow, email: string, password: string
   if (capability.action !== 'signInRoute') throw new Error('Wrong credential capability')
   const initialHome = identityApiForRegion(flow.catalog, flow.bootstrap.initialRegionId, flow.bootstrap.initialIdentityApiOrigin)
   const route = await initialHome.post<CredentialRouteRequestV1, CredentialRouteResolutionV1>(
-    '/api/auth/v1/sign-in/routes', { schemaVersion: 1, email, capability: capability.routeCapability }, 'routeResolution',
+    '/api/auth/v1/sign-in/routes', { schemaVersion: 1, email: canonicalEmail, capability: capability.routeCapability }, 'routeResolution',
   )
   const continued = await flow.controller.post<RouteContinuationRequestV1, CredentialRouteContinuationResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/route-continuations`,
@@ -233,7 +235,7 @@ export async function signIn(flow: IdentityFlow, email: string, password: string
   const home = identityApiForRegion(flow.catalog, continued.regionId, continued.identityApiOrigin)
   const attempt = await home.post<CredentialAttemptRequestV1, CredentialAttemptResultV1>(
     '/api/auth/v1/credential-attempts',
-    { schemaVersion: 1, email, capability: continued.destinationCapability }, 'credentialAttempt', undefined,
+    { schemaVersion: 1, email: canonicalEmail, capability: continued.destinationCapability }, 'credentialAttempt', undefined,
     { 'Idempotency-Key': continued.attemptId },
   )
   const registration = await flow.controller.post<CredentialAttemptRegistrationRequestV1, CredentialAttemptRegistrationResultV1>(
@@ -243,7 +245,7 @@ export async function signIn(flow: IdentityFlow, email: string, password: string
   )
   const result = await home.post<SignInRequestV1, AccountEstablishmentResultV1>(
     '/api/auth/v1/sign-ins',
-    { schemaVersion: 1, email, password, attemptId: continued.attemptId, capability: continued.destinationCapability, registrationProof: registration.registrationProof },
+    { schemaVersion: 1, email: canonicalEmail, password, attemptId: continued.attemptId, capability: continued.destinationCapability, registrationProof: registration.registrationProof },
     'accountEstablishment', undefined, { 'Idempotency-Key': continued.attemptId },
   )
   return { result, navigationUri: await continueAccountEstablishment(flow, result) }
@@ -343,7 +345,8 @@ export interface SignupStartAttempt {
 }
 
 export async function startSignup(flow: IdentityFlow, attempt: SignupStartAttempt): Promise<StartedSignup> {
-  assertBoundedText(attempt.email, 254, 'email')
+  const canonicalEmail = normalizeEmailForWire(attempt.email)
+  if (canonicalEmail === null) throw new Error('Invalid email')
   const region = flow.catalog.projection.regions.find((candidate) => candidate.regionId === attempt.regionId)
   if (region === undefined) throw new Error('Unknown signup region')
   const issued = attempt.capability ?? await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
@@ -354,7 +357,7 @@ export async function startSignup(flow: IdentityFlow, attempt: SignupStartAttemp
   attempt.capability = issued
   const home = identityApiForRegion(flow.catalog, region.regionId, region.identityOrigin)
   const preparation = attempt.preparation ?? await home.post<SignupPreparationRequestV1, SignupPreparationResultV1>(
-    '/api/auth/v1/signup-preparations', { schemaVersion: 1, email: attempt.email, capability: issued.destinationCapability }, 'signupPreparation', undefined,
+    '/api/auth/v1/signup-preparations', { schemaVersion: 1, email: canonicalEmail, capability: issued.destinationCapability }, 'signupPreparation', undefined,
     { 'Idempotency-Key': issued.establishmentOperationId },
   )
   attempt.preparation = preparation
@@ -371,7 +374,7 @@ export async function startSignup(flow: IdentityFlow, attempt: SignupStartAttemp
   }
   const request: SignupCreateRequestV1 = {
     schemaVersion: 1,
-    email: attempt.email,
+    email: canonicalEmail,
     protocol,
   }
   const progress = await home.post<SignupCreateRequestV1, SignupProgressV1>('/api/auth/v1/signups', request, 'signupProgress', undefined, { 'Idempotency-Key': issued.establishmentOperationId })
@@ -475,7 +478,8 @@ export async function requestPasswordRecovery(
   flow: IdentityFlow,
   attempt: PasswordRecoveryStartAttempt,
 ): Promise<PasswordRecoveryAcceptedV1> {
-  assertBoundedText(attempt.email, 254, 'email')
+  const canonicalEmail = normalizeEmailForWire(attempt.email)
+  if (canonicalEmail === null) throw new Error('Invalid email')
   const issued = attempt.capability ?? await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
     { schemaVersion: 1, action: 'passwordRecoveryRoute' }, 'credentialCapability', flow.bootstrap.csrfToken,
@@ -484,7 +488,7 @@ export async function requestPasswordRecovery(
   attempt.capability = issued
   const initialHome = identityApiForRegion(flow.catalog, flow.bootstrap.initialRegionId, flow.bootstrap.initialIdentityApiOrigin)
   const route = attempt.route ?? await initialHome.post<CredentialRouteRequestV1, CredentialRouteResolutionV1>(
-    '/api/auth/v1/password-recovery-routes', { schemaVersion: 1, email: attempt.email, capability: issued.routeCapability }, 'routeResolution',
+    '/api/auth/v1/password-recovery-routes', { schemaVersion: 1, email: canonicalEmail, capability: issued.routeCapability }, 'routeResolution',
   )
   attempt.route = route
   const continued = attempt.continuation ?? await flow.controller.post<RouteContinuationRequestV1, CredentialRouteContinuationResultV1>(
@@ -494,7 +498,7 @@ export async function requestPasswordRecovery(
   if (continued.action !== 'passwordRecoveryRequest') throw new Error('Wrong recovery continuation')
   attempt.continuation = continued
   const home = identityApiForRegion(flow.catalog, continued.regionId, continued.identityApiOrigin)
-  const request: PasswordRecoveryRequestV1 = { schemaVersion: 1, email: attempt.email, protocol: { capability: continued.destinationCapability } }
+  const request: PasswordRecoveryRequestV1 = { schemaVersion: 1, email: canonicalEmail, protocol: { capability: continued.destinationCapability } }
   return home.post<PasswordRecoveryRequestV1, PasswordRecoveryAcceptedV1>(
     '/api/auth/v1/password-recovery-requests', request, 'recoveryAccepted', undefined,
     { 'Idempotency-Key': continued.attemptId },

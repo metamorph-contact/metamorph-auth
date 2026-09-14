@@ -117,6 +117,24 @@ describe('authentication HTTP boundary', () => {
     })
   })
 
+  it('preserves the typed verified-domain conflict on signup', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      schemaVersion: 1,
+      error: {
+        code: 'auth.signup.domain.conflict', message: 'safe', details: { kind: 'empty' },
+        correlationId: '01890f3a-6e3a-7c15-8c65-450b85e12a01',
+        recovery: { action: 'retryInput' },
+      },
+    }), { status: 409, headers: { 'Content-Type': 'application/json' } })))
+    await expect(new AuthApi('https://identity.example').post(
+      '/api/auth/v1/signups', { schemaVersion: 1 }, 'signupProgress',
+    )).rejects.toMatchObject({
+      code: 'auth.signup.domain.conflict',
+      retryable: true,
+      recoveryAction: 'retryInput',
+    })
+  })
+
   it('rejects a protocol code with the wrong status on a retained endpoint', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
       schemaVersion: 1,

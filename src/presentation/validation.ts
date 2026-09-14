@@ -10,7 +10,32 @@ export function validBoundedText(value: string, maximumBytes: number, required =
 }
 
 export function validEmail(value: string): boolean {
-  return validBoundedText(value, 254) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value)
+  return normalizeEmailForWire(value) !== null
+}
+
+/** CSI wire email has an ASCII local part and an IDNA A-label domain. */
+export function normalizeEmailForWire(value: string): string | null {
+  const input = value.trim()
+  if (input.length === 0 || CONTROL_CHARACTERS.test(input)) return null
+  const at = input.lastIndexOf('@')
+  if (at <= 0 || at === input.length - 1) return null
+  const local = input.slice(0, at)
+  const rawDomain = input.slice(at + 1)
+  if (utf8Length(rawDomain) > 1_024) return null
+  if (/[^\x21-\x7e]/u.test(local) || local.includes('@') || /[\s\\/:?#@*%\[\]]/u.test(rawDomain) || rawDomain.endsWith('.')) return null
+  let domain: string
+  try {
+    const parsed = new URL(`http://${rawDomain}`)
+    domain = parsed.hostname
+    if (parsed.host !== domain || parsed.pathname !== '/' || parsed.username !== '' || parsed.password !== '') return null
+  } catch {
+    return null
+  }
+  if (domain.length > 253 || /^\d+(?:\.\d+)+$/u.test(domain)) return null
+  const labels = domain.split('.')
+  if (labels.length < 2 || labels.some((label) => label.length === 0 || label.length > 63 || label.startsWith('-') || label.endsWith('-') || !/^[a-z0-9-]+$/u.test(label))) return null
+  const canonical = `${local.toLowerCase()}@${domain}`
+  return validBoundedText(canonical, 254) ? canonical : null
 }
 
 export function exceedsUtf8Limit(value: string, maximumBytes: number): boolean {

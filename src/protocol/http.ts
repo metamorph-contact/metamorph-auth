@@ -43,7 +43,7 @@ function endpointAllows(path: string, code: string): boolean {
   }
   return [
     'auth.flow.expired', 'auth.credentials.invalid', 'auth.credentials.rate_limited', 'auth.password.policy',
-    'auth.signup.organization_name.invalid', 'auth.signup.handle.unavailable',
+    'auth.signup.organization_name.invalid', 'auth.signup.domain.conflict', 'auth.signup.handle.unavailable',
     'auth.account.temporarily_unavailable', 'auth.account_session.invalid', 'auth.account_establishment.superseded',
     'auth.destination.capacity', 'auth.destination.not_started', 'auth.destination.superseded',
     'auth.callback.invalid', 'auth.callback.superseded', 'auth.product_session.provisional',
@@ -66,6 +66,7 @@ function protocolError(envelope: ProtocolErrorEnvelopeV1, status: number, path: 
     ['auth.credentials.rate_limited', [429, 'retryCredentials', 'rateLimit']],
     ['auth.password.policy', [422, 'retryCredentials', 'passwordPolicy']],
     ['auth.signup.organization_name.invalid', [422, 'retryInput', 'empty']],
+    ['auth.signup.domain.conflict', [409, 'retryInput', 'empty']],
     ['auth.signup.handle.unavailable', [409, 'retryInput', 'empty']],
     ['auth.account.temporarily_unavailable', [503, 'retrySameOperation', 'empty']],
     ['auth.account_session.invalid', [401, 'reauthenticate', 'empty']],

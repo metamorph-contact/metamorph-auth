@@ -104,6 +104,7 @@ function protocolMessage(error: unknown): string {
   if (error.code === 'auth.password.policy') return 'errors.password_policy'
   if (error.code === 'auth.signup.handle.unavailable') return 'errors.handle_unavailable'
   if (error.code === 'auth.signup.organization_name.invalid') return 'errors.organization_invalid'
+  if (error.code === 'auth.signup.domain.conflict') return 'errors.organization_domain_conflict'
   if (error.code === 'auth.dependency.unavailable' || error.code === 'auth_unavailable') return 'errors.auth_unavailable'
   if (error.code === 'auth_invalid_response' || error.code === 'auth_outcome_uncertain') return 'errors.auth_unavailable'
   if (error.code === 'auth.account_session.invalid' || error.code === 'auth.product_session.invalid') return 'errors.session_expired'

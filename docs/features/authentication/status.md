@@ -5,6 +5,9 @@
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
 - Contracts: Mutable
+- Plan 05: U-label email domains now use the same A-label wire key as ASCII
+  domains; signup has a localized verified-owner conflict. The Plan 05 admin
+  UI and live SSO remain uncomposed (see the SaaS Plan 05 integrator ledger).
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
