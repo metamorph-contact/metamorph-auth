@@ -6,11 +6,12 @@ import type { PasswordRecoveryAcceptedV1 } from '../../contracts/generated/csi11
 import type { SignupProgressV1 } from '../../contracts/generated/csi11/SignupProgressV1'
 import type { RuntimeTargetAdmitResultV1 } from '../../contracts/generated/enterprise-security-v1/types/RuntimeTargetAdmitResultV1'
 import { IdentityMethodPreviewError } from '../identity-client'
-import { coreIdentityScreens, coreIdentityStates, type CoreIdentityClient, type CoreIdentityPayload, type CoreIdentityScreen, type CoreIdentityState } from '../identity-core-client'
+import { coreIdentityScreens, type CoreIdentityClient, type CoreIdentityPayload, type CoreIdentityScreen } from '../identity-core-client'
+import { identityPreviewStates, type IdentityPreviewState } from './identity-states'
 import { identityMethodFixture } from './identity-methods'
 
 export const identityCoreScenarios = coreIdentityScreens.flatMap((screenId) =>
-  coreIdentityStates.map((state) => ({ screenId, state, id: `${screenId}:${state}` as const })))
+  identityPreviewStates.map((state) => ({ screenId, state, id: `${screenId}:${state}` as const })))
 
 const previewRequest = {
   schemaVersion: 1,
@@ -72,17 +73,17 @@ const finalization: AuthorizationFinalizationResultV1 = {
   schemaVersion: 1, navigationUri: 'https://product.example.invalid/fixture-return', expiresAt,
 }
 
-export function identityCoreFixture(state: CoreIdentityState): CoreIdentityClient {
+export function identityCoreFixture(state: IdentityPreviewState): CoreIdentityClient {
   return {
     async load(screenId: CoreIdentityScreen, signal: AbortSignal): Promise<CoreIdentityPayload> {
-      if (!coreIdentityScreens.includes(screenId) || !coreIdentityStates.includes(state)) throw new Error('Unknown identity fixture')
+      if (!coreIdentityScreens.includes(screenId) || !identityPreviewStates.includes(state)) throw new Error('Unknown identity fixture')
       if (state === 'loading') return waitUntilCancelled(signal)
       if (screenId === 'SCR-IDN-001') {
         const resolution = await identityMethodFixture(`${screenId}:${state}`).resolveMethods(previewRequest, signal)
         return { kind: 'entry', resolution }
       }
       await wait(signal)
-      const errorIndex: Partial<Record<CoreIdentityState, number>> = {
+      const errorIndex: Partial<Record<IdentityPreviewState, number>> = {
         'retryable-error': 11, 'terminal-error': 15, 'stale-revision': 8,
         'assurance-challenge': 0, 'regional-correction': 9, 'provider-outage': 6,
       }

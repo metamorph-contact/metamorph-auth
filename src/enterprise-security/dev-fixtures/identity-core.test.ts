@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { coreIdentityScreens, coreIdentityStates } from '../identity-core-client'
+import { coreIdentityScreens } from '../identity-core-client'
 import { identityCoreFixture, identityCoreScenarios } from './identity-core'
+import { identityPreviewStates } from './identity-states'
 
 describe('EA-01I core identity previews', () => {
   it('registers every core screen and deterministic state exactly once', () => {
-    expect(identityCoreScenarios).toHaveLength(coreIdentityScreens.length * coreIdentityStates.length)
+    expect(identityCoreScenarios).toHaveLength(coreIdentityScreens.length * identityPreviewStates.length)
     expect(new Set(identityCoreScenarios.map((scenario) => scenario.id)).size).toBe(identityCoreScenarios.length)
   })
 

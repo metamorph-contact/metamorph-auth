@@ -1497,10 +1497,10 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
   beforeLoad: async ({ params }) => {
-    if (!/^SCR-IDN-(?:001|01[1-7])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
+    if (!/^SCR-IDN-(?:00[1-5]|010|01[1-7])$/u.test(params.screenId) || !isSupportedLocale(params.locale)) throw notFound()
     await setLocale(params.locale)
   },
-  component: lazyRouteComponent(() => import('./enterprise-security/dev-preview/identity'), 'IdentitySecurityPreviewPage'),
+  component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
 const routeTree = rootRoute.addChildren([
   authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,

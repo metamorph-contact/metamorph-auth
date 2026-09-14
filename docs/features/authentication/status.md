@@ -8,8 +8,8 @@
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
-- Plan 01: `EA-01I` development-only core identity preview and CSI continuity
-  checks complete; `EA-01J` is next
+- Plan 01: `EA-01J` development-only ceremony preview and focused checks
+  complete; `EA-01K` is next
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -74,3 +74,11 @@ the enterprise live adapter still fails closed. Focused type, fixture/router,
 CSI continuity, generated-contract, and production-bundle checks pass. The
 human has not yet exercised these previews; live enterprise methods remain for
 the later wiring plans.
+
+Packet J adds separate lazy development previews for passkey, TOTP, recovery
+code, first-login/step-up, and factor-recovery status. Typed generated
+challenges and progress never become a verified credential or action proof in
+the fixture. Manual TOTP setup is first-display only and scrubbed on pagehide;
+code entry clears before dispatch. Ready, unavailable, replay/expiry, hold,
+approval, repudiation, and regional/provider states have focused fixture and
+route checks. Production still excludes every enterprise preview module.

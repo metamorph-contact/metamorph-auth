@@ -12,13 +12,6 @@ export const coreIdentityScreens = [
 ] as const
 export type CoreIdentityScreen = (typeof coreIdentityScreens)[number]
 
-export const coreIdentityStates = [
-  'ready', 'empty', 'loading', 'retryable-error', 'terminal-error',
-  'partial', 'stale-revision', 'read-only', 'assurance-challenge',
-  'regional-correction', 'provider-outage', 'async-progress',
-] as const
-export type CoreIdentityState = (typeof coreIdentityStates)[number]
-
 export type CoreIdentityPayload =
   | { kind: 'empty' }
   | { kind: 'entry'; resolution: IdentityMethodResolutionV1 }

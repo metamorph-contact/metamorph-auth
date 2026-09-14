@@ -7,7 +7,8 @@ import i18n from '../../i18n'
 import enterpriseSecurityEn from '../../i18n/locales/en/enterprise-security.json'
 import { IDENTITY_FIXTURE_MARKER } from '../dev-fixtures/identity-methods'
 import { identityCoreFixture } from '../dev-fixtures/identity-core'
-import { coreIdentityScreens, coreIdentityStates, type CoreIdentityPayload, type CoreIdentityScreen, type CoreIdentityState } from '../identity-core-client'
+import { identityPreviewStates, type IdentityPreviewState } from '../dev-fixtures/identity-states'
+import { coreIdentityScreens, type CoreIdentityPayload, type CoreIdentityScreen } from '../identity-core-client'
 import { IdentityMethodPreviewError } from '../identity-client'
 
 i18n.addResourceBundle('en', 'enterprise-security', enterpriseSecurityEn)
@@ -24,9 +25,9 @@ const screenNames: Record<CoreIdentityScreen, string> = {
 }
 
 type LoadState =
-  | { kind: 'loading'; screenId: CoreIdentityScreen; scenario: CoreIdentityState }
-  | { kind: 'result'; screenId: CoreIdentityScreen; scenario: CoreIdentityState; payload: CoreIdentityPayload }
-  | { kind: 'error'; screenId: CoreIdentityScreen; scenario: CoreIdentityState; code: string }
+  | { kind: 'loading'; screenId: CoreIdentityScreen; scenario: IdentityPreviewState }
+  | { kind: 'result'; screenId: CoreIdentityScreen; scenario: IdentityPreviewState; payload: CoreIdentityPayload }
+  | { kind: 'error'; screenId: CoreIdentityScreen; scenario: IdentityPreviewState; code: string }
 
 function errorMessage(code: string): string {
   if (code === 'security.owner.unavailable') return 'security.preview.error.ownerUnavailable'
@@ -37,11 +38,11 @@ function errorMessage(code: string): string {
   return 'security.preview.error.generic'
 }
 
-export function IdentitySecurityPreviewPage() {
+export function CoreIdentityPreviewPage() {
   const { locale, screenId: routeScreenId } = useParams({ strict: false }) as { locale?: string; screenId?: string }
   const { t } = useTranslation('enterprise-security')
   const screenId = coreIdentityScreens.find((candidate) => candidate === routeScreenId)
-  const [scenario, setScenario] = useState<CoreIdentityState>('ready')
+  const [scenario, setScenario] = useState<IdentityPreviewState>('ready')
   const [selected, setSelected] = useState<string>()
   const [loaded, setLoaded] = useState<LoadState>()
   const client = useMemo(() => identityCoreFixture(scenario), [scenario])
@@ -91,7 +92,7 @@ export function IdentitySecurityPreviewPage() {
         >{t(`security.preview.identity.screen.${screenNames[candidate]}.title`)}</a>)}</Stack>
       </nav>
       <div role="group" aria-label={t('security.preview.scenarios')}>
-        <Stack gap={2}>{coreIdentityStates.map((state) => <Button
+        <Stack gap={2}>{identityPreviewStates.map((state) => <Button
           key={state}
           label={t(`security.preview.scenario.${state}`)}
           variant="outline" tone="neutral" pressed={scenario === state}

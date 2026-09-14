@@ -1,11 +1,11 @@
 import { buildSecurityErrorEnvelope } from '../../contracts/generated/enterprise-security-v1/fixtures.generated'
 import type { IdentityEntryRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityEntryRequestV1'
 import type { IdentityMethodResolutionV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
-import { coreIdentityStates, type CoreIdentityState } from '../identity-core-client'
 import { IdentityMethodPreviewError, type IdentityMethodClient } from '../identity-client'
+import { identityPreviewStates, type IdentityPreviewState } from './identity-states'
 
 export const IDENTITY_FIXTURE_MARKER = 'EA01_FIXTURE_ONLY'
-export const identityPreviewScenarios = coreIdentityStates.map((state) => ({
+export const identityPreviewScenarios = identityPreviewStates.map((state) => ({
   id: `SCR-IDN-001:${state}` as const,
   state,
 }))
@@ -35,11 +35,11 @@ export function identityMethodFixture(scenario: IdentityPreviewScenario): Identi
       if (request.schemaVersion !== 1 || request.flowId.length === 0 || request.realmId.length === 0) {
         throw new Error('Invalid method-resolution fixture request')
       }
-      const state: CoreIdentityState = scenario.slice('SCR-IDN-001:'.length) as CoreIdentityState
-      if (!coreIdentityStates.includes(state)) throw new Error('Unknown method fixture scenario')
+      const state: IdentityPreviewState = scenario.slice('SCR-IDN-001:'.length) as IdentityPreviewState
+      if (!identityPreviewStates.includes(state)) throw new Error('Unknown method fixture scenario')
       if (state === 'loading') return waitUntilCancelled(signal)
       await wait(signal)
-      const errors: Partial<Record<CoreIdentityState, number>> = {
+      const errors: Partial<Record<IdentityPreviewState, number>> = {
         'retryable-error': 11, 'terminal-error': 15, 'stale-revision': 8,
         'assurance-challenge': 0, 'regional-correction': 9, 'provider-outage': 6,
       }

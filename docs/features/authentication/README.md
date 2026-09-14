@@ -49,6 +49,11 @@ routes remain the production behavior. Preview selections have no live effect;
 enterprise live adapters fail closed until their owning plans wire the guarded
 APIs.
 
+Packet J's passkey, authenticator-code, recovery-code, step-up, and recovery-
+status previews use a second development-only lazy module. Its browser
+credential adapter is inert in preview, and its fixtures cannot issue a
+credential result or action proof.
+
 The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or

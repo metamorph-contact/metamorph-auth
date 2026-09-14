@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { PageTransitions } from '@polymorph/ui/identity'
 import { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -59,5 +59,32 @@ describe('identity router presentation', () => {
     }
     await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-009' } } as never)))
       .rejects.toMatchObject({ isNotFound: true })
+  })
+
+  it('admits Packet J ceremony previews without opening the gated inbox', async () => {
+    const guard = router.routesById['/$locale/_preview/enterprise-security/$screenId'].options.beforeLoad
+    for (const screenId of ['SCR-IDN-002', 'SCR-IDN-003', 'SCR-IDN-004', 'SCR-IDN-005', 'SCR-IDN-010']) {
+      await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId } } as never)))
+        .resolves.toBeUndefined()
+    }
+    await expect(Promise.resolve().then(() => guard?.({ params: { locale: 'en', screenId: 'SCR-IDN-009' } } as never)))
+      .rejects.toMatchObject({ isNotFound: true })
+  })
+
+  it('reveals manual TOTP setup only on request and scrubs it on pagehide', async () => {
+    render(<PageTransitions><IdentityRouter /></PageTransitions>)
+    await act(async () => {
+      await router.navigate({
+        to: '/$locale/_preview/enterprise-security/$screenId',
+        params: { locale: 'en', screenId: 'SCR-IDN-003' },
+      })
+    })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Authenticator code preview' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Show manual setup key' })).toBeTruthy()
+    expect(screen.queryByText('Fixture-only manual setup key')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Show manual setup key' }))
+    expect(await screen.findByText('Fixture-only manual setup key')).toBeTruthy()
+    fireEvent(window, new Event('pagehide'))
+    await waitFor(() => expect(screen.queryByText('Fixture-only manual setup key')).toBeNull())
   })
 })
