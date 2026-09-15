@@ -1,5 +1,11 @@
 # Shared Identity Frontend Status
 
+Plan 08B regenerates public emergency activation proof as local password+TOTP
+or UV passkey; TOTP/recovery alone cannot satisfy MFA without a prior session.
+Live emergency UI/transport wiring is Plan 08D; actual CSI/local-secret/common
+owner installation remains SaaS EA-08I. No live emergency receipt or human test
+is claimed by this generated contract change.
+
 - Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
