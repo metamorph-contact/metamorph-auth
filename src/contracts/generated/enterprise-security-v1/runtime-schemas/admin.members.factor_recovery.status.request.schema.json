@@ -1,0 +1,46 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::AdminMemberReadRequestV1. Do not edit.",
+  "$defs": {
+    "AdminMemberRefV1": {
+      "additionalProperties": false,
+      "properties": {
+        "memberUserId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "targetTenantId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        }
+      },
+      "required": [
+        "targetTenantId",
+        "memberUserId"
+      ],
+      "type": "object"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:admin.members.factor_recovery.status:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "member": {
+      "$ref": "#/$defs/AdminMemberRefV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "member"
+  ],
+  "title": "AdminMemberReadRequestV1",
+  "type": "object"
+}

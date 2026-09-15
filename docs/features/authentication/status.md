@@ -111,6 +111,38 @@ fixture/router checks. The production build excludes the preview and fixture
 marker. No live recipient endpoint or grant path is registered; that remains
 `AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.
 
+Plan 03 raises the common password client's raw UTF-8 admission bound to
+16 KiB for signup, recovery and sign-in, matching the identity-home verifier.
+The rendered sign-in, signup and recovery controls use that same byte boundary,
+and all three generated request schemas publish it explicitly.
+Only those three password endpoints permit up to 128 KiB of JSON-escaped
+request framing; other requests retain the 64-KiB client limit. Focused client,
+HTTP and TypeScript checks pass. Live factor/profile clients remain gated on
+their identity-home ceremonies and action-proof/session integration.
+
+Plan 03 packet E adds a typed browser WebAuthn evidence adapter for identity
+assertion and registration. It maps the closed ES256/RS256/EdDSA profile,
+resident-key and user-verification options, rejects noncanonical or expired
+challenge input, passes the browser abort signal, and returns only credential
+evidence for identity-home verification. Focused adapter, fixture, and type
+checks pass. The adapter does not issue a session. The Plan 01 ceremony preview
+remains a development-only fixture. EA-00J now generates the 42 Plan 03
+request/response schemas, typed maps and exact EA-00H route metadata for both
+browser consumers. This client uses precompiled validators under the production
+CSP, validates its serialized request, UTF-8 field bounds and canonical
+idempotency binding, omits browser credentials, and checks bounded,
+duplicate-free responses against the exact per-route schema, status, media,
+failure-profile and canonical `Retry-After` contract. Anonymous recovery start
+uses a closed transport-failure allowlist so account-specific method or state
+errors cannot cross the public entry boundary. The focused
+decoder/request suite and TypeScript check pass. Account-session/evidence composition and binding the
+staged client to the catalog-selected live identity transport remain deferred
+to the Plan 03 integrator after their Plan 02/00/04/11
+owners supply the required gates. The staged identity-home verifier now accepts
+ES256, bounded RS256 and Ed25519; a live owner must still negotiate the
+effective-policy algorithm and attestation profile before issuing options.
+No passkey or factor-recovery route is live.
+
 Plan 02 Packet G refreshes the mutable CSI-07 browser snapshot for the optional
 product-route-move receipt and forwards it only when a caller supplies the
 source-P proof. This is the browser consumer for Packet B's explicit
@@ -119,9 +151,33 @@ cannot turn identity-home navigation into a product-region move. Metamorph
 Auth owns no profile/admin session-device screen rows; those live routes are in
 Octamorph.
 
+Main reconciliation includes Plan 02G account-selection receipt forwarding. Plan 03 still owns action-specific proof issuance for the live session/device consumer and production factor/profile ceremony composition; the consumer receipt and staged browser evidence do not produce a proof.
+
 Plan 04 main reconciliation preserves its generated tenant-policy workspace
 and simulation types alongside Packet G's optional source-P route receipt.
 Forced frontend typecheck, four focused identity protocol tests, the CSI-07
 snapshot check and all 1,795 declared enterprise artifact checks pass;
 this adds no identity-owned profile/admin session screen or authentication
 authority. The existing live-method and operator handoff gaps remain.
+
+
+## Plan 04 current-main reconciliation (2026-09-15)
+
+Plan 03 main is merged into `codex/plan04` with Plan 02G account-selection
+receipt forwarding and Plan 04's policy/simulation types preserved. The combined
+Rust owner regenerates the enterprise pack. No generated/schema file is edited
+by hand. Plan 04 now supplies compiled active/pending policy to Plan 03's
+factor/strong-action/password-replacement cores; this does not install a public
+identity ceremony or non-password CSI issuer. The existing feature brief and
+identity presentation/credential ownership remain accurate. Actual protected
+proof admission, live factor/profile/recovery composition and external notice/
+private/session-owner effects remain recorded in SaaS EA-04I. No database,
+expensive or human integration qualification is claimed.
+
+EA-04I final combined-owner validation: 20 focused request/response/passkey
+tests, TypeScript check, generated validator and contract consumer checks,
+and the combined 1,969-artifact Rust export drift check pass. Both read-only
+integration reviewers returned CLEAN after fixes, before commit. This change
+regenerates contracts and preserves main's typed boundaries; the owning
+presentation intent remains accurate. Live producer gates and human browser
+and Tauri testing remain deferred; no database tests ran.
