@@ -189,9 +189,19 @@ regenerates contracts and preserves main's typed boundaries; the owning
 presentation intent remains accurate. Live producer gates and human browser
 and Tauri testing remain deferred; no database tests ran.
 
+## Plan 04 main landing (2026-09-15)
+
+The reviewed combined Rust-owned contract and typed identity boundary reconciliation
+landed on development main at `86941ee`. This landing preserves the
+recorded cheap-check and CLEAN read-only review results; no additional feature
+behavior changed during the merge. Remaining external owner capabilities and
+live adapter installation stay deferred in the SaaS EA-04I integrator packet.
+Main landing does not establish full live Plan 04 completion or human acceptance.
+No database or expensive qualification ran for this merge.
+
 ## Plan 05 merge integration (2026-09-15, in progress)
 
-The pending `codex/plan05` merge incorporates Plans 02–04 and regenerates the
+The `codex/plan05` branch incorporates Plans 02–04 and regenerates the
 shared provider rotation contracts with an optional first primary binding and
 explicit new-material expiry. TypeScript, runtime/Plan 03 validator checks and
 the 21 focused protocol/presentation tests pass. Existing Auth behavior remains
