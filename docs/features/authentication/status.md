@@ -283,3 +283,13 @@ continuation presentation/orchestration remains owned E work, with actual CSI
 ceremony/return transport in SaaS EA-10I. Incremental foundation review is not a
 full E exit. Existing README/architecture/decisions remain accurate for this
 structural change. No live browser or cross-region qualification ran.
+
+The next EA-10E increment regenerates `simulationAssumptions` in the historical
+envelope: exact hypothetical predicates for simulation, null for protected
+actions. Simulation compiled fields label its draft calculation and do not
+identify a published active/floor snapshot. Shared export/check covers 1,990
+artifacts at `a4d953cf3de24f80b225088eb768e58f2b8802299636987dc4687e853ff91f96`;
+TypeScript and strict schema checks pass. Both backend incremental readonly
+reviews are clean. This remains structural consumption; E identity presentation
+and the final packet review remain outstanding. Existing README/architecture/
+decisions remain accurate. No browser, DB or cross-region qualification ran.
