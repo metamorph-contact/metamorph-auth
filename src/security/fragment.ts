@@ -48,7 +48,10 @@ export type DestinationContinuationFragment = Readonly<{
   receipt: string
 }>
 
+export type SamlHandoffFragment = Readonly<{ kind: 'samlHandoff'; handoffProof: string; providerRegionId: string }>
+
 export type AuthFragment =
+  | SamlHandoffFragment
   | InitialEntryFragment
   | EmailVerificationFragment
   | PasswordRecoveryFragment
@@ -106,6 +109,13 @@ function parseFragment(hash: string): AuthFragment {
     throw new InvalidAuthFragmentError()
   }
   const params = new URLSearchParams(hash.slice(1))
+  if (params.has('saml_handoff')) {
+    exact(params, ['saml_handoff', 'provider_region'])
+    const handoffProof = digestValue(params, 'saml_handoff')
+    const providerRegionId = value(params, 'provider_region')
+    if (!/^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u.test(providerRegionId) || providerRegionId.length > 96) throw new InvalidAuthFragmentError()
+    return Object.freeze({ kind: 'samlHandoff', handoffProof, providerRegionId })
+  }
   if (params.get('v') !== '1') throw new InvalidAuthFragmentError()
   const kind = params.get('kind')
   if (kind === 'initial' || kind === 'relocation') {

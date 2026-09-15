@@ -1,3 +1,4 @@
+import { fixtureFederationProviders } from './federation-providers'
 import { buildSecurityErrorEnvelope } from '../../contracts/generated/enterprise-security-v1/fixtures.generated'
 import type { ExternalIdentityStartRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/ExternalIdentityStartRequestV1'
 import type { ExternalIdentityStartV1 } from '../../contracts/generated/enterprise-security-v1/types/ExternalIdentityStartV1'
@@ -22,7 +23,7 @@ const progress = (nextStep: IdentityCeremonyProgressV1['nextStep']): IdentityCer
   nextStep, subjectReproof: null, expiresAt,
 })
 const methods: IdentityMethodResolutionV1 = {
-  schemaVersion: 1, continuationId: 'fixture-continuation', methods: ['federation'], expiresAt,
+  schemaVersion: 1, continuationId: 'fixture-continuation', methods: ['federation'], federationProviders: fixtureFederationProviders, expiresAt,
 }
 const profileRequest: IdentityProfileCompleteRequestV1 = {
   ceremony: { schemaVersion: 1, attemptId: 'fixture-attempt', continuationId: 'fixture-continuation', expectedCeremonyRevision: '1' },
@@ -32,7 +33,7 @@ const profileRequest: IdentityProfileCompleteRequestV1 = {
   privacyAcknowledgement: null,
 }
 const handoff: IdentityIdpSamlHandoffRedeemResultV1 = {
-  schemaVersion: 1, targetTenantId: 'fixture-tenant', providerId: 'fixture-provider',
+  schemaVersion: 1, callbackId: 'fixture-callback', targetTenantId: 'fixture-tenant', providerId: 'fixture-provider',
   tenantDisplayName: 'Example Studio', providerDisplayName: 'Example IdP',
   continuation: progress('confirm_federation'),
 }

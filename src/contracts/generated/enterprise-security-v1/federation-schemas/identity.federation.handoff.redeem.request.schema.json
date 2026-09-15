@@ -1,0 +1,51 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityIdpSamlHandoffRedeemRequestV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "OneTimeProofV1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.federation.handoff.redeem:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Binds a verified unsolicited SAML callback to a new, explicit browser\nflow. The fragment proof is one-use and never authorizes an account by\nitself; the owner returns a continuation only after flow/CSRF admission.",
+  "properties": {
+    "clientRegistrationId": {
+      "$ref": "#/$defs/CatalogKeyV1"
+    },
+    "flowId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "handoffProof": {
+      "$ref": "#/$defs/OneTimeProofV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "flowId",
+    "clientRegistrationId",
+    "handoffProof"
+  ],
+  "title": "IdentityIdpSamlHandoffRedeemRequestV1",
+  "type": "object"
+}

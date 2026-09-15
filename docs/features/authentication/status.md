@@ -286,3 +286,22 @@ original callback, local-proof and action deadlines hold; unsatisfied provider
 reauthentication contributes no fallback assurance. Public/generated contracts
 remain accurate. Human and actual configured-provider/CSI qualification remain
 open in the SaaS integrator ledger.
+
+## Plan06G browser composition — 2026-09-15
+
+Owned scoped method discovery/SAML confirmation/JIT contact/profile and per-offer
+recipient decision/status journeys are implemented. Rust-generated twelve-
+operation types/routes/schemas and identical standalone validators bind exact
+callback/challenge/provisional metadata. Actual CSI establishment recovery,
+current factor/link/privacy/contact and guarded recipient suppliers remain
+mandatory; no ready progress or DEV receipt issues an account or target access.
+Cancellation, scope exit, page suspension and expiry erase private custody; actual
+CSI durable cancellation must also fence in-flight publication. Same original
+request/privacy receipt recovers ambiguous responses; definite denials permit new
+commands. Live callback origin/region comes from the verified catalog.
+
+37 focused Auth checks and both TypeScript builds pass. Production bundle admits
+about 287 KiB gzip under its original 330 KiB limit, with inline fragment/CSP,
+no-eval and DEV fixture exclusion checks. Browser exercises are synthetic protocol
+receipts, not actual IdP/CSI/cross-process qualification. The SaaS Plan06G handoff
+and EA-06I ledger own actual supplier installation and human testing. All readonly bug/security/performance final reviews are clear.

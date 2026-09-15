@@ -63,7 +63,9 @@ credential result or action proof.
 Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
 a third development-only lazy module. Its JIT sample carries the generated
 profile-completion request shape, including handle, first name, avatar fallback,
-and a null privacy handoff; it does not submit a profile or invent a receipt.
+and a null privacy handoff in the original inspection scenarios. G's interactive
+ready preview exercises the real profile form/transport with an explicitly DEV-only
+privacy receipt and never invokes an actual profile publisher.
 Packet L's recipient inbox uses a fourth
 lazy module and the separately generated authorization recipient contract. It
 shows pinned offers, redacted claim-required teasers, queued decisions, local
@@ -75,3 +77,22 @@ The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or
 catalog change that is not regenerated therefore fails the product build.
+
+## Plan06G browser composition — 2026-09-15
+
+Owned scoped method discovery/SAML confirmation/JIT contact/profile and per-offer
+recipient decision/status journeys are implemented. Rust-generated twelve-
+operation types/routes/schemas and identical standalone validators bind exact
+callback/challenge/provisional metadata. Actual CSI establishment recovery,
+current factor/link/privacy/contact and guarded recipient suppliers remain
+mandatory; no ready progress or DEV receipt issues an account or target access.
+Cancellation, scope exit, page suspension and expiry erase private custody; actual
+CSI durable cancellation must also fence in-flight publication. Same original
+request/privacy receipt recovers ambiguous responses; definite denials permit new
+commands. Live callback origin/region comes from the verified catalog.
+
+37 focused Auth checks and both TypeScript builds pass. Production bundle admits
+about 287 KiB gzip under its original 330 KiB limit, with inline fragment/CSP,
+no-eval and DEV fixture exclusion checks. Browser exercises are synthetic protocol
+receipts, not actual IdP/CSI/cross-process qualification. The SaaS Plan06G handoff
+and EA-06I ledger own actual supplier installation and human testing. All readonly bug/security/performance final reviews are clear.

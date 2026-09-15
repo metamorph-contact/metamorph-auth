@@ -98,6 +98,8 @@ import {
 
 type RouteParams = { locale: string; authProjectionId: string; catalogVersion: string }
 
+const FederationMethodChoices = lazy(() => import('./enterprise-security/federation-methods').then((module) => ({ default: module.FederationMethodChoices })))
+
 const signupControls = () => import('@polymorph/ui/identity-signup')
 const ColorInput = lazy(async () => ({ default: (await signupControls()).ColorInput }))
 const ImageEditor = lazy(async () => ({ default: (await signupControls()).ImageEditor }))
@@ -671,6 +673,16 @@ function AuthorizePage() {
           void move({ kind: 'signupEmail' })
         }} />
       </FormStack>
+      <Suspense fallback={null}><FederationMethodChoices key={ready.flow.bootstrap.flowId} flow={ready.flow} email={email}
+        disabled={pending || leaving || credentialAttemptUncertain !== undefined}
+        navigate={async (uri) => {
+          setSignInPassword('')
+          await run(async () => {
+            // The exact HTTPS provider URI comes from the independently admitted
+            // start response. Product-return navigation uses its existing catalog gate.
+            await afterPageFade(setLeaving, () => { window.location.assign(uri) })
+          })
+        }} /></Suspense>
     </Presentation>
   }
 
@@ -1491,6 +1503,7 @@ function OutletShim() {
   return <Outlet />
 }
 
+const samlEntryRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: lazyRouteComponent(() => import('./enterprise-security/saml-entry'), 'SamlHandoffEntryPage') })
 const base = '/$locale/auth/$authProjectionId/$catalogVersion'
 const authorizeRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/authorize`, component: AuthorizePage })
 const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/authorize/continue`, component: ContinuePage })
@@ -1513,7 +1526,7 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
 const routeTree = rootRoute.addChildren([
-  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  samlEntryRoute, authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })
