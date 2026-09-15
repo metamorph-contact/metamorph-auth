@@ -160,7 +160,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.request.schema.json",
     "requestType": "ConditionalExplainRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.response.schema.json",
-    "responseType": "ConditionalDecisionV1"
+    "responseType": "ConditionalExplanationV1"
   },
   "admin.conditional.preview": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.preview.request.schema.json",
@@ -172,7 +172,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.read.request.schema.json",
     "requestType": "ConditionalReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.read.response.schema.json",
-    "responseType": "ConditionalPolicyV1"
+    "responseType": "ConditionalWorkspaceV1"
   },
   "admin.conditional.rollback": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.rollback.request.schema.json",
@@ -208,7 +208,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.simulate.request.schema.json",
     "requestType": "ConditionalSimulationRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.simulate.response.schema.json",
-    "responseType": "ConditionalDecisionV1"
+    "responseType": "ConditionalExplanationV1"
   },
   "admin.contacts.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.contacts.create.request.schema.json",

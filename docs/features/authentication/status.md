@@ -268,3 +268,18 @@ cross-region qualification is claimed.
 Both read-only Plan 10 D reviewers returned CLEAN after the owning backend
 fixes. Existing README/architecture/decision records remain accurate for this
 structural consumer update; presentation behavior changes in E.
+
+Plan 10 EA-10E foundation (`codex/plan10`, 2026-09-15) regenerates backend-owned
+authored/workspace/history contracts and decision-region locators. Historical
+responses preserve both required compiled calculations and explicitly separate
+simulation from protected-action purpose. Conditional denials expose a nullable
+locator only after successful common RBAC and persistence. The history envelope
+never grants access or extends the original calculation expiry. Shared export
+and strict schema/fixture checks cover 1,990 artifacts (pin
+`0097b500387fae5a8bbd6998c0094e6e62adf140886f4f858ea5564ee04fc8e5`);
+TypeScript passes. Backend-only workspace response bounds now account for both
+complete active/draft ASTs. This is structural consumer reconciliation; identity
+continuation presentation/orchestration remains owned E work, with actual CSI
+ceremony/return transport in SaaS EA-10I. Incremental foundation review is not a
+full E exit. Existing README/architecture/decisions remain accurate for this
+structural change. No live browser or cross-region qualification ran.

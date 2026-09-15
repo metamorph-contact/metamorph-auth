@@ -5,4 +5,4 @@
  * A non-bearer one-use CSI continuation. Resume re-admits the exact action
  * with new CSI identity and one new RBAC decision; this is never a permit.
  */
-export type RuntimeConditionalChallengeV1 = { continuationId: string, identityHomeRegionId: string, actionBindingSha256: string, required: Array<"recent" | "mfa" | "sso" | "phishing_resistant">, baselineRequired: Array<"hardware_bound" | "separate_local_factor">, expiresAt: string, };
+export type RuntimeConditionalChallengeV1 = { decisionId: string, decisionRegionId: string, continuationId: string, identityHomeRegionId: string, actionBindingSha256: string, required: Array<"recent" | "mfa" | "sso" | "phishing_resistant">, baselineRequired: Array<"hardware_bound" | "separate_local_factor">, expiresAt: string, };
