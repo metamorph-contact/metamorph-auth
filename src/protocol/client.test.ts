@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { loadAccounts, startSignup, type IdentityFlow, type SignupStartAttempt } from './client'
+import { chooseAccount, loadAccounts, startSignup, type DisplayAccount, type IdentityFlow, type SignupStartAttempt } from './client'
 import { ProtocolError } from './http'
 
 const operationId = '01890f3a-6e3a-7c15-8c65-450b85e12a01'
@@ -129,5 +129,41 @@ describe('account option reconciliation', () => {
       accounts: [],
       unavailableCount: 1,
     })
+  })
+
+  it('forwards a source product route move receipt with the exact account selection', async () => {
+    const controllerPost = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      kind: 'relocate',
+      navigationUri: 'https://product.in.example/auth/return',
+      expiresAt,
+    })
+    const account = {
+      reference,
+      summary: {
+        browserAccountId: operationId,
+        validationReceipt: 'validation.receipt.signature',
+      },
+    } as unknown as DisplayAccount
+
+    await expect(chooseAccount(
+      accountFlow(controllerPost),
+      account,
+      operationId,
+      'route.move.receipt',
+    )).resolves.toBe('https://product.in.example/auth/return')
+
+    expect(controllerPost).toHaveBeenCalledWith(
+      `/api/auth/v1/flows/${operationId}/account-selections`,
+      {
+        schemaVersion: 1,
+        selectionAttemptId: operationId,
+        browserAccountId: operationId,
+        validationReceipt: 'validation.receipt.signature',
+        productRouteMoveReceipt: 'route.move.receipt',
+      },
+      'accountSelection',
+      'c'.repeat(43),
+    )
   })
 })

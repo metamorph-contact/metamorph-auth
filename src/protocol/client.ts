@@ -299,10 +299,10 @@ export async function loadAccounts(flow: IdentityFlow): Promise<DisplayAccountsR
   return Object.freeze({ accounts: Object.freeze(accounts.values), unavailableCount: accounts.unavailableCount })
 }
 
-export async function chooseAccount(flow: IdentityFlow, account: DisplayAccount, attemptId: string): Promise<string | null> {
+export async function chooseAccount(flow: IdentityFlow, account: DisplayAccount, attemptId: string, productRouteMoveReceipt?: string): Promise<string | null> {
   const selected = await flow.controller.post<AccountSelectionRequestV1, AccountSelectionResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/account-selections`,
-    { schemaVersion: 1, selectionAttemptId: attemptId, browserAccountId: account.reference.browserAccountId, validationReceipt: account.summary.validationReceipt },
+    { schemaVersion: 1, selectionAttemptId: attemptId, browserAccountId: account.reference.browserAccountId, validationReceipt: account.summary.validationReceipt, ...(productRouteMoveReceipt === undefined ? {} : { productRouteMoveReceipt }) },
     'accountSelection', flow.bootstrap.csrfToken,
   )
   if (selected.kind === 'relocate') return selected.navigationUri

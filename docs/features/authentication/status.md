@@ -1,6 +1,6 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-14
+- Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -12,6 +12,11 @@
   57 screens; the recipient inbox now consumes authorization-owned generated
   DTOs and typed fixtures. Human preview exercise is pending. Its production
   route remains gated on `VER-OWN-001` guarded handlers.
+- Plan 02 Packet G: the generated CSI-07 account-selection request and protocol
+  client accept the optional source-P `productRouteMoveReceipt`. A focused
+  client test verifies exact forwarding. Generic sign-in still omits the field
+  because it preserves the product region selected before start; no product
+  operation currently requests P→P′ relocation.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -105,3 +110,18 @@ completed/rejected history, local skip, stale and uncertain states have focused
 fixture/router checks. The production build excludes the preview and fixture
 marker. No live recipient endpoint or grant path is registered; that remains
 `AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.
+
+Plan 02 Packet G refreshes the mutable CSI-07 browser snapshot for the optional
+product-route-move receipt and forwards it only when a caller supplies the
+source-P proof. This is the browser consumer for Packet B's explicit
+relocation branch. Ordinary account selection passes no receipt and therefore
+cannot turn identity-home navigation into a product-region move. Metamorph
+Auth owns no profile/admin session-device screen rows; those live routes are in
+Octamorph.
+
+Plan 04 main reconciliation preserves its generated tenant-policy workspace
+and simulation types alongside Packet G's optional source-P route receipt.
+Forced frontend typecheck, four focused identity protocol tests, the CSI-07
+snapshot check and all 1,795 declared enterprise artifact checks pass;
+this adds no identity-owned profile/admin session screen or authentication
+authority. The existing live-method and operator handoff gaps remain.
