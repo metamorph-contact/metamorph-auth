@@ -1,0 +1,42 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ProfileContactChallengeAcceptanceV1. Do not edit.",
+  "$defs": {
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.emails.add:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Uniform acceptance of a delivery attempt, not evidence that an email was\nsent, a route is unclaimed, or the candidate belongs to this account.",
+  "properties": {
+    "acceptedAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "expiresAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    },
+    "verificationId": {
+      "$ref": "#/$defs/SecurityIdV1",
+      "description": "The same opaque ID is supplied to verification whether this was a\nreal challenge or a non-enumerating decoy acceptance."
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "verificationId",
+    "acceptedAt",
+    "expiresAt"
+  ],
+  "title": "ProfileContactChallengeAcceptanceV1",
+  "type": "object"
+}

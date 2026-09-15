@@ -1,0 +1,284 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityPasskeyRegisterResultV1. Do not edit.",
+  "$defs": {
+    "Base64UrlBlob64V1": {
+      "maxLength": 86,
+      "minLength": 2,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "type": "string"
+    },
+    "ContactEmailV1": {
+      "format": "email",
+      "maxLength": 320,
+      "minLength": 3,
+      "pattern": "^[!-~](?:[ -~]*[!-~])?$",
+      "type": "string"
+    },
+    "DeviceLabelV1": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string"
+    },
+    "IdentityCeremonyProgressV1": {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "continuationId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "nextStep": {
+          "$ref": "#/$defs/IdentityCeremonyStepV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        },
+        "subjectReproof": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IdentitySubjectReproofReceiptV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Present only after a suspended home subject finishes a purpose-bound\nfresh factor challenge. The receipt is a non-bearer reference; identity\nhome consumes it once for the matching admin reactivation command."
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "continuationId",
+        "ceremonyRevision",
+        "nextStep",
+        "expiresAt"
+      ],
+      "type": "object"
+    },
+    "IdentityCeremonyStepV1": {
+      "enum": [
+        "verify_email",
+        "verify_factor",
+        "complete_profile",
+        "first_login_enrollment",
+        "accept_invitation",
+        "ready",
+        "rejected"
+      ],
+      "type": "string"
+    },
+    "IdentitySubjectReproofReceiptV1": {
+      "additionalProperties": false,
+      "properties": {
+        "expectedHomeStatusRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "provedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "receiptId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        }
+      },
+      "required": [
+        "receiptId",
+        "expectedHomeStatusRevision",
+        "provedAt",
+        "expiresAt"
+      ],
+      "type": "object"
+    },
+    "OneTimeProofV1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+      "type": "string"
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "WebAuthnAlgorithmProfileV1": {
+      "description": "The browser adapter maps this closed profile to COSE alg IDs. ES256 is\nalways offered; policy may additionally allow RS256 and/or EdDSA.",
+      "enum": [
+        "es256",
+        "es256_rs256",
+        "es256_ed_dsa",
+        "es256_rs256_ed_dsa"
+      ],
+      "type": "string"
+    },
+    "WebAuthnAttachmentV1": {
+      "enum": [
+        "platform",
+        "cross_platform"
+      ],
+      "type": "string"
+    },
+    "WebAuthnAttestationV1": {
+      "enum": [
+        "none",
+        "direct",
+        "enterprise"
+      ],
+      "type": "string"
+    },
+    "WebAuthnCreationOptionsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithmProfile": {
+          "$ref": "#/$defs/WebAuthnAlgorithmProfileV1"
+        },
+        "attachment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WebAuthnAttachmentV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attestation": {
+          "$ref": "#/$defs/WebAuthnAttestationV1"
+        },
+        "challenge": {
+          "$ref": "#/$defs/OneTimeProofV1"
+        },
+        "residentKey": {
+          "$ref": "#/$defs/WebAuthnResidentKeyV1"
+        },
+        "rpId": {
+          "$ref": "#/$defs/WebAuthnRpIdV1"
+        },
+        "rpName": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "timeoutMs": {
+          "$ref": "#/$defs/WebAuthnTimeoutMsV1"
+        },
+        "userDisplayName": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "userHandle": {
+          "$ref": "#/$defs/Base64UrlBlob64V1"
+        },
+        "userName": {
+          "$ref": "#/$defs/ContactEmailV1"
+        },
+        "userVerification": {
+          "$ref": "#/$defs/WebAuthnUserVerificationV1"
+        }
+      },
+      "required": [
+        "rpId",
+        "rpName",
+        "userHandle",
+        "userName",
+        "userDisplayName",
+        "challenge",
+        "algorithmProfile",
+        "timeoutMs",
+        "residentKey",
+        "userVerification",
+        "attestation"
+      ],
+      "type": "object"
+    },
+    "WebAuthnResidentKeyV1": {
+      "enum": [
+        "preferred",
+        "required"
+      ],
+      "type": "string"
+    },
+    "WebAuthnRpIdV1": {
+      "maxLength": 253,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+      "type": "string"
+    },
+    "WebAuthnTimeoutMsV1": {
+      "maximum": 120000,
+      "minimum": 30000,
+      "type": "integer"
+    },
+    "WebAuthnUserVerificationV1": {
+      "enum": [
+        "preferred",
+        "required"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.passkey.register_first_login:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "kind": {
+          "const": "challenge",
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/$defs/WebAuthnCreationOptionsV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        }
+      },
+      "required": [
+        "kind",
+        "schemaVersion",
+        "ceremonyId",
+        "options",
+        "expiresAt"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "registered",
+          "type": "string"
+        },
+        "progress": {
+          "$ref": "#/$defs/IdentityCeremonyProgressV1"
+        }
+      },
+      "required": [
+        "kind",
+        "progress"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "IdentityPasskeyRegisterResultV1"
+}

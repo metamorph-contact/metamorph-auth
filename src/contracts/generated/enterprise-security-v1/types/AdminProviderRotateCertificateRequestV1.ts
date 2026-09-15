@@ -3,4 +3,4 @@
 import type { AdminProviderCommandGuardV1 } from "./AdminProviderCommandGuardV1";
 import type { ProviderPublicRotationV1 } from "./ProviderPublicRotationV1";
 
-export type AdminProviderRotateCertificateRequestV1 = { guard: AdminProviderCommandGuardV1, expectedProviderRevision: string, material: ProviderPublicRotationV1, expectedPrimaryBindingRevision: string, oldBindingOverlapUntil: string, };
+export type AdminProviderRotateCertificateRequestV1 = { guard: AdminProviderCommandGuardV1, expectedProviderRevision: string | null, material: ProviderPublicRotationV1, expectedPrimaryBindingRevision: string | null, oldBindingOverlapUntil: string | null, newBindingExpiresAt: string, };

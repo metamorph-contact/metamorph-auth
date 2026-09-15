@@ -111,6 +111,12 @@ function assertBoundedText(value: string, maximumBytes: number, label: string): 
   }
 }
 
+function assertBoundedPassword(value: string): void {
+  if (value.length === 0 || new TextEncoder().encode(value).byteLength > 16 * 1024) {
+    throw new Error('Invalid password')
+  }
+}
+
 function assertBootstrap(catalog: LoadedIdentityCatalog, bootstrap: FlowBootstrapV1): void {
   const presentation = catalog.presentation
   const admittedLogoAssetIds = presentation.logoAssets.kind === 'modeSafe'
@@ -217,7 +223,7 @@ export async function continueAccountEstablishment(flow: IdentityFlow, result: A
 export async function signIn(flow: IdentityFlow, email: string, password: string): Promise<{ result: AccountEstablishmentResultV1; navigationUri: string | null }> {
   const canonicalEmail = normalizeEmailForWire(email)
   if (canonicalEmail === null) throw new Error('Invalid email')
-  assertBoundedText(password, 1_024, 'password')
+  assertBoundedPassword(password)
   const capability = await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
     { schemaVersion: 1, action: 'signInRoute' }, 'credentialCapability', flow.bootstrap.csrfToken,
@@ -435,7 +441,7 @@ export async function updateSignup(
     return home.put<SignupOrganizationRequestV1, SignupProgressV1>(`${base}/organization`, { schemaVersion: 1, displayName: input.organization, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
   }
   if (progress.nextStep === 'setPassword' && input.password !== undefined) {
-    assertBoundedText(input.password, 1_024, 'password')
+    assertBoundedPassword(input.password)
     return home.put<SignupPasswordRequestV1, SignupProgressV1>(`${base}/password`, { schemaVersion: 1, password: input.password, protocol: continuation.protocol }, 'signupProgress', progress.csrfToken)
   }
   if (progress.nextStep === 'completeProfile' && input.profile !== undefined) {
@@ -559,7 +565,7 @@ export async function resolveRecovery(home: AuthApi, request: PasswordRecoveryRe
 }
 
 export async function completeRecovery(home: AuthApi, request: PasswordRecoveryCompleteRequestV1): Promise<PasswordRecoveryCompletedV1> {
-  assertBoundedText(request.newPassword, 1_024, 'password')
+  assertBoundedPassword(request.newPassword)
   return home.post<PasswordRecoveryCompleteRequestV1, PasswordRecoveryCompletedV1>(
     '/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined,
     { 'Idempotency-Key': request.completionAttemptId },

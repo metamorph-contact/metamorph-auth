@@ -87,7 +87,14 @@ import {
   type StartRecovery,
 } from './security/session-receipts'
 import { armBfcacheRecovery } from './security/bfcache'
-import { exceedsUtf8Limit, utf8Length, validBoundedText, validEmail } from './presentation/validation'
+import {
+  boundedPasswordInput,
+  exceedsUtf8Limit,
+  PASSWORD_WIRE_MAX_BYTES,
+  validBoundedText,
+  validEmail,
+  validPasswordInput,
+} from './presentation/validation'
 
 type RouteParams = { locale: string; authProjectionId: string; catalogVersion: string }
 
@@ -118,10 +125,6 @@ function failureKind(error: unknown): FailureKind {
   return (error instanceof ProtocolError && error.retryable) || error instanceof CatalogUnavailableError
     ? 'temporary'
     : 'terminal'
-}
-
-function boundedPassword(value: string): string | null {
-  return utf8Length(value) <= 2_048 ? value : null
 }
 
 type IdentityField = 'email' | 'password' | 'organization' | 'firstName' | 'lastName' | 'handle'
@@ -655,14 +658,14 @@ function AuthorizePage() {
         <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}><Input disabled={credentialAttemptUncertain !== undefined} type="email" autoComplete="email" maxLength={254} value={email} onChange={(value) => { setEmail(value); clearFieldError('email') }} /></FormField>
         <FormField id="identity-password" label={t('auth.password.label')} required error={fieldErrors.password} labelEnd={<Button disabled={credentialAttemptUncertain !== undefined} label={t('auth.password.forgot')} variant="ghost" tone="accent" size="sm" onClick={() => move({ kind: 'recovery' })} />}>
           <PasswordInput disabled={credentialAttemptUncertain !== undefined} toggleLabel={t('password.show')} autoComplete="current-password" value={signInPassword} onChange={(value) => {
-            const bounded = boundedPassword(value)
+            const bounded = boundedPasswordInput(value)
             if (bounded !== null) { setSignInPassword(bounded); clearFieldError('password') }
           }} />
         </FormField>
         {credentialRetryUntil > now && <Text tone="secondary"><span id="credential-cooldown">{t('auth.retry.wait', { seconds: Math.ceil((credentialRetryUntil - now) / 1_000) })}</span></Text>}
         <Button type="submit" aria-describedby={credentialRetryUntil > now ? 'credential-cooldown' : undefined}
           label={t(credentialAttemptUncertain !== undefined ? 'actions.retry' : 'actions.signIn')} loading={pending} disabled={credentialRetryUntil > now ||
-          (credentialAttemptUncertain === undefined && (!validEmail(email.trim()) || signInPassword.length === 0 || utf8Length(signInPassword) > 1_024))} />
+          (credentialAttemptUncertain === undefined && (!validEmail(email.trim()) || !validPasswordInput(signInPassword)))} />
         <Button disabled={credentialAttemptUncertain !== undefined} label={t('actions.signUp')} variant="ghost" tone="accent" onClick={() => {
           setSignInPassword('')
           void move({ kind: 'signupEmail' })
@@ -933,11 +936,11 @@ function AuthorizePage() {
   if (progress.nextStep === 'setPassword') {
     return <Presentation catalog={ready.catalog} transitionKey="signup-password" pending={pending} leaving={leaving} title={t('auth.signup.password')}>
       <FormStack onSubmit={(event) => { event.preventDefault(); submitSignup({ password: signupPassword }) }}>
-        <FormField id="identity-password" label={t('auth.signup.password')} required error={fieldErrors.password ?? (exceedsUtf8Limit(signupPassword, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={signupMutationUncertain} toggleLabel={t('password.show')} autoComplete="new-password" value={signupPassword} onChange={(value) => {
-          const bounded = boundedPassword(value)
+        <FormField id="identity-password" label={t('auth.signup.password')} required error={fieldErrors.password ?? (exceedsUtf8Limit(signupPassword, PASSWORD_WIRE_MAX_BYTES) ? t('errors.too_long_bytes', { maximum: PASSWORD_WIRE_MAX_BYTES }) : undefined)}><PasswordInput disabled={signupMutationUncertain} toggleLabel={t('password.show')} autoComplete="new-password" value={signupPassword} onChange={(value) => {
+          const bounded = boundedPasswordInput(value)
           if (bounded !== null) { setSignupPassword(bounded); clearFieldError('password') }
         }} /></FormField>
-        <Button type="submit" label={t(signupMutationUncertain ? 'actions.retry' : 'actions.continue')} loading={pending} disabled={!signupMutationUncertain && !validBoundedText(signupPassword, 1_024)} />
+        <Button type="submit" label={t(signupMutationUncertain ? 'actions.retry' : 'actions.continue')} loading={pending} disabled={!signupMutationUncertain && !validPasswordInput(signupPassword)} />
       </FormStack>
     </Presentation>
   }
@@ -1237,7 +1240,7 @@ function RecoverPasswordPage() {
   </Presentation>
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    if (pending || completionPending.current || !validBoundedText(password, 1_024)) return
+    if (pending || completionPending.current || !validPasswordInput(password)) return
     completionPending.current = true
     setPending(true)
     const attemptId = completionAttemptId ?? randomUuid7()
@@ -1276,12 +1279,12 @@ function RecoverPasswordPage() {
   }
   return <Presentation catalog={value.catalog} transitionKey="recover-password" pending={pending} leaving={leaving} title={t('auth.recovery.title')} description={<><bdi dir="auto">{preview.email}</bdi>{completionAttemptId !== undefined && <><br />{t('auth.recovery.retryDescription')}</>}</>}>
     <FormStack onSubmit={submit}>
-      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={pending} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
-        const bounded = boundedPassword(value)
+      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, PASSWORD_WIRE_MAX_BYTES) ? t('errors.too_long_bytes', { maximum: PASSWORD_WIRE_MAX_BYTES }) : undefined)}><PasswordInput disabled={pending} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
+        const bounded = boundedPasswordInput(value)
         if (bounded !== null) { setPassword(bounded); setPasswordError(undefined) }
       }} /></FormField>
       <Button type="submit" label={t(completionAttemptId === undefined ? 'actions.continue' : 'actions.retry')} loading={pending}
-        disabled={!validBoundedText(password, 1_024)} />
+        disabled={!validPasswordInput(password)} />
     </FormStack>
   </Presentation>
 }

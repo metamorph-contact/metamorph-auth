@@ -3,4 +3,4 @@
 import type { PolicySettingViewV1 } from "./PolicySettingViewV1";
 import type { TenantMethodModeV1 } from "./TenantMethodModeV1";
 
-export type MethodPolicySettingsV1 = { passwordLogin: PolicySettingViewV1<boolean>, passkeyLogin: PolicySettingViewV1<boolean>, enterpriseFederation: PolicySettingViewV1<boolean>, mode: PolicySettingViewV1<TenantMethodModeV1>, };
+export type MethodPolicySettingsV1 = { passwordLogin: PolicySettingViewV1<boolean, boolean>, passkeyLogin: PolicySettingViewV1<boolean, boolean>, enterpriseFederation: PolicySettingViewV1<boolean, boolean>, mode: PolicySettingViewV1<TenantMethodModeV1, TenantMethodModeV1>, };
