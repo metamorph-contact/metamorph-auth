@@ -207,3 +207,12 @@ explicit new-material expiry. TypeScript, runtime/Plan 03 validator checks and
 the 21 focused protocol/presentation tests pass. Existing Auth behavior remains
 accurate; Plan 05 administration belongs to Octamorph and the SaaS owner. This
 integration passed the final read-only contract, database and security reviews.
+
+Plan 05's typed live client work corrects the shared identifier/claim-value
+schema to include the control/bidi restriction already enforced by Rust.
+The owning pack regenerates this consumer manifest. Existing Auth presentation,
+wire types and Plan 03 validator behavior remain accurate; no identity UI or
+authority is added by this schema correction.
+
+The regenerated consumer manifest and unchanged Plan 03 validators pass their
+checks. All three Plan 05 read-only re-reviewers returned CLEAN after fixes.
