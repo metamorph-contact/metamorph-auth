@@ -12,6 +12,11 @@
   57 screens; the recipient inbox now consumes authorization-owned generated
   DTOs and typed fixtures. Human preview exercise is pending. Its production
   route remains gated on `VER-OWN-001` guarded handlers.
+- Plan 02 Packet G: the generated CSI-07 account-selection request and protocol
+  client accept the optional source-P `productRouteMoveReceipt`. A focused
+  client test verifies exact forwarding. Generic sign-in still omits the field
+  because it preserves the product region selected before start; no product
+  operation currently requests P→P′ relocation.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -137,3 +142,13 @@ owners supply the required gates. The staged identity-home verifier now accepts
 ES256, bounded RS256 and Ed25519; a live owner must still negotiate the
 effective-policy algorithm and attestation profile before issuing options.
 No passkey or factor-recovery route is live.
+
+Plan 02 Packet G refreshes the mutable CSI-07 browser snapshot for the optional
+product-route-move receipt and forwards it only when a caller supplies the
+source-P proof. This is the browser consumer for Packet B's explicit
+relocation branch. Ordinary account selection passes no receipt and therefore
+cannot turn identity-home navigation into a product-region move. Metamorph
+Auth owns no profile/admin session-device screen rows; those live routes are in
+Octamorph.
+
+Main reconciliation includes Plan 02G account-selection receipt forwarding. Plan 03 still owns action-specific proof issuance for the live session/device consumer and production factor/profile ceremony composition; the consumer receipt and staged browser evidence do not produce a proof.
