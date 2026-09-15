@@ -250,3 +250,21 @@ owner composition remain in EA-10E and the SaaS EA-10I ledger. No browser,
 producer ingress or protected-product verification is claimed for this packet.
 Generated drift and source v1/rejection schema checks pass against 1,978
 artifacts (pin `4ce955dceb0c7527a3de238f916bf76eb4cad5ef26c0d3b821f0da9dd1e7f677`). TypeScript passes.
+
+Plan 10 EA-10D (`codex/plan10`, 2026-09-15) regenerates the backend-owned
+protected-action contracts. Requests carry nullable `conditionalContinuationId`,
+paired with `actionProof` by the backend owner; a challenge carries a bounded
+non-bearer continuation, exact action-binding digest, identity-home region,
+conditional/freshness requirements, two independent hardware-bound /
+separate-local-factor baseline requirements and expiry. Generated drift and
+strict schema checks pass against
+1,980 artifacts (pin
+`43a774af2a79b202c890c925aeb2433f206df36e54571795d8d808f4087bfafb`);
+TypeScript passes. This packet changes structural contract consumption. EA-10E
+owns presentation/orchestration; actual CSI ceremony/return transport and the
+first product business handler remain in SaaS EA-10I. No live browser, DB or
+cross-region qualification is claimed.
+
+Both read-only Plan 10 D reviewers returned CLEAN after the owning backend
+fixes. Existing README/architecture/decision records remain accurate for this
+structural consumer update; presentation behavior changes in E.
