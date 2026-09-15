@@ -936,8 +936,7 @@ export const enterpriseSecurityCatalog = {
         "operations": [
           "admin.conditional.read",
           "admin.conditional.simulate",
-          "admin.conditional.explain",
-          "admin.conditional.preview"
+          "admin.conditional.explain"
         ]
       },
       {
@@ -960,9 +959,7 @@ export const enterpriseSecurityCatalog = {
         "assurance": "strong",
         "operations": [
           "admin.conditional.rule.update",
-          "admin.conditional.rule.reorder",
-          "admin.conditional.apply",
-          "admin.conditional.rollback"
+          "admin.conditional.rule.reorder"
         ]
       },
       {

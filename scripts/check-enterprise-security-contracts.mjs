@@ -69,7 +69,13 @@ for (const name of readdirSync(path.join(docs, 'api'))) {
   }
   operationSchemaCount += 1;
 }
-assert.equal(operationSchemaCount, 237 * 2);
+const { enterpriseSecurityOperations } = await import(pathToFileURL(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/contracts/generated/enterprise-security-v1/operations.generated.ts')).href);
+const expectedOperationSchemas = Object.values(enterpriseSecurityOperations)
+  .flatMap((operation) => operation.requestSchema === undefined ? [] : [path.basename(operation.requestSchema), path.basename(operation.responseSchema)]);
+assert(expectedOperationSchemas.length > 0);
+assert.equal(new Set(expectedOperationSchemas).size, expectedOperationSchemas.length);
+assert.deepEqual(new Set(readdirSync(path.join(docs, 'api')).filter((name) => name !== 'error.schema.json')), new Set(expectedOperationSchemas));
+assert.equal(operationSchemaCount, expectedOperationSchemas.length);
 for (const name of readdirSync(path.join(docs, 'events'))) {
   const schema = read(`events/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/${name}`);

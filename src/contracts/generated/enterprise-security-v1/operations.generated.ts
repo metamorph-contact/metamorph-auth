@@ -150,35 +150,17 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.compliance.report.status.response.schema.json",
     "responseType": "SecurityAsyncResultV1"
   },
-  "admin.conditional.apply": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.apply.request.schema.json",
-    "requestType": "ConditionalCommandGuardV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.apply.response.schema.json",
-    "responseType": "ConditionalMutationResultV1"
-  },
   "admin.conditional.explain": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.request.schema.json",
     "requestType": "ConditionalExplainRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.response.schema.json",
     "responseType": "ConditionalExplanationV1"
   },
-  "admin.conditional.preview": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.preview.request.schema.json",
-    "requestType": "ConditionalReadRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.preview.response.schema.json",
-    "responseType": "ConditionalPreviewV1"
-  },
   "admin.conditional.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.read.request.schema.json",
     "requestType": "ConditionalReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.read.response.schema.json",
     "responseType": "ConditionalWorkspaceV1"
-  },
-  "admin.conditional.rollback": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.rollback.request.schema.json",
-    "requestType": "ConditionalRollbackRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.rollback.response.schema.json",
-    "responseType": "ConditionalMutationResultV1"
   },
   "admin.conditional.rule.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.rule.create.request.schema.json",
