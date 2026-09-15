@@ -5,4 +5,9 @@
  * A read can show an active challenge's state without redisplaying its raw
  * token; response-loss retry of the creation mutation owns first display.
  */
-export type DomainDnsChallengeSummaryV1 = { proofId: string, proofRevision: string, domain: string, txtRecordLabel: "_metamorph-verify", expiresAt: string, };
+export type DomainDnsChallengeSummaryV1 = { proofId: string, proofRevision: string,
+/**
+ * Exact reservation/transfer epoch required by the proof command. This
+ * does not mean that the claim has a verified route or is discoverable.
+ */
+proofRouteEpoch: string, domain: string, txtRecordLabel: "_metamorph-verify", expiresAt: string, };

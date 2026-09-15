@@ -6,8 +6,7 @@
 - Repository: Development-in-progress
 - Contracts: Mutable
 - Plan 05: U-label email domains now use the same A-label wire key as ASCII
-  domains; signup has a localized verified-owner conflict. The Plan 05 admin
-  UI and live SSO remain uncomposed (see the SaaS Plan 05 integrator ledger).
+  domains; signup has a localized verified-owner conflict. Octamorph now owns live Plan 05 admin UI routes; actual admin owner composition and live SSO remain open (see the SaaS Plan 05 integrator ledger).
 - Plan 05 main reconciliation: source manifests are regenerated after SaaS
   main `c816115`, Auth `f11441b` and Octamorph `e7db528`. A-label normalization
   and the verified-owner conflict coexist with the route-move receipt consumer;
@@ -226,3 +225,18 @@ checks. All three Plan 05 read-only re-reviewers returned CLEAN after fixes.
 The catalog20 supplier publication passes the owning exporter drift check,
 exact signed-publication verification/check and frontend TypeScript. All three
 readonly supplier reviewers returned CLEAN; the SaaS integrator remains open.
+
+Plan 05 proof-epoch consumer update (2026-09-15): regenerated enterprise
+contracts expose current proof state and stored `proofRouteEpoch` on domain cards/challenge summaries
+separately from verified discovery authority. Shared identity presentation does
+not use that field or perform domain administration. Octamorph owns the live
+admin controls. The operator deferred browser/Yugabyte execution for this
+development merge and will run end-to-end verification separately; remaining
+producer/deployment work stays in SaaS EA-05I.
+
+Final development handoff verification: Rust compile (including test targets),
+TypeScript in both consumers, frontend lint/format, generated contract/validator
+drift checks and all three read-only reviews pass for this cut. Targeted Clippy
+completed with warnings; no browser or Yugabyte execution was performed.
+The operator owns end-to-end verification and the EA-05I residual ledger remains
+open.
