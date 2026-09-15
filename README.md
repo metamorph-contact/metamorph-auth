@@ -23,6 +23,9 @@ downloaded projection or caller input. Packet `EA-00J` enterprise design
 contracts are generated into `src/contracts/generated/enterprise-security-v1`;
 run `npm run check:ea00j` for the pinned manifest, fixture/schema rejection,
 and TypeScript checks. They do not replace the current CSI runtime client.
+Plan 02 Packet G refreshes that current CSI client with the optional
+source-P-signed product-route-move receipt; generic account selection omits it
+unless an explicit product relocation supplies the proof.
 Browser code must use the bounded text decoders, which reject duplicate member
 names before strict schema validation,
 then call `verifyCatalogPair` with only the protected transaction's catalog

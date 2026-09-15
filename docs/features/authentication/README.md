@@ -12,6 +12,12 @@ protocol. CSI-13 defines the trusted product boundary, CSI-15 exposes the SaaS
 routes through regional product API hosts and cuts over Octamorph, and CSI-16
 closes the focused post-cutover security/engineering review.
 
+Plan 02 Packet G adds the optional source-P product-route-move receipt to the
+generated CSI-07 account-selection request and typed client. The normal caller
+omits it; only a future explicit product-flow relocation may supply the proof.
+Profile and admin session/device pages are product-owned and live in
+Octamorph, so this identity frontend has no corresponding fixture to replace.
+
 Security invariants are catalog-pinned origins and navigation, protected
 fragment scrubbing before parsing, exact browser/tab recovery state, no
 credential persistence or logging, strict bounded/versioned response decoding,

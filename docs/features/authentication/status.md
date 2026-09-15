@@ -1,6 +1,6 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-14
+- Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -8,6 +8,10 @@
 - Plan 05: U-label email domains now use the same A-label wire key as ASCII
   domains; signup has a localized verified-owner conflict. The Plan 05 admin
   UI and live SSO remain uncomposed (see the SaaS Plan 05 integrator ledger).
+- Plan 05 main reconciliation: source manifests are regenerated after SaaS
+  main `c816115`, Auth `f11441b` and Octamorph `e7db528`. A-label normalization
+  and the verified-owner conflict coexist with the route-move receipt consumer;
+  enterprise wire shapes and preview/live gates are unchanged.
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
@@ -15,6 +19,11 @@
   57 screens; the recipient inbox now consumes authorization-owned generated
   DTOs and typed fixtures. Human preview exercise is pending. Its production
   route remains gated on `VER-OWN-001` guarded handlers.
+- Plan 02 Packet G: the generated CSI-07 account-selection request and protocol
+  client accept the optional source-P `productRouteMoveReceipt`. A focused
+  client test verifies exact forwarding. Generic sign-in still omits the field
+  because it preserves the product region selected before start; no product
+  operation currently requests P→P′ relocation.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -108,3 +117,11 @@ completed/rejected history, local skip, stale and uncertain states have focused
 fixture/router checks. The production build excludes the preview and fixture
 marker. No live recipient endpoint or grant path is registered; that remains
 `AUTH-RI-B`–`AUTH-RI-E`/`VER-OWN-001` in authorization.
+
+Plan 02 Packet G refreshes the mutable CSI-07 browser snapshot for the optional
+product-route-move receipt and forwards it only when a caller supplies the
+source-P proof. This is the browser consumer for Packet B's explicit
+relocation branch. Ordinary account selection passes no receipt and therefore
+cannot turn identity-home navigation into a product-region move. Metamorph
+Auth owns no profile/admin session-device screen rows; those live routes are in
+Octamorph.
