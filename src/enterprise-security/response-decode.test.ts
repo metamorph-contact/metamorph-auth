@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { buildSecurityErrorEnvelope } from '../contracts/generated/enterprise-security-v1/fixtures.generated'
-import type { Plan03ResponseMap } from '../contracts/generated/enterprise-security-v1/plan03-responses.generated'
+import type { Plan03ResponseMap } from '../contracts/generated/enterprise-security-v1/plan03-operations.generated'
 import { decodePlan03Error, decodePlan03Response } from './response-decode'
 
 const unavailable = {
@@ -44,7 +44,11 @@ describe('EA-03 identity response ingress', () => {
   })
 
   it('rejects operation names inherited from the validator map prototype', () => {
-    expect(() => decodePlan03Response('constructor' as keyof Plan03ResponseMap, '{}')).toThrow('Missing Plan 03 response schema')
+    expect(() => decodePlan03Response('constructor' as keyof Plan03ResponseMap, '{}')).toThrow('Missing Plan 03 route')
+  })
+
+  it('applies the identity route response cap rather than the product cap', () => {
+    expect(() => decodePlan03Response('identity.totp.enroll', `${JSON.stringify(unavailable)}${' '.repeat(65_536)}`)).toThrow()
   })
 
   it('applies Rust-equivalent provider URL control and canonical byte bounds', () => {

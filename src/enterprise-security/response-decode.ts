@@ -1,10 +1,11 @@
 import { decodeBoundedJsonText } from '../contracts/decode'
-import type { Plan03ResponseMap } from '../contracts/generated/enterprise-security-v1/plan03-responses.generated'
-import { plan03Validators } from './plan03-validators.generated'
+import { plan03Routes } from '../contracts/generated/enterprise-security-v1/plan03-routes.generated'
+import type { Plan03ResponseMap } from '../contracts/generated/enterprise-security-v1/plan03-operations.generated'
+import { plan03ResponseValidators } from './plan03-validators.generated'
 import type { SecurityApiErrorV1 } from '../contracts/generated/enterprise-security-v1/types/SecurityApiErrorV1'
 
 type ResponseValidator = (input: unknown) => boolean
-const validators = plan03Validators as unknown as Readonly<Record<string, ResponseValidator>>
+const validators = plan03ResponseValidators as unknown as Readonly<Record<string, ResponseValidator>>
 
 function providerHttpsUrl(value: string): boolean {
   try {
@@ -51,7 +52,8 @@ export function decodePlan03Response<K extends keyof Plan03ResponseMap>(
   operation: K,
   text: string,
 ): Plan03ResponseMap[K] {
-  return decode(operation, text, 256 * 1024) as Plan03ResponseMap[K]
+  if (!Object.hasOwn(plan03Routes, operation)) throw new Error('Missing Plan 03 route')
+  return decode(operation, text, plan03Routes[operation].maxResponseBytes) as Plan03ResponseMap[K]
 }
 
 export function decodePlan03Error(text: string): SecurityApiErrorV1 {

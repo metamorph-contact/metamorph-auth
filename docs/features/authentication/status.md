@@ -122,12 +122,17 @@ challenge input, passes the browser abort signal, and returns only credential
 evidence for identity-home verification. Focused adapter, fixture, and type
 checks pass. The adapter does not issue a session. The Plan 01 ceremony preview
 remains a development-only fixture. EA-00J now generates the 42 Plan 03
-response schemas and a typed response map for both browser consumers; this
-client uses precompiled validators under the production CSP and checks bounded,
-duplicate-free JSON against the exact schema and
-rejects unlisted fields and variants. Focused decoder checks pass. Production
-ceremony requests, account-session/evidence composition, and live route
-binding remain deferred to the Plan 03 integrator after their Plan 02/00/04/11
+request/response schemas, typed maps and exact EA-00H route metadata for both
+browser consumers. This client uses precompiled validators under the production
+CSP, validates its serialized request, UTF-8 field bounds and canonical
+idempotency binding, omits browser credentials, and checks bounded,
+duplicate-free responses against the exact per-route schema, status, media,
+failure-profile and canonical `Retry-After` contract. Anonymous recovery start
+uses a closed transport-failure allowlist so account-specific method or state
+errors cannot cross the public entry boundary. The focused
+decoder/request suite and TypeScript check pass. Account-session/evidence composition and binding the
+staged client to the catalog-selected live identity transport remain deferred
+to the Plan 03 integrator after their Plan 02/00/04/11
 owners supply the required gates. The staged identity-home verifier now accepts
 ES256, bounded RS256 and Ed25519; a live owner must still negotiate the
 effective-policy algorithm and attestation profile before issuing options.
