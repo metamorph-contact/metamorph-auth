@@ -293,3 +293,12 @@ TypeScript and strict schema checks pass. Both backend incremental readonly
 reviews are clean. This remains structural consumption; E identity presentation
 and the final packet review remain outstanding. Existing README/architecture/
 decisions remain accurate. No browser, DB or cross-region qualification ran.
+
+EA-10E shared impact regenerates `conditional_action_blocked`, separating
+conditional action denial from baseline method failure and session revocation.
+Shared export verifies 1,990 artifacts at `c1fcbff92fcc0e305562c6e5fef0227065f1c56cb3cc8dfe6b5c167d04c46480`; TypeScript and strict schema
+checks pass. This change is structural consumption; identity continuation presentation remains owned E work.
+Both backend readonly incremental reviews are clean after challenge/retry/bounds
+fixes. Dedicated conditional lifecycle/live workflows and final E review remain
+outstanding. Existing README/architecture/decisions remain accurate for this
+increment. No live DB, browser or cross-region qualification ran.
