@@ -305,3 +305,10 @@ about 287 KiB gzip under its original 330 KiB limit, with inline fragment/CSP,
 no-eval and DEV fixture exclusion checks. Browser exercises are synthetic protocol
 receipts, not actual IdP/CSI/cross-process qualification. The SaaS Plan06G handoff
 and EA-06I ledger own actual supplier installation and human testing. All readonly bug/security/performance final reviews are clear.
+
+## Plan06 main reconciliation — 2026-09-15
+
+Imported main's EA-02H authority-freshness key/vector/deadline contracts and
+regenerated the combined Rust-owned manifest. Plan06 federation journeys remain
+bound to current CSI owner admission; a regional lease does not grant a session.
+The existing README and transport documentation remain accurate.
