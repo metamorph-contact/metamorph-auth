@@ -260,3 +260,13 @@ linking or primary email; actual pre-account/global/privacy/media and CSI
 strong-action suppliers remain mandatory EA-06I gates. This client has no new
 live JIT/session adapter. The existing generated profile/challenge/privacy DTOs
 remain accurate and unchanged; Plan 06 G owns their browser composition.
+
+## Plan 06 E server authority boundary — 2026-09-15
+
+SaaS E adds provider reservations/logout floors and non-effective H candidates.
+Real CSI non-password session publication and all-issuer H/P proof composition
+remain mandatory integrator gates; cached provider receipts grant no access.
+Existing generated profile/confirmation/continuation DTOs and fixtures remain
+accurate: E adds internal authenticated owner types and no public wire/UI change.
+The coordinated EA-02H generated dependency/receipt amendment is still open in
+SaaS EA-06I-08. Plan 06 F/G own later assurance/browser composition.
