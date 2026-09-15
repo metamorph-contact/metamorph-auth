@@ -1497,6 +1497,15 @@ const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${ba
 const verifyEmailRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/verify-email`, component: VerifyEmailPage })
 const recoverPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/recover-password`, component: RecoverPasswordPage })
 const logoutRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/logout`, component: LogoutPage })
+const conditionalStepUpRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `${base}/conditional-step-up/$continuationId`,
+  beforeLoad: async ({ params }) => {
+    if (!isSupportedLocale(params.locale) || !/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(params.continuationId)) throw notFound()
+    await setLocale(params.locale)
+  },
+  component: lazyRouteComponent(() => import('./enterprise-security/conditional-continuation-page'), 'ConditionalContinuationPage'),
+})
 const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
@@ -1513,7 +1522,7 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
 const routeTree = rootRoute.addChildren([
-  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute, conditionalStepUpRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })

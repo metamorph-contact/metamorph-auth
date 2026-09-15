@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
+import conditionalEn from './locales/en/conditional-step-up.json'
 import commonEn from './locales/en/common.json'
 import authenticationEn from './locales/en/authentication.json'
 import errorsEn from './locales/en/errors.json'
@@ -25,7 +26,7 @@ function mergeBundles(...bundles: Readonly<Record<string, string>>[]): Record<st
   return messages
 }
 
-export const EN_MESSAGES = Object.freeze(mergeBundles(commonEn, authenticationEn, errorsEn, imageEditorEn, catalogEn))
+export const EN_MESSAGES = Object.freeze(mergeBundles(commonEn, authenticationEn, errorsEn, imageEditorEn, catalogEn, conditionalEn))
 
 void i18n.use(initReactI18next).init({
   lng: 'en',
