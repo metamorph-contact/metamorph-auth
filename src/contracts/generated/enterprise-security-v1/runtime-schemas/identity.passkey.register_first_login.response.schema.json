@@ -66,6 +66,7 @@
         "complete_profile",
         "first_login_enrollment",
         "accept_invitation",
+        "pending_provisioning",
         "ready",
         "rejected"
       ],

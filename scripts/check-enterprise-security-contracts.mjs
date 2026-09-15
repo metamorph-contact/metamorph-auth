@@ -57,6 +57,7 @@ const error = ajv.compile(read('api/error.schema.json'));
 const audit = ajv.compile(read('events/customer-audit.schema.json'));
 const integration = ajv.compile(read('events/integration.schema.json'));
 let operationSchemaCount = 0;
+let entrySchemaCount = 0;
 for (const name of readdirSync(path.join(docs, 'api'))) {
   const schema = read(`api/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/api/${name}`);
@@ -67,14 +68,21 @@ for (const name of readdirSync(path.join(docs, 'api'))) {
   } catch (cause) {
     throw new Error(`invalid generated operation schema ${name}`, { cause });
   }
-  operationSchemaCount += 1;
+  if (name === 'scim-entry.schema.json') {
+    assert.equal(schema.$id, 'urn:metamorph:enterprise-security:v1:scim-entry');
+    entrySchemaCount += 1;
+  } else {
+    assert.ok(/\.(request|response)\.schema\.json$/.test(name), `unexpected operation schema: ${name}`);
+    operationSchemaCount += 1;
+  }
 }
 assert.equal(operationSchemaCount, 237 * 2);
+assert.equal(entrySchemaCount, 1);
 for (const name of readdirSync(path.join(docs, 'events'))) {
   const schema = read(`events/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/${name}`);
 }
-assert.equal(Object.keys(manifest.schemaIds).length, operationSchemaCount + 5);
+assert.equal(Object.keys(manifest.schemaIds).length, operationSchemaCount + entrySchemaCount + 5);
 const apiIndex = ajv.compile(JSON.parse(readFileSync(path.join(docs, '../../enterprise-security-api-v1.schema.json'), 'utf8')));
 const eventIndex = ajv.compile(JSON.parse(readFileSync(path.join(docs, '../../enterprise-security-events-v1.schema.json'), 'utf8')));
 assert.equal(typeof apiIndex, 'function');

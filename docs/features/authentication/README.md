@@ -75,3 +75,27 @@ The checked-in UI release and generated browser trust are build inputs, not
 runtime suggestions. Octamorph's build verifies its generated product trust
 against the admitted deployment catalog and this exact UI release. A release or
 catalog change that is not regenerated therefore fails the product build.
+
+
+## Plan 09 live SCIM workspace — EA-09F
+
+The controlled identity page at
+`/$locale/auth/$authProjectionId/$catalogVersion/scim/activate` consumes the
+closed protected SCIM entry before catalog fetch. It chooses only a verified
+catalog region endpoint, sends no browser session, validates generated request/
+response shapes and bounds, and retains exact uncertain retries only in memory.
+Independent email verification and a distinct completion capability lead to
+`pending_provisioning`; canonical identity and team access are not inferred.
+Pagehide removes the flow and capabilities; restored pages require a fresh
+entry. Completion or terminal failure clears entry custody. All visible copy is
+in `src/i18n/locales/en/scim.json`. The local generator/check scripts consume the
+three SaaS Rust operation schemas and the sole HTTP register.
+
+These are live adapters with explicit unavailable owner states. Actual runtime,
+primary-email/global proof, encrypted notification delivery and authorization
+recipient behavior remain in the SaaS 09I ledger. Development UI/contract checks
+are distinct from human interoperability or live authority acceptance.
+
+EA-09F is development-complete: 34 focused frontend checks and TypeScript/
+owning validator checks pass; final readonly bug/security/performance rereviews
+are CLEAN. Human/runtime and adjacent-owner integration remain in SaaS EA-09I.

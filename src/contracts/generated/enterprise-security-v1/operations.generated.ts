@@ -1010,21 +1010,21 @@ export const enterpriseSecurityOperations = {
   },
   "identity.scim.activation.complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.activation.complete.request.schema.json",
-    "requestType": "IdentityScimActivationCompleteRequestV1",
+    "requestType": "IdentityScimCompleteRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.activation.complete.response.schema.json",
     "responseType": "IdentityCeremonyProgressV1"
   },
   "identity.scim.primary_email.start": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.start.request.schema.json",
-    "requestType": "IdentityEmailStartRequestV1",
+    "requestType": "IdentityScimEmailStartRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.start.response.schema.json",
     "responseType": "IdentityAcceptedV1"
   },
   "identity.scim.primary_email.verify": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.verify.request.schema.json",
-    "requestType": "IdentityEmailVerifyRequestV1",
+    "requestType": "IdentityScimEmailVerifyRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.verify.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityScimVerifiedActivationV1"
   },
   "identity.signal.receive": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.signal.receive.request.schema.json",

@@ -240,3 +240,14 @@ drift checks and all three read-only reviews pass for this cut. Targeted Clippy
 completed with warnings; no browser or Yugabyte execution was performed.
 The operator owns end-to-end verification and the EA-05I residual ledger remains
 open.
+
+
+## Plan 09 F development-complete (2026-09-15)
+
+The live SCIM workspace and generated validators above are implemented in the
+`codex/plan09` worktree. 34 focused client/UI/request/response/fixture/i18n checks, TypeScript
+and owning SCIM/Plan03 validator drift checks pass. All three final readonly
+bug/security/performance rereviews are CLEAN after fixes. Human exercise, actual
+owner composition and the blocked F Yugabyte runtime scenarios (including
+unapplied review migrations 0079–0080) remain recorded in SaaS EA-09I; no release
+or live human authority claim is made.

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check:catalog-publication && npm run check:validators && npm run check:plan03-validators && tsc -b && vite build && node scripts/check-dist-bundle.mjs",
+    "build": "npm run check:catalog-publication && npm run check:validators && npm run check:plan03-validators && npm run check:scim-validators && tsc -b && vite build && node scripts/check-dist-bundle.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
@@ -28,7 +28,9 @@
     "check:recipient": "npm run check:recipient-generated && node scripts/check-authorization-recipient-contracts.mjs && tsc -b",
     "check:themes": "tsx scripts/check-theme-admission.mjs catalog/identity-ui-release.development.json",
     "check:contrast": "node scripts/check-identity-contrast.mjs",
-    "check:contracts": "npm run check:generated && npm run check:csi07-generated && npm run check:csi08-generated && npm run check:csi09-generated && npm run check:csi10-generated && npm run check:csi11-generated && npm run check:ea00j && npm run check:recipient && npm run check:themes && npm run check:contrast && npm run check:catalog-publication && npm run check:validators && tsc -b && node scripts/check-contracts.mjs"
+    "check:contracts": "npm run check:generated && npm run check:csi07-generated && npm run check:csi08-generated && npm run check:csi09-generated && npm run check:csi10-generated && npm run check:csi11-generated && npm run check:ea00j && npm run check:recipient && npm run check:themes && npm run check:contrast && npm run check:catalog-publication && npm run check:validators && tsc -b && node scripts/check-contracts.mjs",
+    "generate:scim-validators": "node scripts/generate-scim-validators.mjs",
+    "check:scim-validators": "node scripts/generate-scim-validators.mjs --check"
   },
   "dependencies": {
     "@fontsource-variable/fira-code": "5.2.7",

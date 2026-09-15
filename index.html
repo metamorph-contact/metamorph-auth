@@ -8,7 +8,7 @@
         "use strict";
         var hash = window.location.hash;
         var bytes = new TextEncoder().encode(hash).byteLength;
-        var staged = bytes <= 16384 ? hash : "#invalid";
+        var staged = (hash.startsWith("#scim=") ? bytes <= 65536 : bytes <= 16384) ? hash : "#invalid";
         if (staged !== "#invalid" && hash !== "") {
           try {
             var parameters = new URLSearchParams(hash.slice(1));
