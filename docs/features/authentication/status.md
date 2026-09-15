@@ -108,6 +108,8 @@ marker. No live recipient endpoint or grant path is registered; that remains
 
 Plan 03 raises the common password client's raw UTF-8 admission bound to
 16 KiB for signup, recovery and sign-in, matching the identity-home verifier.
+The rendered sign-in, signup and recovery controls use that same byte boundary,
+and all three generated request schemas publish it explicitly.
 Only those three password endpoints permit up to 128 KiB of JSON-escaped
 request framing; other requests retain the 64-KiB client limit. Focused client,
 HTTP and TypeScript checks pass. Live factor/profile clients remain gated on
