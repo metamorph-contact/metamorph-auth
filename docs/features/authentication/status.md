@@ -17,6 +17,12 @@
   client test verifies exact forwarding. Generic sign-in still omits the field
   because it preserves the product region selected before start; no product
   operation currently requests P→P′ relocation.
+- Audit Packet 2.3: the CSI-11-owned production account security-activity page,
+  strict selected-account bootstrap, same-origin typed API client, generated
+  runtime validator, reduced catalog vocabulary, localization, and pagination
+  states are implemented. Product-origin mounting, cross-region owner
+  transport, and all real browser/database/Lodestone qualification remain
+  deferred.
 
 Implemented source includes catalog verification/boundaries, exact fragment
 handling, browser-head and per-tab recovery stores, typed protocol clients,
@@ -117,4 +123,16 @@ source-P proof. This is the browser consumer for Packet B's explicit
 relocation branch. Ordinary account selection passes no receipt and therefore
 cannot turn identity-home navigation into a product-region move. Metamorph
 Auth owns no profile/admin session-device screen rows; those live routes are in
-Octamorph.
+Octamorph. Separately, it owns Audit Packet 2.3's common self security-activity
+account page. The page accepts exactly one UUIDv7 account-slot query, verifies that the
+ordinary product bootstrap selected the same account, and calls only the
+current origin's `profile.activity.list` endpoint with the exact slot/CSRF
+binding. The server, not this browser, supplies subject and home region. The UI
+never consumes raw audit details, principal labels, source IP, user-agent
+family, or another user's identifier.
+
+Focused Packet 2.3 evidence consists of generated validator drift checks and
+three account-client Vitest cases. The repository-wide TypeScript build is
+still blocked by the pre-existing unresolved local
+`@polymorph/ui/identity`/`@polymorph/theme/runtime` exports, including existing
+CSI source; no real browser or service run was attempted.

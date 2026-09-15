@@ -1493,6 +1493,18 @@ const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${ba
 const verifyEmailRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/verify-email`, component: VerifyEmailPage })
 const recoverPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/recover-password`, component: RecoverPasswordPage })
 const logoutRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/logout`, component: LogoutPage })
+const accountSecurityActivityRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/$locale/account/security-activity',
+  beforeLoad: async ({ params }) => {
+    if (!isSupportedLocale(params.locale) || window.location.hash !== '') throw notFound()
+    const { accountSlotFromSearch } = await import('./enterprise-security/account-activity-client')
+    accountSlotFromSearch(window.location.search)
+    await setLocale(params.locale)
+    installPresentationTheme('shadcn-neutral')
+  },
+  component: lazyRouteComponent(() => import('./enterprise-security/account-activity'), 'AccountSecurityActivityPage'),
+})
 const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
@@ -1509,7 +1521,7 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
 const routeTree = rootRoute.addChildren([
-  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute, accountSecurityActivityRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })

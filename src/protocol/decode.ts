@@ -14,6 +14,7 @@ export type ResponseSchemaName =
   | 'destinationReceipt' | 'authorizationFinalization' | 'signupProgress' | 'signupCompletion'
   | 'emailPreview' | 'emailVerification' | 'recoveryAccepted' | 'recoveryCompleted'
   | 'logoutOptions' | 'logoutAccountMetadata' | 'logoutResult'
+  | 'productBootstrap' | 'profileActivity'
 
 const validators = {
   protocolError: generated.protocolError,
@@ -47,6 +48,8 @@ const validators = {
   logoutOptions: generated.logoutOptions,
   logoutAccountMetadata: generated.logoutAccountMetadata,
   logoutResult: generated.logoutResult,
+  productBootstrap: generated.productBootstrap,
+  profileActivity: generated.profileActivity,
 } as unknown as Readonly<Record<ResponseSchemaName, RuntimeValidator>>
 
 export function decodeProtocolResponse<T>(name: ResponseSchemaName, text: string, maxBytes = 256 * 1024): T {

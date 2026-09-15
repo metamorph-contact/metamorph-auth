@@ -8,6 +8,14 @@ browser recovery state, translations, controlled themes/assets, signup and
 recovery flows, destination finalization, and logout UI are implemented. See the
 [`authentication feature`](docs/features/authentication/README.md).
 
+Audit Packet 2.3 adds the common account security-activity presentation at
+`/{locale}/account/security-activity`. This repository owns that route and its
+localized reduced vocabulary, while Metamorph SaaS owns the same-origin product
+session, `profile.activity.list` API, self authorization, native-v4 query, and
+privacy reduction. A product may deep-link only after deploying this shared
+artifact on its own origin; the common static identity origin does not receive
+product cookies or call the activity API.
+
 Repository documentation and update rules are defined in
 [`docs/README.md`](docs/README.md). The repository remains
 development-in-progress until the human operator explicitly changes that
