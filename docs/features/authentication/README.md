@@ -1,5 +1,18 @@
 # Shared Identity Frontend
 
+Plan 08D mounts `EmergencyEntryGate` in common identity credentials only for
+an actual admitted emergency-purpose `EmergencyEntryContext` matched to current
+flow, tenant and cataloged identity home. It verifies fresh UV passkey or local
+password+TOTP and reason, preserves exact uncertain command retries and shows
+absolute window/review obligations. Private readiness pins stay server-side.
+Expiry, flow/account changes, pagehide/BFCache clear proof/retry memory. Actual
+CSI controller completion through registered callback/fences and the next
+immutable identity UI catalog release remain SaaS EA-08I-02/05; the activation
+DTO is not a grant. Request attempt/continuation correlation is distinct from
+the server activation ID; actual critical-delivery state/incident/retry is shown.
+The lightweight gate avoids loading emergency assets for ordinary sign-in. Seven focused identity tests and TypeScript/schema checks pass.
+
+
 Metamorph Auth is the realm common identity browser application. It renders a
 catalog-admitted product presentation while Metamorph SaaS owns credentials,
 sessions, tenants, audit, and the sole common RBAC evaluator.

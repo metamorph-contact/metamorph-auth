@@ -340,7 +340,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.read.request.schema.json",
     "requestType": "AdminEmergencyReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.read.response.schema.json",
-    "responseType": "PageResultV1<EmergencyAssignmentCardV1>"
+    "responseType": "AdminEmergencyReadResultV1"
   },
   "admin.emergency.readiness": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.readiness.request.schema.json",

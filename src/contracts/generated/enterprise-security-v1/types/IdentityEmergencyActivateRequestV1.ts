@@ -3,4 +3,4 @@
 import type { EmergencyLocalFactorProofV1 } from "./EmergencyLocalFactorProofV1";
 import type { IdentityCeremonyRefV1 } from "./IdentityCeremonyRefV1";
 
-export type IdentityEmergencyActivateRequestV1 = { ceremony: IdentityCeremonyRefV1, localFactor: EmergencyLocalFactorProofV1, expectedAssignmentRevision: string, independentAlertTestId: string, reason: string, };
+export type IdentityEmergencyActivateRequestV1 = { ceremony: IdentityCeremonyRefV1, localFactor: EmergencyLocalFactorProofV1, reason: string, };

@@ -1,5 +1,18 @@
 # Shared Identity Frontend Status
 
+Plan 08D mounts `EmergencyEntryGate` in common identity credentials only for
+an actual admitted emergency-purpose `EmergencyEntryContext` matched to current
+flow, tenant and cataloged identity home. It verifies fresh UV passkey or local
+password+TOTP and reason, preserves exact uncertain command retries and shows
+absolute window/review obligations. Private readiness pins stay server-side.
+Expiry, flow/account changes, pagehide/BFCache clear proof/retry memory. Actual
+CSI controller completion through registered callback/fences and the next
+immutable identity UI catalog release remain SaaS EA-08I-02/05; the activation
+DTO is not a grant. Request attempt/continuation correlation is distinct from
+the server activation ID; actual critical-delivery state/incident/retry is shown.
+The lightweight gate avoids loading emergency assets for ordinary sign-in. Seven focused identity tests and TypeScript/schema checks pass.
+
+
 Plan 08B regenerates public emergency activation proof as local password+TOTP
 or UV passkey; TOTP/recovery alone cannot satisfy MFA without a prior session.
 Live emergency UI/transport wiring is Plan 08D; actual CSI/local-secret/common
@@ -318,3 +331,9 @@ Imported main's EA-02H authority-freshness key/vector/deadline contracts and
 regenerated the combined Rust-owned manifest. Plan06 federation journeys remain
 bound to current CSI owner admission; a regional lease does not grant a session.
 The existing README and transport documentation remain accurate.
+
+Plan 08D owning development is complete. Seven focused identity tests,
+TypeScript/schema checks and the coordinated 2,039-artifact pack pass. All final
+read-only bug/security/performance reviewers are CLEAN. Actual purpose-flow and
+CSI/common owner installation, immutable presentation publication and human
+outage evidence remain in SaaS EA-08I; no live receipt or qualification is claimed.

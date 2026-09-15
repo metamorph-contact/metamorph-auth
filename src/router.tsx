@@ -1,3 +1,4 @@
+import {EmergencyEntryGate} from './enterprise-security/emergency-entry-gate'
 import {
   createRootRoute,
   createRoute,
@@ -97,6 +98,7 @@ import {
 } from './presentation/validation'
 
 type RouteParams = { locale: string; authProjectionId: string; catalogVersion: string }
+
 
 const FederationMethodChoices = lazy(() => import('./enterprise-security/federation-methods').then((module) => ({ default: module.FederationMethodChoices })))
 
@@ -673,6 +675,7 @@ function AuthorizePage() {
           void move({ kind: 'signupEmail' })
         }} />
       </FormStack>
+      <Suspense fallback={null}><EmergencyEntryGate flow={ready.flow} email={email} disabled={pending || leaving || credentialAttemptUncertain !== undefined} navigate={uri => navigateAfterFade(ready.catalog, uri, setLeaving)} /></Suspense>
       <Suspense fallback={null}><FederationMethodChoices key={ready.flow.bootstrap.flowId} flow={ready.flow} email={email}
         disabled={pending || leaving || credentialAttemptUncertain !== undefined}
         navigate={async (uri) => {
