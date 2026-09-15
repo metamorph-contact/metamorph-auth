@@ -12,6 +12,12 @@
   main `c816115`, Auth `f11441b` and Octamorph `e7db528`. A-label normalization
   and the verified-owner conflict coexist with the route-move receipt consumer;
   enterprise wire shapes and preview/live gates are unchanged.
+- Plan 05 catalog supplier: signed development publication advances to
+  `central-development-20` for the backend-owned federation callback and realm
+  current/overlap locator supplier contract. Browser projection/schema ownership
+  is unchanged; this publication does not activate enterprise UI, SSO or a domain
+  namespace switch. Coordinated consumers and shared global admission remain
+  open in the SaaS Plan 05 ledger.
 - Human testing: Development slice accepted 2026-09-13; long-running tests deferred
 - Runtime composition: Implemented for the loopback development graph
 - Octamorph cutover: Implemented; development slice accepted by the human
@@ -216,3 +222,7 @@ authority is added by this schema correction.
 
 The regenerated consumer manifest and unchanged Plan 03 validators pass their
 checks. All three Plan 05 read-only re-reviewers returned CLEAN after fixes.
+
+The catalog20 supplier publication passes the owning exporter drift check,
+exact signed-publication verification/check and frontend TypeScript. All three
+readonly supplier reviewers returned CLEAN; the SaaS integrator remains open.
