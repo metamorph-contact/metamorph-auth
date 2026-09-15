@@ -502,7 +502,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.network.read.request.schema.json",
     "requestType": "ConditionalSourceReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.network.read.response.schema.json",
-    "responseType": "PageResultV1<ConditionalSourceV1>"
+    "responseType": "ConditionalSourcesReadResultV1"
   },
   "admin.network.source.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.network.source.create.request.schema.json",
@@ -538,7 +538,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.posture.read.request.schema.json",
     "requestType": "ConditionalSourceReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.posture.read.response.schema.json",
-    "responseType": "PageResultV1<ConditionalSourceV1>"
+    "responseType": "ConditionalSourcesReadResultV1"
   },
   "admin.posture.source.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.posture.source.create.request.schema.json",
