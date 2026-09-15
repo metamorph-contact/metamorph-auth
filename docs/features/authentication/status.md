@@ -240,3 +240,14 @@ drift checks and all three read-only reviews pass for this cut. Targeted Clippy
 completed with warnings; no browser or Yugabyte execution was performed.
 The operator owns end-to-end verification and the EA-05I residual ledger remains
 open.
+
+## Plan 06 C contract consumption — 2026-09-15
+
+Rust-owned enterprise schemas, TypeScript and manifests regenerate for explicit
+SAML handoff confirmation: `confirm_federation`, revision-bound
+`SamlHandoffContinue`, and the separate classified flow-CSRF/idempotent JSON
+callback continuation binding. Targeted typechecking and generated contract fixtures/drift pass. Five affected federation fixture tests pass; the SAML handoff fixture
+now returns confirmation. This changes the mutable contract pack, not live browser/CSI admission. Plan 06 G owns browser
+composition; actual owner gates and human testing remain in the SaaS EA-06I
+ledger. Existing route/fixture and production fail-closed documentation remains
+accurate.

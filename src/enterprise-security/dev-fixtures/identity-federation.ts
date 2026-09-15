@@ -34,7 +34,7 @@ const profileRequest: IdentityProfileCompleteRequestV1 = {
 const handoff: IdentityIdpSamlHandoffRedeemResultV1 = {
   schemaVersion: 1, targetTenantId: 'fixture-tenant', providerId: 'fixture-provider',
   tenantDisplayName: 'Example Studio', providerDisplayName: 'Example IdP',
-  continuation: progress('verify_factor'),
+  continuation: progress('confirm_federation'),
 }
 
 function wait(signal: AbortSignal): Promise<void> {
