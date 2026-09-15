@@ -251,3 +251,12 @@ now returns confirmation. This changes the mutable contract pack, not live brows
 composition; actual owner gates and human testing remain in the SaaS EA-06I
 ledger. Existing route/fixture and production fail-closed documentation remains
 accurate.
+
+## Plan 06 D server admission boundary — 2026-09-15
+
+SaaS now owns immutable enterprise-subject links and sealed JIT profile commands
+with separate canonical identity-home staging. Provider email never authorizes
+linking or primary email; actual pre-account/global/privacy/media and CSI
+strong-action suppliers remain mandatory EA-06I gates. This client has no new
+live JIT/session adapter. The existing generated profile/challenge/privacy DTOs
+remain accurate and unchanged; Plan 06 G owns their browser composition.
