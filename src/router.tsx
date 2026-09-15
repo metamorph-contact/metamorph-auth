@@ -19,7 +19,8 @@ import {
   Text,
   toast,
 } from '@polymorph/ui/identity'
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { assertExternalNavigationLive } from './enterprise-security/external-navigation'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -382,6 +383,13 @@ function AuthorizePage() {
   const [step, setStep] = useState<AuthorizeStep>({ kind: 'credentials' })
   const [pending, setPending] = useState(true)
   const [leaving, setLeaving] = useState(false)
+  const [externalCustody, setExternalCustody] = useState(false)
+  const externalCustodyRef = useRef(false)
+  const externalCustodyChanged = useCallback((held: boolean) => {
+    externalCustodyRef.current = held
+    if (held) setSignInPassword('')
+    setExternalCustody(held)
+  }, [])
   const [email, setEmail] = useState('')
   const [signInPassword, setSignInPassword] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
@@ -620,6 +628,7 @@ function AuthorizePage() {
     }
     const submit = (event: FormEvent) => {
       event.preventDefault()
+      if (externalCustodyRef.current) return
       void run(async () => {
         if (credentialAttemptUncertain !== undefined) {
           const recovered = await recoverCredentialAttempt(ready.flow)
@@ -657,30 +666,34 @@ function AuthorizePage() {
     }
     return <Presentation catalog={ready.catalog} transitionKey="credentials" pending={pending} leaving={leaving} title={t('auth.email.title', { product })} description={t('auth.email.description')}>
       <FormStack onSubmit={submit}>
-        <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}><Input disabled={credentialAttemptUncertain !== undefined} type="email" autoComplete="email" maxLength={254} value={email} onChange={(value) => { setEmail(value); clearFieldError('email') }} /></FormField>
-        <FormField id="identity-password" label={t('auth.password.label')} required error={fieldErrors.password} labelEnd={<Button disabled={credentialAttemptUncertain !== undefined} label={t('auth.password.forgot')} variant="ghost" tone="accent" size="sm" onClick={() => move({ kind: 'recovery' })} />}>
-          <PasswordInput disabled={credentialAttemptUncertain !== undefined} toggleLabel={t('password.show')} autoComplete="current-password" value={signInPassword} onChange={(value) => {
+        <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}><Input disabled={externalCustody || credentialAttemptUncertain !== undefined} type="email" autoComplete="email" maxLength={254} value={email} onChange={(value) => { setEmail(value); clearFieldError('email') }} /></FormField>
+        <FormField id="identity-password" label={t('auth.password.label')} required error={fieldErrors.password} labelEnd={<Button disabled={externalCustody || credentialAttemptUncertain !== undefined} label={t('auth.password.forgot')} variant="ghost" tone="accent" size="sm" onClick={() => move({ kind: 'recovery' })} />}>
+          <PasswordInput disabled={externalCustody || credentialAttemptUncertain !== undefined} toggleLabel={t('password.show')} autoComplete="current-password" value={signInPassword} onChange={(value) => {
             const bounded = boundedPasswordInput(value)
             if (bounded !== null) { setSignInPassword(bounded); clearFieldError('password') }
           }} />
         </FormField>
         {credentialRetryUntil > now && <Text tone="secondary"><span id="credential-cooldown">{t('auth.retry.wait', { seconds: Math.ceil((credentialRetryUntil - now) / 1_000) })}</span></Text>}
         <Button type="submit" aria-describedby={credentialRetryUntil > now ? 'credential-cooldown' : undefined}
-          label={t(credentialAttemptUncertain !== undefined ? 'actions.retry' : 'actions.signIn')} loading={pending} disabled={credentialRetryUntil > now ||
+          label={t(credentialAttemptUncertain !== undefined ? 'actions.retry' : 'actions.signIn')} loading={pending} disabled={externalCustody || credentialRetryUntil > now ||
           (credentialAttemptUncertain === undefined && (!validEmail(email.trim()) || !validPasswordInput(signInPassword)))} />
-        <Button disabled={credentialAttemptUncertain !== undefined} label={t('actions.signUp')} variant="ghost" tone="accent" onClick={() => {
+        <Button disabled={externalCustody || credentialAttemptUncertain !== undefined} label={t('actions.signUp')} variant="ghost" tone="accent" onClick={() => {
           setSignInPassword('')
           void move({ kind: 'signupEmail' })
         }} />
       </FormStack>
       <Suspense fallback={null}><FederationMethodChoices key={ready.flow.bootstrap.flowId} flow={ready.flow} email={email}
+        onCustodyChange={externalCustodyChanged}
         disabled={pending || leaving || credentialAttemptUncertain !== undefined}
-        navigate={async (uri) => {
+        navigate={async (uri, signal, expiresAt) => {
           setSignInPassword('')
           await run(async () => {
             // The exact HTTPS provider URI comes from the independently admitted
             // start response. Product-return navigation uses its existing catalog gate.
-            await afterPageFade(setLeaving, () => { window.location.assign(uri) })
+            await afterPageFade(setLeaving, () => {
+              assertExternalNavigationLive(signal, [ready.flow.bootstrap.expiresAt, ready.catalog.projection.expiresAt, expiresAt])
+              window.location.assign(uri)
+            })
           })
         }} /></Suspense>
     </Presentation>

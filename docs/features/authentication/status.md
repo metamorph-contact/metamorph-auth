@@ -1,5 +1,22 @@
 # Shared Identity Frontend Status
 
+## Plan 07 E — 2026-09-15
+
+Owned typed social entry/start consumers are implemented. Current advisory
+provider choices render without requiring email; exact command custody, safe
+typed errors, expiry/suspension teardown and guarded post-fade navigation are
+implemented. Rust-owned 13-operation schemas/types/routes and identical
+standalone validators regenerate. Native callbacks remain server GET/303
+continuations into the existing canonical signup/admission/account chooser;
+there is no social password evidence or browser OAuth token/code handling.
+Provider/transport doubles and focused existing protocol checks pass, not actual
+configured-provider/CSI qualification. Final reviews/checks and real supplier/
+human handoffs are recorded in the SaaS Plan 07 execution/EA-07I ledger.
+Final E evidence: 37 focused checks, TypeScript, Rust-owned 2,037-artifact drift,
+derived validator checks and quick production asset admission pass. Initial JS
+is 288,838 gzip bytes under the unchanged 330 KiB budget. All three final readonly
+reviews are CLEAN, including the retained exact-attempt post-fade deadline fix.
+
 - Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred

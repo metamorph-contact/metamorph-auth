@@ -135,6 +135,21 @@ export const federationRoutes = {
     "surface": "regional_identity",
     "wire": "security_json"
   },
+  "identity.social.start": {
+    "binding": "default",
+    "failureProfile": "public_ceremony",
+    "idempotency": "required_header",
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 65536,
+    "method": "POST",
+    "operationId": "OP-IDN-006",
+    "operationKey": "identity.social.start",
+    "path": "/api/auth/v1/security/identity/social/start",
+    "securityProfile": "ceremony",
+    "successStatus": 200,
+    "surface": "regional_identity",
+    "wire": "security_json"
+  },
   "profile.identities.link": {
     "binding": "default",
     "failureProfile": "browser_command",

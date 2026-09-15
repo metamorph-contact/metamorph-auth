@@ -1,5 +1,12 @@
 # Shared Identity Frontend
 
+Plan 07 adds email-independent realm social choices and exact typed starts to
+combined entry. Only current server-advertised Google/Microsoft/GitHub choices
+render. Native callbacks are server GET/303 continuations into existing CSI
+signup/admission/account choice, not browser OAuth code/token handlers. Real
+deployment/policy/native CSI/session suppliers remain the SaaS EA-07I gate;
+no fixture or ready progress can establish an account.
+
 Metamorph Auth is the realm common identity browser application. It renders a
 catalog-admitted product presentation while Metamorph SaaS owns credentials,
 sessions, tenants, audit, and the sole common RBAC evaluator.

@@ -15,6 +15,13 @@
       "maxItems": 8,
       "type": "array"
     },
+    "BoundedListSocialProviderV1Max3V1": {
+      "items": {
+        "$ref": "#/$defs/SocialProviderV1"
+      },
+      "maxItems": 3,
+      "type": "array"
+    },
     "CatalogKeyV1": {
       "maxLength": 96,
       "minLength": 1,
@@ -93,6 +100,15 @@
     },
     "SecuritySchemaVersionV1": {
       "const": 1
+    },
+    "SocialProviderV1": {
+      "description": "Exact realm social adapters in CAT-SEC-005. Microsoft social is not a\ntenant-configured Entra enterprise provider.",
+      "enum": [
+        "google",
+        "microsoft",
+        "github"
+      ],
+      "type": "string"
     }
   },
   "$id": "urn:metamorph:enterprise-security:v1:api:identity.methods.resolve:response",
@@ -115,6 +131,10 @@
     },
     "schemaVersion": {
       "$ref": "#/$defs/SecuritySchemaVersionV1"
+    },
+    "socialProviders": {
+      "$ref": "#/$defs/BoundedListSocialProviderV1Max3V1",
+      "description": "Advisory realm-deployed, current-policy-permitted social choices.\nAbsence means unavailable/denied, not an entered account's existence."
     }
   },
   "required": [
@@ -122,6 +142,7 @@
     "continuationId",
     "methods",
     "federationProviders",
+    "socialProviders",
     "expiresAt"
   ],
   "title": "IdentityMethodResolutionV1",

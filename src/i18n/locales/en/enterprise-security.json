@@ -215,5 +215,11 @@
   "security.journey.loading": "Preparing a fresh sign-in flow…",
   "security.journey.simulateReturn": "Simulate verified provider return",
   "security.journey.demoProof": "Development-only verification proof: {{proof}}",
-  "security.journey.demoRedirect": "A real start would navigate to the admitted provider. This development fixture stays here."
+  "security.journey.demoRedirect": "A real start would navigate to the admitted provider. This development fixture stays here.",
+  "security.social.google": "Continue with Google",
+  "security.social.microsoft": "Continue with Microsoft",
+  "security.social.github": "Continue with GitHub",
+  "security.social.denied": "This sign-in method is not allowed for this flow.",
+  "security.social.invalid": "This sign-in could not be verified. Start a fresh flow.",
+  "security.social.rateLimited": "Too many attempts. Wait before retrying the same sign-in."
 }
