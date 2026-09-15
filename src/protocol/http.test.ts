@@ -5,6 +5,24 @@ import { AuthApi, ProtocolError } from './http'
 describe('authentication HTTP boundary', () => {
   afterEach(() => vi.unstubAllGlobals())
 
+  it('sends a 16-KiB password even when JSON escaping expands its wire body', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ schemaVersion: 1, accepted: true }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ))
+    vi.stubGlobal('fetch', fetchMock)
+    await new AuthApi('https://identity.example').post(
+      '/api/auth/v1/password-recoveries/complete', { newPassword: '\u0000'.repeat(16 * 1024) }, 'recoveryAccepted',
+    )
+    const body = fetchMock.mock.calls[0]?.[1]?.body as string
+    expect(new TextEncoder().encode(body).byteLength).toBeGreaterThan(64 * 1024)
+    expect(new TextEncoder().encode(body).byteLength).toBeLessThan(128 * 1024)
+    await expect(new AuthApi('https://identity.example').post(
+      '/api/auth/v1/password-recovery-requests', { password: '\u0000'.repeat(16 * 1024) }, 'recoveryAccepted',
+    )).rejects.toMatchObject({ code: 'auth_request_too_large' })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
   it('rejects non-origin bases and paths outside the reserved namespace', async () => {
     expect(() => new AuthApi('https://identity.example/path')).toThrow()
     const fetchMock = vi.fn()

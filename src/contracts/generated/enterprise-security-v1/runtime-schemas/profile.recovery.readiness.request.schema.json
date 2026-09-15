@@ -1,0 +1,21 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::SelfReadRequestV1. Do not edit.",
+  "$defs": {
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.recovery.readiness:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion"
+  ],
+  "title": "SelfReadRequestV1",
+  "type": "object"
+}

@@ -5,6 +5,8 @@ import { decodeProtocolResponse, type ResponseSchemaName } from './decode'
 
 const MAX_RESPONSE_BYTES = 256 * 1024
 const MAX_JSON_REQUEST_BYTES = 64 * 1024
+// A 16-KiB password can JSON-escape to 96 KiB before protocol fields.
+const MAX_PASSWORD_REQUEST_BYTES = 128 * 1024
 const REQUEST_TIMEOUT_MS = 20_000
 
 export class ProtocolError extends Error {
@@ -186,7 +188,10 @@ export class AuthApi {
     }
     let response: globalThis.Response
     const encodedBody = body === undefined ? undefined : JSON.stringify(body)
-    if (encodedBody !== undefined && new TextEncoder().encode(encodedBody).byteLength > MAX_JSON_REQUEST_BYTES) {
+    const requestLimit = path === '/api/auth/v1/sign-ins' || path === '/api/auth/v1/password-recoveries/complete' ||
+      /^\/api\/auth\/v1\/signups\/[0-9a-f-]+\/password$/u.test(path)
+      ? MAX_PASSWORD_REQUEST_BYTES : MAX_JSON_REQUEST_BYTES
+    if (encodedBody !== undefined && new TextEncoder().encode(encodedBody).byteLength > requestLimit) {
       throw new ProtocolError('auth_request_too_large')
     }
     try {

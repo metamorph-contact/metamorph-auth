@@ -1,0 +1,39 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityAcceptedV1. Do not edit.",
+  "$defs": {
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.factor_recovery.start:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accepted": {
+      "type": "boolean"
+    },
+    "continuationId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "expiresAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "accepted",
+    "continuationId",
+    "expiresAt"
+  ],
+  "title": "IdentityAcceptedV1",
+  "type": "object"
+}
