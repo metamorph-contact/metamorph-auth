@@ -270,3 +270,19 @@ Existing generated profile/confirmation/continuation DTOs and fixtures remain
 accurate: E adds internal authenticated owner types and no public wire/UI change.
 The coordinated EA-02H generated dependency/receipt amendment is still open in
 SaaS EA-06I-08. Plan 06 F/G own later assurance/browser composition.
+
+## Plan 06 F server assurance boundary — 2026-09-15
+
+SaaS F owns admitted provider-test/receipt gates, explicit assurance mapping,
+action-bound reauthentication and authenticated logout. Actual admin test launch,
+current CSI/action publisher and distinct catalog logout registrations remain
+mandatory integrator gates. No client or public session route is enabled.
+Existing generated provider/profile/continuation/strong-action DTOs remain
+accurate and unchanged; Plan 06 G owns browser composition and human handoff.
+
+F's 45 unit/four focused Yugabyte/five import checks and all readonly delta
+reviews pass; canonical focused schema was recreated and removed. Final source,
+original callback, local-proof and action deadlines hold; unsatisfied provider
+reauthentication contributes no fallback assurance. Public/generated contracts
+remain accurate. Human and actual configured-provider/CSI qualification remain
+open in the SaaS integrator ledger.
