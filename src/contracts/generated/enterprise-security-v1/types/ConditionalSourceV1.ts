@@ -5,4 +5,8 @@ import type { ConditionalSignatureAlgorithmV1 } from "./ConditionalSignatureAlgo
 import type { ConditionalSourceKindV1 } from "./ConditionalSourceKindV1";
 import type { ConditionalSourceStateV1 } from "./ConditionalSourceStateV1";
 
-export type ConditionalSourceV1 = { sourceId: string, kind: ConditionalSourceKindV1, state: ConditionalSourceStateV1, issuerId: string, audienceId: string, keyId: string, keyGeneration: string, priorKeyOverlapUntil: string | null, signatureAlgorithm: ConditionalSignatureAlgorithmV1, publicKey: string, maxEvidenceAgeSeconds: number, zoneSetRevision: string | null, networkZones: Array<{ zoneId: string, cidrs: [string, ...Array<string>], name: string, state: ConditionalNetworkZoneStateV1, revision: string, }>, revision: string, };
+export type ConditionalSourceV1 = { trustTestReceiptId: string | null,
+/**
+ * Deadline to activate this exact tested revision, not runtime expiry.
+ */
+trustTestExpiresAt: string | null, sourceId: string, kind: ConditionalSourceKindV1, state: ConditionalSourceStateV1, issuerId: string, audienceId: string, keyId: string, keyGeneration: string, priorKeyOverlapUntil: string | null, signatureAlgorithm: ConditionalSignatureAlgorithmV1, publicKey: string, maxEvidenceAgeSeconds: number, zoneSetRevision: string | null, networkZones: Array<{ zoneId: string, cidrs: [string, ...Array<string>], name: string, state: ConditionalNetworkZoneStateV1, revision: string, }>, revision: string, };

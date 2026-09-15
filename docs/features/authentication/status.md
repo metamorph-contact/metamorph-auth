@@ -240,3 +240,13 @@ drift checks and all three read-only reviews pass for this cut. Targeted Clippy
 completed with warnings; no browser or Yugabyte execution was performed.
 The operator owns end-to-end verification and the EA-05I residual ledger remains
 open.
+
+
+Plan 10 EA-10B (`codex/plan10`, 2026-09-15) regenerates the backend-owned
+conditional source contracts: nullable existing zone UUID on edits, latest
+trust-test receipt/activation deadline in source cards, and the strict signed
+conditional producer envelope schema/types. This is contract consumption only; live rule/source editors and production
+owner composition remain in EA-10E and the SaaS EA-10I ledger. No browser,
+producer ingress or protected-product verification is claimed for this packet.
+Generated drift and source v1/rejection schema checks pass against 1,978
+artifacts (pin `4ce955dceb0c7527a3de238f916bf76eb4cad5ef26c0d3b821f0da9dd1e7f677`). TypeScript passes.
