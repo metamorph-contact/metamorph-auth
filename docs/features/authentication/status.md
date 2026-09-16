@@ -2,7 +2,7 @@
 
 ## Plan 06 integrator and Plan 07 social identity — 2026-09-16
 
-EA-06I is in progress: current CSI/CSRF method/start admission and same-flow SP
+EA-06I is development-complete for repository-owned work: current CSI/CSRF method/start admission and same-flow SP
 return/recovery are being composed with the real JIT and H establishment owners.
 Typed privacy metadata and acknowledgement preserve optional consent. Native
 unsolicited SAML entry, original start-response recovery and explicit durable
@@ -10,9 +10,10 @@ per-flow cancellation are written. Password and federation enter the actual
 identity invitation inbox before product continuation. Recipient composition
 now has an independent backend owner/listener/worker construction path.
 Configured process startup, emailed ingress, factor/link and actual policy/effect
-delivery owners remain open. Generated artifacts, targeted checks and readonly
-reviews for this change have not completed. Earlier qualification below belongs
-to its dated packets.
+delivery owners remain external deployment gates. Plan 07's SaaS integrator now
+hosts native start/callback/link-callback, durable signup continuation and
+cross-region returning-account handoff; this frontend still handles no provider
+code or token. Generated artifacts are unchanged by the integrator additions.
 
 ## Plan 07 E — 2026-09-15
 

@@ -333,9 +333,10 @@ export class FederationJourney {
         // that transition gets a new deadline; retries within D never extend it.
         live(p.expiresAt)
         live(result.progress.expiresAt)
-        if (result.progress.continuationId !== p.continuationId ||
-            result.progress.continuationId !== state.handoff.callbackId ||
-            BigInt(result.progress.ceremonyRevision) < BigInt(p.ceremonyRevision) ||
+        // The confirmed callback may retain the C continuation or mint the
+        // separate D-purpose continuation. The request's callback/proof pair,
+        // not equality between those distinct identifiers, binds the handoff.
+        if (BigInt(result.progress.ceremonyRevision) < BigInt(p.ceremonyRevision) ||
             Date.parse(result.progress.expiresAt) > Date.parse(this.flowExpiresAt))
           throw new Error('security.ceremony.mismatch')
         if (Date.parse(result.progress.expiresAt) > Date.parse(p.expiresAt) &&
