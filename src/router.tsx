@@ -121,6 +121,7 @@ import {
 type RouteParams = { locale: string; authProjectionId: string; catalogVersion: string }
 
 const ProviderRuntimeTestPanel = lazy(() => import('./enterprise-security/provider-test').then(module => ({default: module.ProviderRuntimeTestPanel})))
+const EmergencyFactorTestPanel = lazy(() => import('./enterprise-security/emergency-factor-test').then(module => ({default: module.EmergencyFactorTestPanel})))
 const FederationMethodChoices = lazy(() => import('./enterprise-security/federation-methods').then((module) => ({ default: module.FederationMethodChoices })))
 const FederationReturnPanel = lazy(() => import('./enterprise-security/federation-return').then(module=>({default:module.FederationReturnPanel})))
 const SelectedAccountInvitationInbox = lazy(() => import('./enterprise-security/account-inbox').then(module=>({default:module.SelectedAccountInvitationInbox})))
@@ -732,6 +733,9 @@ function AuthorizePage() {
   if (step.kind === 'federation') {
     return <Suspense fallback={null}><FederationReturnPanel flow={ready.flow} fragment={step.fragment}
       navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (ready.flow.bootstrap.emergencyEntry?.purpose === 'factor_test') {
+    return <Suspense fallback={null}><EmergencyFactorTestPanel flow={ready.flow} /></Suspense>
   }
   if (ready.flow.bootstrap.providerTestEntry != null) {
     return <Suspense fallback={null}><ProviderRuntimeTestPanel flow={ready.flow}

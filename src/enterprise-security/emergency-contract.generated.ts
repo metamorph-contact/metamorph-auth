@@ -3,17 +3,24 @@ import type { IdentityAcceptedV1 } from '../contracts/generated/enterprise-secur
 import type { IdentityEmergencyActivateRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyActivateRequestV1'
 import type { IdentityEmergencyActivationV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyActivationV1'
 import type { IdentityEmergencyEntryRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyEntryRequestV1'
+import type { IdentityEmergencyFactorTestCompleteRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyFactorTestCompleteRequestV1'
+import type { IdentityEmergencyFactorTestReceiptV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyFactorTestReceiptV1'
+import type { IdentityEmergencyFactorTestStartRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityEmergencyFactorTestStartRequestV1'
 import type { IdentityPasskeyAssertRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityPasskeyAssertRequestV1'
 import type { IdentityPasskeyAssertResultV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityPasskeyAssertResultV1'
 export interface EmergencyRequestMap {
   'identity.passkey.assert': IdentityPasskeyAssertRequestV1
   'identity.emergency.entry': IdentityEmergencyEntryRequestV1
   'identity.emergency.activate': IdentityEmergencyActivateRequestV1
+  'identity.emergency.factor_test.start': IdentityEmergencyFactorTestStartRequestV1
+  'identity.emergency.factor_test.complete': IdentityEmergencyFactorTestCompleteRequestV1
 }
 export interface EmergencyResponseMap {
   'identity.passkey.assert': IdentityPasskeyAssertResultV1
   'identity.emergency.entry': IdentityAcceptedV1
   'identity.emergency.activate': IdentityEmergencyActivationV1
+  'identity.emergency.factor_test.start': IdentityAcceptedV1
+  'identity.emergency.factor_test.complete': IdentityEmergencyFactorTestReceiptV1
 }
 export const emergencyRoutes = {
   "identity.passkey.assert": {
@@ -52,6 +59,36 @@ export const emergencyRoutes = {
     "binding": "default",
     "method": "POST",
     "path": "/api/auth/v1/security/identity/emergency/activate",
+    "surface": "regional_identity",
+    "wire": "security_json",
+    "successStatus": 200,
+    "securityProfile": "ceremony",
+    "failureProfile": "public_ceremony",
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 65536,
+    "idempotency": "required_header"
+  },
+  "identity.emergency.factor_test.start": {
+    "operationId": "OP-IDN-044",
+    "operationKey": "identity.emergency.factor_test.start",
+    "binding": "default",
+    "method": "POST",
+    "path": "/api/auth/v1/security/identity/emergency/factor-test/start",
+    "surface": "regional_identity",
+    "wire": "security_json",
+    "successStatus": 200,
+    "securityProfile": "ceremony",
+    "failureProfile": "public_ceremony",
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 65536,
+    "idempotency": "required_header"
+  },
+  "identity.emergency.factor_test.complete": {
+    "operationId": "OP-IDN-045",
+    "operationKey": "identity.emergency.factor_test.complete",
+    "binding": "default",
+    "method": "POST",
+    "path": "/api/auth/v1/security/identity/emergency/factor-test/complete",
     "surface": "regional_identity",
     "wire": "security_json",
     "successStatus": 200,

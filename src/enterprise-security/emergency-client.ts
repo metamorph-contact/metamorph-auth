@@ -57,6 +57,13 @@ export function identityEmergencyClient(
   flow: IdentityFlow,
   regionId = flow.bootstrap.initialRegionId,
 ): EmergencyClient {
+  const authorization = flow.bootstrap.emergencyAuthorization;
+  if (
+    flow.bootstrap.intent !== "emergency" ||
+    flow.bootstrap.emergencyEntry === null ||
+    authorization === null
+  )
+    throw new Error("security.ceremony.mismatch");
   const origin = identityApiForRegion(flow.catalog, regionId).origin;
   const transport: EmergencyTransport = async (
     request,
@@ -78,6 +85,7 @@ export function identityEmergencyClient(
       headers: {
         ...request.contractHeaders,
         "X-Metamorph-CSRF": flow.bootstrap.csrfToken,
+        "X-Metamorph-Emergency-Authorization": authorization,
       },
     });
     const body = await boundedText(

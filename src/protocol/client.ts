@@ -140,6 +140,30 @@ function assertBootstrap(catalog: LoadedIdentityCatalog, bootstrap: FlowBootstra
     throw new Error('Flow bootstrap does not match the verified presentation')
   }
   identityApiForRegion(catalog, bootstrap.initialRegionId, bootstrap.initialIdentityApiOrigin)
+  const emergency = bootstrap.emergencyEntry
+  const emergencyShapeValid = emergency !== null &&
+    emergency.schemaVersion === 1 &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.launchId) &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.targetTenantId) &&
+    Number.isFinite(Date.parse(emergency.expiresAt)) &&
+    Date.parse(emergency.expiresAt) > Date.now() &&
+    Date.parse(emergency.expiresAt) <= Date.parse(bootstrap.expiresAt) &&
+    (emergency.purpose === 'entry'
+      ? emergency.targetUserId === null && emergency.resultNonce === null
+      : emergency.purpose === 'factor_test' &&
+        emergency.targetUserId !== null &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.targetUserId) &&
+        emergency.resultNonce !== null &&
+        /^[A-Za-z0-9_-]{43}$/u.test(emergency.resultNonce))
+  if (
+    (bootstrap.intent === 'emergency') !== (emergency !== null) ||
+    (emergency !== null && !emergencyShapeValid) ||
+    (emergency === null) !== (bootstrap.emergencyAuthorization === null) ||
+    (bootstrap.emergencyAuthorization !== null &&
+      (!/^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}(?:(?:\.[A-Za-z0-9_-]*){2})?$/u.test(bootstrap.emergencyAuthorization) ||
+        bootstrap.emergencyAuthorization.length > 16 * 1024))
+  ) throw new Error('Invalid emergency flow bootstrap')
+  if (emergency !== null) identityApiForRegion(catalog, emergency.identityHomeRegionId)
 }
 
 async function mapAvailableBounded<Input, Output>(

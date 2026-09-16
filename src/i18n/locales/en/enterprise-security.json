@@ -246,7 +246,12 @@
       "degraded": "Critical alert delivery is degraded; an incident is recorded and independent retries continue.",
       "escalated": "Critical alert delivery has escalated; independent retries continue."
     },
-    "nextAlert": "Next recorded alert attempt: {{time}}."
+    "nextAlert": "Next recorded alert attempt: {{time}}.",
+    "factorTest": {
+      "description": "Verify this designated administrator's current local emergency factor. This test creates no session or emergency access window.",
+      "begin": "Start local factor test",
+      "complete": "Verify password and authenticator"
+    }
   },
   "security.journey.samlEmailDescription": "Enter the email you want to use to continue this enterprise sign-in. You will review the verified provider before continuing.",
   "security.journey.target.tenant": "Tenant membership",

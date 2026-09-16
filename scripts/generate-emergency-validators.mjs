@@ -9,7 +9,13 @@ import addFormats from 'ajv-formats'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const directory = resolve(root, '../metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/api')
-const operations = ['identity.emergency.entry', 'identity.emergency.activate', 'identity.passkey.assert']
+const operations = [
+  'identity.emergency.entry',
+  'identity.emergency.activate',
+  'identity.emergency.factor_test.start',
+  'identity.emergency.factor_test.complete',
+  'identity.passkey.assert',
+]
 const outputs = [resolve(root, 'src/enterprise-security/emergency-validators.generated.ts')]
 
 function numericFormats(value) {
@@ -77,9 +83,9 @@ for (const file of ['error.schema.json', ...operations.flatMap(key => [key + '.r
   else if (side === 'response') responseEntries.push([key, exportName])
   else errorEntry = exportName
 }
-if (requestEntries.length !== 3 || responseEntries.length !== 3 || errorEntry === undefined) {
+if (requestEntries.length !== 5 || responseEntries.length !== 5 || errorEntry === undefined) {
   throw new Error(
-    `Expected 3 Plan 08 requests, 3 responses and one error; got ${requestEntries.length}/${responseEntries.length}/${errorEntry === undefined ? 0 : 1}`,
+    `Expected 5 Plan 08 requests, 5 responses and one error; got ${requestEntries.length}/${responseEntries.length}/${errorEntry === undefined ? 0 : 1}`,
   )
 }
 
@@ -130,7 +136,7 @@ for (const output of outputs) {
     await writeFile(output, generated)
   }
 }
-console.log('Plan 08 identity validators: 3 exact requests/responses and error match')
+console.log('Plan 08 identity validators: 5 exact requests/responses and error match')
 
 const routes = JSON.parse(await readFile(resolve(directory, '../../../enterprise-security-http-routes-v1.json'), 'utf8')).routes.filter(r => operations.includes(r.operationKey))
 const typeImports = new Set(), requests = [], responses = []

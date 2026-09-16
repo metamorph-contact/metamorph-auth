@@ -37,8 +37,14 @@ const accepted = {
   expiresAt: "2027-01-01T00:00:00Z",
 };
 const signal = new AbortController().signal;
-it("uses the exact three admitted identity routes and binds both request IDs", () => {
-  expect(Object.keys(emergencyRoutes)).toHaveLength(3);
+it("uses the exact five admitted identity routes and binds request IDs", () => {
+  expect(Object.keys(emergencyRoutes).sort()).toEqual([
+    "identity.emergency.entry",
+    "identity.emergency.activate",
+    "identity.passkey.assert",
+    "identity.emergency.factor_test.start",
+    "identity.emergency.factor_test.complete",
+  ].sort());
   expect(
     prepareEmergencyRequest("identity.emergency.entry", entry, id),
   ).toMatchObject({
@@ -48,6 +54,29 @@ it("uses the exact three admitted identity routes and binds both request IDs", (
   });
   expect(() =>
     prepareEmergencyRequest("identity.emergency.entry", entry, tenant),
+  ).toThrow();
+  const factorStart = {
+    schemaVersion: 1 as const,
+    attemptId: id,
+    targetTenantId: tenant,
+    targetUserId: id,
+  };
+  expect(
+    prepareEmergencyRequest(
+      "identity.emergency.factor_test.start",
+      factorStart,
+      id,
+    ),
+  ).toMatchObject({
+    path: "/api/auth/v1/security/identity/emergency/factor-test/start",
+    contractHeaders: { "Idempotency-Key": id },
+  });
+  expect(() =>
+    prepareEmergencyRequest(
+      "identity.emergency.factor_test.start",
+      { ...factorStart, targetUserId: "wrong" },
+      id,
+    ),
   ).toThrow();
   expect(() =>
     prepareEmergencyRequest(

@@ -1469,21 +1469,23 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "anonymous_entry"
+          "priorProof": "emergency_csi_flow"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.entry"
+          "identity.emergency.entry",
+          "identity.emergency.factor_test.start"
         ]
       },
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "emergency_entry_ticket"
+          "priorProof": "emergency_ceremony_ticket"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.activate"
+          "identity.emergency.activate",
+          "identity.emergency.factor_test.complete"
         ]
       },
       {
