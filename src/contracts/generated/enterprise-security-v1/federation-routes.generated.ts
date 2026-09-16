@@ -17,7 +17,7 @@ export const federationRoutes = {
   },
   "identity.federation.dashboard_launch": {
     "binding": "default",
-    "failureProfile": "public_ceremony",
+    "failureProfile": "public_federation",
     "idempotency": "required_header",
     "maxRequestBytes": 65536,
     "maxResponseBytes": 65536,
@@ -47,7 +47,7 @@ export const federationRoutes = {
   },
   "identity.federation.start": {
     "binding": "default",
-    "failureProfile": "public_ceremony",
+    "failureProfile": "public_federation",
     "idempotency": "required_header",
     "maxRequestBytes": 65536,
     "maxResponseBytes": 65536,
@@ -105,6 +105,21 @@ export const federationRoutes = {
     "surface": "regional_identity",
     "wire": "security_json"
   },
+  "identity.jit.privacy.acknowledge": {
+    "binding": "default",
+    "failureProfile": "public_ceremony",
+    "idempotency": "required_header",
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 65536,
+    "method": "POST",
+    "operationId": "OP-IDN-043",
+    "operationKey": "identity.jit.privacy.acknowledge",
+    "path": "/api/auth/v1/security/identity/jit/privacy/acknowledge",
+    "securityProfile": "ceremony",
+    "successStatus": 200,
+    "surface": "regional_identity",
+    "wire": "security_json"
+  },
   "identity.jit.profile_complete": {
     "binding": "default",
     "failureProfile": "public_ceremony",
@@ -122,7 +137,7 @@ export const federationRoutes = {
   },
   "identity.methods.resolve": {
     "binding": "default",
-    "failureProfile": "public_ceremony",
+    "failureProfile": "public_federation",
     "idempotency": "required_header",
     "maxRequestBytes": 65536,
     "maxResponseBytes": 65536,

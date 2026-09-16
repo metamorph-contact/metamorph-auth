@@ -38,19 +38,6 @@
         {
           "additionalProperties": false,
           "properties": {
-            "kind": {
-              "const": "recovery_code",
-              "type": "string"
-            }
-          },
-          "required": [
-            "kind"
-          ],
-          "type": "object"
-        },
-        {
-          "additionalProperties": false,
-          "properties": {
             "expectedProviderRevision": {
               "$ref": "#/$defs/RevisionV1"
             },

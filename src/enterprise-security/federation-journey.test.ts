@@ -46,6 +46,7 @@ describe('owned federation browser journey', () => {
         kind: 'oidc' as const,
         state: JOURNEY_FIXTURE_PROOF,
         authorizationCode: 'opaque-provider-code',
+        responseIssuer: 'https://idp.example.test',
       },
     }
     expect(() =>

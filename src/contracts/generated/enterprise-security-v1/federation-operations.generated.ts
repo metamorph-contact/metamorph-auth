@@ -11,11 +11,13 @@ import type { IdentityFederationProgressV1 } from "./types/IdentityFederationPro
 import type { IdentityIdpSamlHandoffRedeemRequestV1 } from "./types/IdentityIdpSamlHandoffRedeemRequestV1";
 import type { IdentityIdpSamlHandoffRedeemResultV1 } from "./types/IdentityIdpSamlHandoffRedeemResultV1";
 import type { IdentityJitPrimaryEmailStartResultV1 } from "./types/IdentityJitPrimaryEmailStartResultV1";
+import type { IdentityJitPrivacyAcknowledgeRequestV1 } from "./types/IdentityJitPrivacyAcknowledgeRequestV1";
 import type { IdentityMethodResolutionV1 } from "./types/IdentityMethodResolutionV1";
 import type { IdentityProfileCompleteRequestV1 } from "./types/IdentityProfileCompleteRequestV1";
 import type { IdentitySocialStartRequestV1 } from "./types/IdentitySocialStartRequestV1";
 import type { IdentitySocialStartV1 } from "./types/IdentitySocialStartV1";
 import type { IdentityStepUpResultV1 } from "./types/IdentityStepUpResultV1";
+import type { PrivacyAcknowledgementHandoffV1 } from "./types/PrivacyAcknowledgementHandoffV1";
 import type { ProfileConnectedIdentitiesPageV1 } from "./types/ProfileConnectedIdentitiesPageV1";
 import type { ProfileIdentityLinkPreparedV1 } from "./types/ProfileIdentityLinkPreparedV1";
 import type { ProfileIdentityLinkRequestV1 } from "./types/ProfileIdentityLinkRequestV1";
@@ -31,6 +33,7 @@ export interface FederationRequestMap {
   "identity.federation.step_up": IdentityFederatedStepUpRequestV1;
   "identity.jit.primary_email.start": IdentityEmailStartRequestV1;
   "identity.jit.primary_email.verify": IdentityEmailVerifyRequestV1;
+  "identity.jit.privacy.acknowledge": IdentityJitPrivacyAcknowledgeRequestV1;
   "identity.jit.profile_complete": IdentityProfileCompleteRequestV1;
   "identity.methods.resolve": IdentityEntryRequestV1;
   "identity.social.start": IdentitySocialStartRequestV1;
@@ -47,6 +50,7 @@ export interface FederationResponseMap {
   "identity.federation.step_up": IdentityStepUpResultV1;
   "identity.jit.primary_email.start": IdentityJitPrimaryEmailStartResultV1;
   "identity.jit.primary_email.verify": IdentityFederationProgressV1;
+  "identity.jit.privacy.acknowledge": PrivacyAcknowledgementHandoffV1;
   "identity.jit.profile_complete": IdentityFederationProgressV1;
   "identity.methods.resolve": IdentityMethodResolutionV1;
   "identity.social.start": IdentitySocialStartV1;

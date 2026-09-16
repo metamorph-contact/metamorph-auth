@@ -19,6 +19,7 @@ import {
 } from './federation-journey'
 
 export interface FederationPanelOwners {
+  cancel?: () => Promise<void>
   account?: FederationAccountContinuation
   recipient: IdentityRecipientClient
   /** Actual controlled-factor/link owners publish their current ceremony result;
@@ -32,8 +33,9 @@ export interface FederationPanelOwners {
     signal: AbortSignal,
   ) => Promise<IdentityFederationProgressV1>
   privacy: {
-    required: boolean
+    required: (state: Extract<FederationJourneyState, {kind:'profile'}>) => boolean
     acknowledge: (
+      state: Extract<FederationJourneyState, {kind:'profile'}>,
       signal: AbortSignal,
       commandId: string,
     ) => Promise<IdentityProfileCompleteRequestV1['privacyAcknowledgement']>
@@ -62,6 +64,10 @@ export function FederationJourneyPanel({
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
   const [concealed, setConcealed] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelFailed, setCancelFailed] = useState(false)
+  const [cancelled, setCancelled] = useState(false)
+  const cancelBusy = useRef(false)
   const busy = useRef(false)
   const controller = useRef(new AbortController())
   const lifecycle = useRef(0)
@@ -158,7 +164,27 @@ export function FederationJourneyPanel({
       if (!controller.current.signal.aborted) setPending(false)
     }
   }
-  if (concealed) return <Text>{t('security.journey.expired')}</Text>
+  async function cancel() {
+    if(cancelBusy.current) return
+    cancelBusy.current = true
+    privacyCommand.current = undefined
+    journey.stop()
+    controller.current.abort()
+    setConcealed(true)
+    setState({kind:'rejected'})
+    setProof(''); setEmail(''); setHandle(''); setFirstName(''); setLastName(''); setAcknowledged(false)
+    setCancelling(true); setCancelFailed(false)
+    try {
+      if(!owners.cancel) throw new Error('security.owner.unavailable')
+      await owners.cancel()
+      setCancelled(true)
+    } catch { setCancelFailed(true) }
+    finally { cancelBusy.current = false; setCancelling(false) }
+  }
+  if (concealed) return <Stack>
+    <Text>{t(cancelling?'security.journey.cancelPending':cancelFailed?'security.journey.cancelFailed':cancelled?'security.journey.cancelled':'security.journey.expired')}</Text>
+    {cancelFailed&&<Button label={t('security.journey.retryButton')} disabled={cancelling} onClick={()=>void cancel()}/>}
+  </Stack>
   const form = (children: React.ReactNode, submit: () => Promise<FederationJourneyState>) => (
     <form
       onSubmit={(event) => {
@@ -254,9 +280,9 @@ export function FederationJourneyPanel({
               <Input maxLength={7} value={color} disabled={pending} onChange={setColor} />
             </FormField>
             <Text tone="secondary">{t('security.journey.picture')}</Text>
-            {owners.privacy.required && (
+            {(state.privacyPolicy !== null || owners.privacy.required(state)) && (
               <Checkbox
-                label={t('security.journey.privacy')}
+                label={t(state.privacyPolicy?.purpose==='freely_given_consent' ? 'security.journey.privacyOptional' : 'security.journey.privacy')}
                 checked={acknowledged}
                 disabled={pending}
                 onCheckedChange={(value) => setAcknowledged(value === true)}
@@ -271,7 +297,7 @@ export function FederationJourneyPanel({
                 !/^[a-z0-9][a-z0-9_-]{1,46}[a-z0-9]$/u.test(handle) ||
                 !firstName.trim() ||
                 !/^#[0-9a-f]{6}$/u.test(color) ||
-                (owners.privacy.required && !acknowledged)
+                (owners.privacy.required(state) && !acknowledged)
               }
             />
           </>,
@@ -283,16 +309,16 @@ export function FederationJourneyPanel({
               avatarColor: color,
               approvedPictureRefId: null,
             }
-            const fingerprint = JSON.stringify([state, profile])
+            const fingerprint = JSON.stringify([state, profile, acknowledged])
             if (privacyCommand.current && privacyCommand.current.fingerprint !== fingerprint)
               throw new Error('security.operation.conflict')
             privacyCommand.current ??= { fingerprint, id: randomUuid7() }
             const original = privacyCommand.current
             if (original.receipt === undefined)
-              original.receipt = owners.privacy.required
-                ? await owners.privacy.acknowledge(controller.current.signal, original.id)
+              original.receipt = acknowledged
+                ? await owners.privacy.acknowledge(state,controller.current.signal, original.id)
                 : null
-            if (owners.privacy.required && original.receipt === null)
+            if (owners.privacy.required(state) && original.receipt === null)
               throw new Error('security.owner.unavailable')
             const next = await journey.profile(state, profile, original.receipt)
             privacyCommand.current = undefined
@@ -339,6 +365,7 @@ export function FederationJourneyPanel({
           leave={() => setState(leaveFederationInbox(state))}
         />
       )}
+      {state.kind === 'test_completed' && <Text>{t('security.journey.testCompleted')}</Text>}
       {state.kind === 'ready' && (
         <>
           <Text>{t('security.journey.ready')}</Text>
@@ -362,24 +389,12 @@ export function FederationJourneyPanel({
           <Text>{t('security.journey.retry')}</Text>
         </div>
       )}
-      <Button
+      {state.kind !== 'test_completed' && <Button
         label={t('security.journey.cancel')}
         variant="ghost"
         tone="neutral"
-        onClick={() => {
-          privacyCommand.current = undefined
-          journey.stop()
-          controller.current.abort()
-          setState({ kind: 'rejected' })
-          setConcealed(true)
-          setProof('')
-          setEmail('')
-          setHandle('')
-          setFirstName('')
-          setLastName('')
-          setAcknowledged(false)
-        }}
-      />
+        onClick={() => void cancel()}
+      />}
     </Stack>
   )
 }

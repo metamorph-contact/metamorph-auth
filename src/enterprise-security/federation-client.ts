@@ -1,4 +1,5 @@
-import type { IdentityFlow } from '../protocol/client'
+import { saveFederationReturn, clearIdentityFlowResume } from '../security/session-receipts'
+import { currentFederationAuthorization, prepareFederationAttempt, type IdentityFlow } from '../protocol/client'
 import { identityApiForRegion } from '../catalog/boundaries'
 import type {
   FederationRequestMap,
@@ -61,6 +62,26 @@ export function identityFederationClient(
     const route = federationRoutes[request.operation]
     if (route.surface !== 'regional_identity') throw new Error('Wrong federation surface')
     if (signal.aborted) throw signal.reason
+    if (request.operation === 'identity.methods.resolve') {
+      const input: unknown = JSON.parse(request.body)
+      if (input === null || typeof input !== 'object' || !('routeHint' in input) || typeof input.routeHint !== 'string') throw new Error('Invalid method resolution')
+      await prepareFederationAttempt(flow, input.routeHint)
+    }
+    const authorization = await currentFederationAuthorization(flow)
+    if (authorization === null) throw new Error('Federation flow is unavailable')
+    if (signal.aborted) throw signal.reason
+    if (request.operation === 'identity.federation.callback') {
+      const input = JSON.parse(request.body) as FederationRequestMap['identity.federation.callback']
+      if (input.proof.kind === 'saml_handoff_continue') {
+        // Persist safe identifiers before the explicitly requested command.
+        // Recovery can read an existing confirmed journal; it cannot confirm
+        // an assertion whose command never reached its owner.
+        saveFederationReturn({kind:'federationReturn',projection:flow.bootstrap.authProjectionId,
+          controller:flow.head.placement.controllerRegionId,catalog:flow.bootstrap.catalogVersion,
+          digest:flow.bootstrap.catalogDigest,flow:flow.bootstrap.flowId,attempt:input.callbackId,
+          provider:input.providerId,issuer:regionId})
+      }
+    }
     const response = await fetch(new URL(request.path, origin), {
       method: request.method,
       body: request.body,
@@ -70,7 +91,7 @@ export function identityFederationClient(
       cache: 'no-store',
       referrerPolicy: 'no-referrer',
       signal: AbortSignal.any([signal, AbortSignal.timeout(20_000)]),
-      headers: { ...request.contractHeaders, 'X-Metamorph-CSRF': flow.bootstrap.csrfToken },
+      headers: { ...request.contractHeaders, 'X-Metamorph-CSRF': flow.bootstrap.csrfToken, 'X-Metamorph-Federation-Authorization': authorization },
     })
     const body = await boundedText(response, Math.max(route.maxResponseBytes, 16 * 1024))
     return {
@@ -81,8 +102,18 @@ export function identityFederationClient(
     }
   }
   return {
-    call: (operation, request, commandId, signal) =>
-      executeFederationRequest(transport, operation, request, commandId, signal),
+    call: async (operation, request, commandId, signal) => {
+      const result = await executeFederationRequest(transport, operation, request, commandId, signal)
+      if (operation === 'identity.federation.callback') {
+        const input = request as FederationRequestMap['identity.federation.callback']
+        const output = result as FederationResponseMap['identity.federation.callback']
+        if (input.proof.kind === 'saml_handoff_continue') {
+          if (output.progress.continuationId !== input.callbackId) throw new Error('security.ceremony.mismatch')
+          clearIdentityFlowResume()
+        }
+      }
+      return result
+    },
   }
 }
 export function transportedFederationClient(transport: FederationTransport): FederationClient {

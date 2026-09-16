@@ -4,6 +4,7 @@ import type { IdentityFederationProgressV1 } from '../contracts/generated/enterp
 import type { IdentityFederationProviderV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityFederationProviderV1'
 import type { IdentityMethodResolutionV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
 import type { IdentityJitProfileInputV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityJitProfileInputV1'
+import type { PrivacyPolicyReferenceV1 } from '../contracts/generated/enterprise-security-v1/types/PrivacyPolicyReferenceV1'
 import type { IdentityProfileCompleteRequestV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityProfileCompleteRequestV1'
 import type { IdentityIdpSamlHandoffRedeemResultV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityIdpSamlHandoffRedeemResultV1'
 import type { AccountEstablishmentResultV1 } from '../contracts/generated/csi07/AccountEstablishmentResultV1'
@@ -21,10 +22,12 @@ export type FederationJourneyState =
       progress: IdentityCeremonyProgressV1
       primaryEmailChallengeId: string
       provisionalRevision: string
+      privacyPolicy: PrivacyPolicyReferenceV1 | null
     }
   | { kind: 'factor'; progress: IdentityCeremonyProgressV1 }
   | { kind: 'collision'; progress: IdentityCeremonyProgressV1 }
   | { kind: 'invitations'; progress: IdentityCeremonyProgressV1 }
+  | { kind: 'test_completed'; progress: IdentityCeremonyProgressV1 }
   | { kind: 'ready'; progress: IdentityCeremonyProgressV1 }
   | { kind: 'rejected' }
 
@@ -108,10 +111,13 @@ export function nextFederationState(result: IdentityFederationProgressV1): Feder
         progress,
         primaryEmailChallengeId: jit.primaryEmailChallengeId,
         provisionalRevision: jit.expectedProvisionalIdentityRevision,
+        privacyPolicy: jit.privacyPolicy,
       }
     }
     case 'accept_invitation':
       return { kind: 'invitations', progress }
+    case 'provider_test_completed':
+      return { kind: 'test_completed', progress }
     case 'ready':
       return { kind: 'ready', progress }
     case 'rejected':
@@ -170,17 +176,22 @@ export class FederationJourney {
     input: unknown,
     body: (id: string) => T,
     run: (request: T, id: string, signal: AbortSignal) => Promise<R>,
+    originalCommandId?: string,
   ): Promise<R> {
     this.active()
+    if (originalCommandId !== undefined && !/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(originalCommandId)) {
+      throw new Error('security.operation.conflict')
+    }
     if (this.busy) throw new Error('security.operation.conflict')
     const fingerprint = JSON.stringify(input)
     if (
       this.pending !== undefined &&
-      (this.pending.key !== key || this.pending.fingerprint !== fingerprint)
+      (this.pending.key !== key || this.pending.fingerprint !== fingerprint
+        || (originalCommandId !== undefined && this.pending.id !== originalCommandId))
     )
       throw new Error('security.operation.conflict')
     if (this.pending === undefined) {
-      const id = randomUuid7()
+      const id = originalCommandId ?? randomUuid7()
       this.pending = { key, id, fingerprint, request: structuredClone(body(id)) }
     }
     const command = this.pending
@@ -249,7 +260,27 @@ export class FederationJourney {
       return result.navigationUri
     })
   }
-  async redeem(handoffProof: string): Promise<FederationJourneyState> {
+  async resume(callbackId: string, providerId: string): Promise<FederationJourneyState> {
+    const input = {schemaVersion:1 as const,callbackId,providerId,
+      proof:{kind:'browser_resume' as const,continuationId:callbackId,expectedCeremonyRevision:'1'}}
+    return this.command('resume', input, () => input, async (request,id,signal) => {
+      const result = await this.client.call('identity.federation.callback',request,id,signal)
+      if (result.progress.continuationId !== callbackId || Date.parse(result.progress.expiresAt)>Date.parse(this.flowExpiresAt)) throw new Error('security.ceremony.mismatch')
+      return nextFederationState(result)
+    })
+  }
+  async acknowledgePrivacy(state: Extract<FederationJourneyState,{kind:'profile'}>, signal:AbortSignal, id:string): Promise<IdentityProfileCompleteRequestV1['privacyAcknowledgement']> {
+    this.active(); live(state.progress.expiresAt)
+    if (state.privacyPolicy === null) throw new Error('security.ceremony.mismatch')
+    const result = await this.client.call('identity.jit.privacy.acknowledge',
+      {ceremony:ceremony(state.progress,id),policy:state.privacyPolicy},id,AbortSignal.any([signal,this.controller.signal]))
+    this.active(); signal.throwIfAborted()
+    if (result.ceremonyId !== state.progress.continuationId || result.acknowledgementReceiptId !== id
+      || result.policy.policyId !== state.privacyPolicy.policyId || result.policy.policyVersion !== state.privacyPolicy.policyVersion
+      || result.policy.purpose !== state.privacyPolicy.purpose || result.policy.presentationDigest !== state.privacyPolicy.presentationDigest) throw new Error('security.ceremony.mismatch')
+    return result
+  }
+  async redeem(handoffProof: string, originalCommandId?: string): Promise<FederationJourneyState> {
     const input = {
       schemaVersion: 1 as const,
       flowId: this.flowId,
@@ -273,6 +304,7 @@ export class FederationJourney {
           throw new Error('security.ceremony.mismatch')
         return { kind: 'confirm', handoff }
       },
+      originalCommandId,
     )
   }
   async confirm(
@@ -299,17 +331,17 @@ export class FederationJourney {
         this.active()
         // Confirmation can enter a newly issued D-purpose JIT capability. Only
         // that transition gets a new deadline; retries within D never extend it.
-        if (p.continuationId === result.progress.continuationId) successor(p, result.progress)
-        else {
-          live(p.expiresAt)
-          live(result.progress.expiresAt)
-          if (
-            !['verify_email', 'resolve_identity'].includes(result.progress.nextStep) ||
-            Date.parse(result.progress.expiresAt) >
-              Math.min(Date.parse(this.flowExpiresAt), Date.now() + 15 * 60_000)
-          )
-            throw new Error('security.ceremony.mismatch')
-        }
+        live(p.expiresAt)
+        live(result.progress.expiresAt)
+        if (result.progress.continuationId !== p.continuationId ||
+            result.progress.continuationId !== state.handoff.callbackId ||
+            BigInt(result.progress.ceremonyRevision) < BigInt(p.ceremonyRevision) ||
+            Date.parse(result.progress.expiresAt) > Date.parse(this.flowExpiresAt))
+          throw new Error('security.ceremony.mismatch')
+        if (Date.parse(result.progress.expiresAt) > Date.parse(p.expiresAt) &&
+            (!['verify_email', 'resolve_identity'].includes(result.progress.nextStep) ||
+              Date.parse(result.progress.expiresAt) > Date.now() + 15 * 60_000))
+          throw new Error('security.ceremony.mismatch')
         return nextFederationState(result)
       },
     )
