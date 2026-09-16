@@ -828,7 +828,19 @@ export const enterpriseSecurityCatalog = {
         "assurance": "session",
         "operations": [
           "admin.emergency.read",
-          "admin.emergency.readiness"
+          "admin.emergency.readiness",
+          "admin.emergency.alert_test.read"
+        ]
+      },
+      {
+        "access": {
+          "capability": "execute",
+          "feature": "emergency_access",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.emergency.alert_test.start"
         ]
       },
       {

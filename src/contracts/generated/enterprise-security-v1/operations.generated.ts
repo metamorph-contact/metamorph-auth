@@ -336,6 +336,18 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.domains.verify.response.schema.json",
     "responseType": "AdminDomainProofCheckResultV1"
   },
+  "admin.emergency.alert_test.read": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestReadRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
+  "admin.emergency.alert_test.start": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestStartRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
   "admin.emergency.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.read.request.schema.json",
     "requestType": "AdminEmergencyReadRequestV1",
