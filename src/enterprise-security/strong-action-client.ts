@@ -71,7 +71,7 @@ export function strongActionIdentityClient(
     admittedSignal.throwIfAborted()
     if (disposed) throw new Error('security.ceremony.expired')
     const expiresAt = Date.parse(value.expiresAt)
-    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now() || expiresAt > Date.now() + 60_000) {
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now() || expiresAt > Date.now() + 90_000) {
       throw new Error('security.ceremony.expired')
     }
     admittedIdentityApi(flow.catalog, value.identityApiOrigin)
@@ -132,7 +132,7 @@ export function strongActionIdentityClient(
         transport(delegation),
         'identity.step_up.complete',
         request,
-        request.ceremony.attemptId,
+        request.mutationId,
         AbortSignal.any([signal, lifetime.signal]),
       )
       if (disposed) throw new Error('security.ceremony.expired')
@@ -152,6 +152,15 @@ function hexDigestToBase64Url(value: string): string {
   let raw = ''
   for (const byte of bytes) raw += String.fromCharCode(byte)
   return btoa(raw).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/u, '')
+}
+
+export function base64UrlDigestToHex(value: string): string {
+  if (!/^[A-Za-z0-9_-]{43}$/u.test(value)) throw new Error('security.request.invalid')
+  const binary = atob(`${value.replaceAll('-', '+').replaceAll('_', '/')}=`)
+  if (binary.length !== 32) throw new Error('security.request.invalid')
+  const canonical = btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/u, '')
+  if (canonical !== value) throw new Error('security.request.invalid')
+  return Array.from(binary, (character) => character.charCodeAt(0).toString(16).padStart(2, '0')).join('')
 }
 
 async function boundedText(response: Response): Promise<string> {

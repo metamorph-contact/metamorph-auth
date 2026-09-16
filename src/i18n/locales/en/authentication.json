@@ -67,5 +67,10 @@
   "auth.signup.skipPicture": "Continue without retrying",
   "auth.signup.verify": "Verify email",
   "auth.signup.verifyDescription": "Confirm this email address to continue.",
-  "auth.signup.verifyTitle": "Verify your email"
+  "auth.signup.verifyTitle": "Verify your email",
+  "auth.strongAction.title": "Confirm this security action",
+  "auth.strongAction.description": "Use a current factor for the selected account.",
+  "auth.strongAction.passkey": "Use a passkey",
+  "auth.strongAction.totpLabel": "Authenticator code",
+  "auth.strongAction.totp": "Verify code"
 }

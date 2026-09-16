@@ -39,6 +39,8 @@ import type { SignupContinuationResultV1 } from './contracts/generated/csi07/Sig
 import type { SignupProfileV1 } from './contracts/generated/csi11/SignupProfileV1'
 import type { SignupProgressV1 } from './contracts/generated/csi11/SignupProgressV1'
 import type { BrowserLogoutResultV1 } from './contracts/generated/csi10/BrowserLogoutResultV1'
+import type { IdentityStepUpCompleteRequestV1 } from './contracts/generated/enterprise-security-v1/types/IdentityStepUpCompleteRequestV1'
+import type { IdentityStepUpStartResultV1 } from './contracts/generated/enterprise-security-v1/types/IdentityStepUpStartResultV1'
 import { isSupportedLocale, setLocale } from './i18n'
 import { afterPageFade, navigateAfterFade } from './navigation/step-transition'
 import { installPresentationTheme } from './presentation/theme'
@@ -73,6 +75,13 @@ import {
   type StartedSignup,
 } from './protocol/client'
 import { ProtocolError } from './protocol/http'
+import {
+  base64UrlDigestToHex,
+  strongActionIdentityClient,
+  type StrongActionIdentityClient,
+} from './enterprise-security/strong-action-client'
+import { Plan03IdentityHttpError } from './enterprise-security/request-contract'
+import { passkeyBrowserAdapter } from './enterprise-security/passkey-browser'
 import { BrowserLogoutClient, type LogoutDisplayOptions } from './protocol/logout'
 import {
   consumeAuthFragmentOnce,
@@ -304,6 +313,7 @@ type AuthorizeStep =
   | {kind:'federation';fragment:FederationReturnFragment}
   | {kind:'recipientInbox';establishment:AccountEstablishmentResultV1}
   | {kind:'selectedRecipientInbox';selected:DisplayAccount}
+  | {kind:'strongAction';selected:DisplayAccount}
   | { kind: 'credentials' }
   | { kind: 'signupEmail' }
   | { kind: 'signupRegion'; email: string }
@@ -316,6 +326,18 @@ type AuthorizeStep =
   | SignupProgressStep
   | { kind: 'pictureUploadFailed'; signup: SignupProgressStep; establishment: AccountEstablishmentResultV1 }
   | { kind: 'error' }
+
+interface StrongActionCompletionAttempt {
+  readonly entryAttemptId: string
+  readonly method: 'passkey' | 'totp'
+  readonly client: StrongActionIdentityClient
+  readonly controller: AbortController
+  readonly started: Extract<IdentityStepUpStartResultV1, { kind: 'local' }>
+  completion?: {
+    readonly inputKey: string
+    readonly request: IdentityStepUpCompleteRequestV1
+  }
+}
 
 function accountStep(result: DisplayAccountsResult): AuthorizeStep {
   return result.accounts.length === 0 && result.unavailableCount === 0
@@ -437,6 +459,7 @@ function AuthorizePage() {
   const [leaving, setLeaving] = useState(false)
   const [email, setEmail] = useState('')
   const [signInPassword, setSignInPassword] = useState('')
+  const [strongActionTotp, setStrongActionTotp] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   const [region, setRegion] = useState('')
   const [organization, setOrganization] = useState('')
@@ -465,19 +488,30 @@ function AuthorizePage() {
   } | undefined>(undefined)
   const signupStartAttempt = useRef<SignupStartAttempt | undefined>(undefined)
   const recoveryStartAttempt = useRef<PasswordRecoveryStartAttempt | undefined>(undefined)
+  const strongActionCompletion = useRef<StrongActionCompletionAttempt | undefined>(undefined)
   const operationPending = useRef(false)
 
   usePagehideScrub(() => {
     setSignInPassword('')
+    setStrongActionTotp('')
     setSignupPassword('')
     setPicture(undefined)
     setCredentialAttemptUncertain(undefined)
     signupStartAttempt.current = undefined
     signupMutationAttempt.current = undefined
     recoveryStartAttempt.current = undefined
+    strongActionCompletion.current?.controller.abort()
+    strongActionCompletion.current?.client.dispose()
+    strongActionCompletion.current = undefined
     setSignupMutationUncertain(false)
     setRecoveryAttemptUncertain(false)
   })
+
+  useEffect(() => () => {
+    strongActionCompletion.current?.controller.abort()
+    strongActionCompletion.current?.client.dispose()
+    strongActionCompletion.current = undefined
+  }, [])
 
   const move = (next: AuthorizeStep) => afterPageFade(setLeaving, () => setStep(next))
   const clearFieldError = (field: IdentityField) => setFieldErrors((current) => {
@@ -488,6 +522,10 @@ function AuthorizePage() {
   })
   const fail = (error: unknown) => {
     toast.danger(t(protocolMessage(error)))
+    // A rejected local factor leaves the strong-action screen usable. The
+    // completion owner below decides whether the exact payload must be kept
+    // for an ambiguous retry or replaced with corrected evidence.
+    if (error instanceof Plan03IdentityHttpError) return
     const field = protocolField(error)
     if (field !== undefined) {
       setFieldErrors((current) => ({ ...current, [field]: t(protocolMessage(error)) }))
@@ -604,7 +642,9 @@ function AuthorizePage() {
           }
           case 'chooseAccount': {
             const accounts = await loadAccounts(loaded.flow)
-            if (live) setStep(accountStep(accounts))
+            if (live) setStep(loaded.flow.bootstrap.strongActionEntry != null
+              ? { kind: 'accounts', result: accounts }
+              : accountStep(accounts))
             return
           }
           case 'recoverCredentialAttempt': {
@@ -699,6 +739,125 @@ function AuthorizePage() {
   if (ready.flow.bootstrap.samlHandoff !== null && ready.flow.bootstrap.samlHandoff !== undefined) {
     return <Suspense fallback={null}><SamlHandoffFlowPanel flow={ready.flow}
       navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (step.kind === 'strongAction') {
+    const entry = ready.flow.bootstrap.strongActionEntry
+    if (entry == null) throw new Error('Missing strong-action entry')
+    const complete = async (method: 'passkey' | 'totp') => {
+      let attempt = strongActionCompletion.current
+      if (attempt !== undefined &&
+          (attempt.entryAttemptId !== entry.attemptId || attempt.method !== method)) {
+        attempt.controller.abort()
+        attempt.client.dispose()
+        strongActionCompletion.current = undefined
+        attempt = undefined
+      }
+      if (attempt === undefined) {
+        const client = strongActionIdentityClient(ready.flow, step.selected.reference.browserAccountId)
+        const controller = new AbortController()
+        try {
+          const started = await client.start({
+            schemaVersion: 1,
+            attemptId: entry.attemptId,
+            operationKey: entry.operationKey,
+            targetDigest: base64UrlDigestToHex(entry.targetDigest),
+            // H derives the current revision from the protected selected-account
+            // handle; this wire value cannot lower or replace that source.
+            expectedSessionRevision: '1',
+            requestedMethod: { kind: method },
+          }, controller.signal)
+          if (started.kind !== 'local' || started.challenge.kind !== method) {
+            throw new Error('security.ceremony.mismatch')
+          }
+          attempt = { entryAttemptId: entry.attemptId, method, client, controller, started }
+          strongActionCompletion.current = attempt
+        } catch (error) {
+          controller.abort()
+          client.dispose()
+          throw error
+        }
+      }
+
+      const inputKey = method === 'totp' ? strongActionTotp : 'passkey'
+      if (attempt.completion === undefined || attempt.completion.inputKey !== inputKey) {
+        const proof = method === 'totp'
+          ? { kind: 'totp' as const, code: strongActionTotp }
+          : {
+              kind: 'passkey' as const,
+              assertion: await passkeyBrowserAdapter.assert({
+                kind: 'challenge',
+                schemaVersion: 1,
+                ceremonyId: entry.attemptId,
+                rpId: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.rpId : '',
+                challenge: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.challenge : '',
+                userVerification: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.userVerification : 'required',
+                expiresAt: attempt.started.challenge.expiresAt,
+              }, attempt.controller.signal),
+            }
+        attempt.completion = {
+          inputKey,
+          request: {
+            mutationId: randomUuid7(),
+            ceremony: {
+              schemaVersion: 1,
+              attemptId: entry.attemptId,
+              continuationId: attempt.started.progress.continuationId,
+              expectedCeremonyRevision: attempt.started.progress.ceremonyRevision,
+            },
+            proof,
+          },
+        }
+      }
+
+      let result
+      try {
+        result = await attempt.client.complete(attempt.completion.request, attempt.controller.signal)
+      } catch (error) {
+        if (error instanceof Plan03IdentityHttpError && error.status < 500 &&
+            error.status !== 408 && error.status !== 429) {
+          // The server definitely rejected this proof. Keep the ceremony and
+          // delegation, but require corrected evidence with a new mutation ID.
+          attempt.completion = undefined
+          throw error
+        }
+        // Network/5xx outcomes are ambiguous. Preserve the exact immutable
+        // proof and mutation ID so the next click is a true idempotent retry.
+        toast.danger(t('errors.auth_unavailable'))
+        return
+      }
+      strongActionCompletion.current = undefined
+      attempt.controller.abort()
+      attempt.client.dispose()
+      setStrongActionTotp('')
+      try {
+        if (window.opener === null || window.opener.closed) throw new Error('security.ceremony.cancelled')
+        window.opener.postMessage({
+          kind: 'metamorphStrongActionResult',
+          schemaVersion: 1,
+          attemptId: entry.attemptId,
+          operationKey: entry.operationKey,
+          resultNonce: entry.resultNonce,
+          action: result.action,
+          expiresAt: result.expiresAt,
+        }, ready.catalog.projection.productUiOrigin)
+        window.close()
+      } catch (error) {
+        throw error
+      }
+    }
+    return <Presentation catalog={ready.catalog} transitionKey="strong-action" pending={pending} leaving={leaving}
+      title={t('auth.strongAction.title')} description={t('auth.strongAction.description')}>
+      <Stack gap={4}>
+        <Button label={t('auth.strongAction.passkey')} variant="outline" tone="accent"
+          onClick={() => void run(() => complete('passkey'))} />
+        <FormField id="strong-action-totp" label={t('auth.strongAction.totpLabel')}>
+          <Input autoComplete="one-time-code" maxLength={8} value={strongActionTotp}
+            onChange={(value) => setStrongActionTotp(value.replace(/\D/gu, '').slice(0, 8))} />
+        </FormField>
+        <Button label={t('auth.strongAction.totp')} disabled={!/^[0-9]{6,8}$/u.test(strongActionTotp)}
+          onClick={() => void run(() => complete('totp'))} />
+      </Stack>
+    </Presentation>
   }
   if (step.kind === 'credentials') {
     const applyCredentialResult = (result: AccountEstablishmentResultV1) => {
@@ -882,6 +1041,9 @@ function AuthorizePage() {
             if(ready.flow.bootstrap.emailedInvitation!=null) {
               await move({kind:'selectedRecipientInbox',selected:account});return
             }
+            if (ready.flow.bootstrap.strongActionEntry != null) {
+              await move({kind:'strongAction',selected:account});return
+            }
             const attempt = accountSelectionAttempt ?? { browserAccountId: accountId, attemptId: randomUuid7() }
             if (attempt.browserAccountId !== accountId) return
             setAccountSelectionAttempt(attempt)
@@ -905,7 +1067,8 @@ function AuthorizePage() {
           <Text tone="secondary">{t('auth.chooseAccount.unavailable', { count: step.result.unavailableCount })}</Text>
           <Button label={t('actions.retry')} variant="outline" tone="neutral" onClick={() => void run(async () => move(accountStep(await loadAccounts(ready.flow))))} />
         </div>}
-        <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="accent" label={t('actions.useAnother')} onClick={() => move({ kind: 'credentials' })} />
+        {ready.flow.bootstrap.strongActionEntry == null &&
+          <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="accent" label={t('actions.useAnother')} onClick={() => move({ kind: 'credentials' })} />}
         <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="neutral" label={t('auth.chooseAccount.signOutAll')} onClick={() => move({ kind: 'confirmLogoutAll', result: step.result })} />
       </Stack>
     </Presentation>

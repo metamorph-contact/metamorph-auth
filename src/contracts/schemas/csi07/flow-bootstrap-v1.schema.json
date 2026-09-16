@@ -112,6 +112,16 @@
       "format": "uint16",
       "maximum": 65535,
       "minimum": 0
+    },
+    "strongActionEntry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProductStrongActionEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "additionalProperties": false,
@@ -140,7 +150,8 @@
         "signUp",
         "addAccount",
         "switchAccount",
-        "continueSignup"
+        "continueSignup",
+        "strongAction"
       ]
     },
     "BrowserAccountId": {
@@ -256,6 +267,43 @@
         "productNameMessageKey",
         "logoAssetId",
         "themeId"
+      ]
+    },
+    "ProductStrongActionEntryV1": {
+      "description": "Product-owned, non-authorizing launch metadata for one exact strong action.\nThe target digest is prepared by the authenticated product API; H still\nrechecks the selected CSI account, current policy, operation, target and\none-use proof when the eventual mutation commits.",
+      "type": "object",
+      "properties": {
+        "attemptId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "operationKey": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "resultNonce": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "targetDigest": {
+          "$ref": "#/$defs/Digest32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "operationKey",
+        "targetDigest",
+        "resultNonce",
+        "expiresAt"
       ]
     },
     "ProviderRuntimeTestContextV1": {
