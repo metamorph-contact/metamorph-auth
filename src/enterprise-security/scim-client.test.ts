@@ -18,12 +18,21 @@ export const entry = {
     continuationId: id,
     expectedCeremonyRevision: '1',
   },
+  privacyPolicy: null,
   expiresAt: '2099-01-01T00:00:00Z',
   startCapability: btoa('protected-start').replace(/=+$/u, ''),
 }
 const request = {
   ceremony: entry.ceremony,
   submittedEmail: 'person@example.com',
+  profile: {
+    handle: 'person_handle',
+    firstName: 'Person',
+    lastName: null,
+    avatarColor: '#7c3aed',
+    approvedPictureRefId: null,
+  },
+  acknowledgedPrivacyPolicy: null,
   startCapability: entry.startCapability,
 }
 const accepted = {
