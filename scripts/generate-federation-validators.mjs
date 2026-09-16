@@ -79,9 +79,9 @@ for (const file of (await readdir(directory)).sort()) {
   else if (side === 'response') responseEntries.push([key, exportName])
   else errorEntry = exportName
 }
-if (requestEntries.length !== 12 || responseEntries.length !== 12 || errorEntry === undefined) {
+if (requestEntries.length !== 13 || responseEntries.length !== 13 || errorEntry === undefined) {
   throw new Error(
-    `Expected 12 Plan 06 requests, 12 responses and one error; got ${requestEntries.length}/${responseEntries.length}/${errorEntry === undefined ? 0 : 1}`,
+    `Expected 13 Plan 06 requests, 13 responses and one error; got ${requestEntries.length}/${responseEntries.length}/${errorEntry === undefined ? 0 : 1}`,
   )
 }
 

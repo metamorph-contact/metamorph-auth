@@ -1,8 +1,11 @@
-import type { DestinationContinuationFragment, InitialEntryFragment } from './fragment'
+import type { IdentityFlowResumeReferenceV1 } from '../contracts/generated/csi07/IdentityFlowResumeReferenceV1'
+import type { DestinationContinuationFragment, InitialEntryFragment, FederationReturnFragment } from './fragment'
 
 const DESTINATION_KEY = 'metamorph.auth.destination.v1'
 const ACCOUNT_LOGOUT_KEY = 'metamorph.auth.account-logout.v1'
 const START_RECOVERY_KEY = 'metamorph.auth.start-recovery.v1'
+const FEDERATION_RETURN_KEY = 'metamorph.auth.federation-return.v1'
+const FLOW_RESUME_KEY = 'metamorph.auth.flow-resume.v1'
 const UUID7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u
 const PROTECTED = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}(?:(?:\.[A-Za-z0-9_-]*){2})?$/u
 const DIGEST = /^[A-Za-z0-9_-]{43}$/u
@@ -11,6 +14,68 @@ const START_MAX_AGE_MS = 2 * 60 * 1_000
 const CLOCK_SKEW_MS = 60 * 1_000
 const CATALOG_ID = /^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$/u
 const CATALOG_VERSION = /^[A-Za-z0-9._-]{1,64}$/u
+
+/** Advisory identifiers only. Current controller and issuer cookies re-admit
+ * every recovery; storage never retains protocol responses or CSI carriers. */
+export function saveFederationReturn(fragment: FederationReturnFragment): void {
+  const retained = JSON.stringify({ ...fragment, receivedAt: new Date().toISOString() })
+  sessionStorage.setItem(FEDERATION_RETURN_KEY, retained)
+  if (sessionStorage.getItem(FEDERATION_RETURN_KEY) !== retained) throw new Error('Session storage verification failed')
+}
+export function clearFederationReturn(): void { sessionStorage.removeItem(FEDERATION_RETURN_KEY) }
+export function readFederationReturn(): FederationReturnFragment | null {
+  const raw = sessionStorage.getItem(FEDERATION_RETURN_KEY)
+  if (raw === null) return null
+  try {
+    if (raw.length > 4096) throw new Error('Invalid return receipt')
+    const v: unknown = JSON.parse(raw)
+    if (v === null || typeof v !== 'object') throw new Error('Invalid return receipt')
+    const r = v as Record<string, unknown>
+    if (Object.keys(r).length !== 10 || r.kind !== 'federationReturn'
+      || !['projection', 'controller', 'issuer'].every((key) => typeof r[key] === 'string' && CATALOG_ID.test(r[key]))
+      || !['flow', 'attempt', 'provider'].every((key) => typeof r[key] === 'string' && UUID7.test(r[key]))
+      || typeof r.catalog !== 'string' || !CATALOG_VERSION.test(r.catalog)
+      || typeof r.digest !== 'string' || !DIGEST.test(r.digest)
+      || !currentTimestamp(r.receivedAt, 30 * 60 * 1000)) throw new Error('Invalid return receipt')
+    return Object.freeze({kind:'federationReturn', projection:r.projection as string, controller:r.controller as string,
+      issuer:r.issuer as string, catalog:r.catalog,digest:r.digest,flow:r.flow as string,attempt:r.attempt as string,provider:r.provider as string})
+  } catch { clearFederationReturn(); return null }
+}
+
+/** Only native non-authorizing reference fields are retained. Handoff proof,
+ * CSRF and CSI/H authorization carriers remain in protected cookies/memory. */
+export function saveIdentityFlowResume(value: IdentityFlowResumeReferenceV1): void {
+  const stored: IdentityFlowResumeReferenceV1 = {
+    schemaVersion: value.schemaVersion, flowId: value.flowId,
+    controllerRegionId: value.controllerRegionId, authProjectionId: value.authProjectionId,
+    catalogVersion: value.catalogVersion, catalogDigest: value.catalogDigest, expiresAt: value.expiresAt,
+  }
+  const encoded = JSON.stringify(stored)
+  sessionStorage.setItem(FLOW_RESUME_KEY, encoded)
+  if (sessionStorage.getItem(FLOW_RESUME_KEY) !== encoded) throw new Error('Session storage verification failed')
+}
+export function clearIdentityFlowResume(): void { sessionStorage.removeItem(FLOW_RESUME_KEY) }
+export function readIdentityFlowResume(): IdentityFlowResumeReferenceV1 | null {
+  const encoded = sessionStorage.getItem(FLOW_RESUME_KEY)
+  if (encoded === null) return null
+  try {
+    if (encoded.length > 1024) throw new Error('Invalid flow reference')
+    const value: unknown = JSON.parse(encoded)
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid flow reference')
+    const v = value as Record<string, unknown>
+    if (Object.keys(v).length !== 7 || v.schemaVersion !== 1
+      || typeof v.flowId !== 'string' || !UUID7.test(v.flowId)
+      || typeof v.controllerRegionId !== 'string' || !CATALOG_ID.test(v.controllerRegionId)
+      || typeof v.authProjectionId !== 'string' || !CATALOG_ID.test(v.authProjectionId)
+      || typeof v.catalogVersion !== 'string' || !CATALOG_VERSION.test(v.catalogVersion)
+      || typeof v.catalogDigest !== 'string' || !DIGEST.test(v.catalogDigest)
+      || typeof v.expiresAt !== 'string' || !Number.isFinite(Date.parse(v.expiresAt))
+      || Date.parse(v.expiresAt) <= Date.now() || Date.parse(v.expiresAt) > Date.now() + 5 * 60_000 + 30_000) {
+      throw new Error('Invalid flow reference')
+    }
+    return Object.freeze(v as unknown as IdentityFlowResumeReferenceV1)
+  } catch { clearIdentityFlowResume(); return null }
+}
 
 function protectedValue(value: unknown, maxBytes: number): value is string {
   return typeof value === 'string' && value.length <= maxBytes && PROTECTED.test(value)

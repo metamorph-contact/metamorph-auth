@@ -50,6 +50,7 @@
             "complete_profile",
             "first_login_enrollment",
             "accept_invitation",
+            "provider_test_completed",
             "ready",
             "rejected"
           ],

@@ -948,6 +948,12 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.verify.response.schema.json",
     "responseType": "IdentityFederationProgressV1"
   },
+  "identity.jit.privacy.acknowledge": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.request.schema.json",
+    "requestType": "IdentityJitPrivacyAcknowledgeRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.response.schema.json",
+    "responseType": "PrivacyAcknowledgementHandoffV1"
+  },
   "identity.jit.profile_complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.profile_complete.request.schema.json",
     "requestType": "IdentityProfileCompleteRequestV1",

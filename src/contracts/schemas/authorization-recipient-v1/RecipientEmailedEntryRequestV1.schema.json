@@ -1,0 +1,43 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientEmailedEntryRequestV1. Do not edit.",
+  "$defs": {
+    "RecipientSchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientEmailedEntryRequestV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "emailedToken": {
+      "pattern": "^[A-Za-z0-9_-]{16,1024}$",
+      "type": "string"
+    },
+    "invitationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "mutationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/RecipientSchemaVersionV1"
+    },
+    "sourceRegionId": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "mutationId",
+    "invitationId",
+    "sourceRegionId",
+    "emailedToken"
+  ],
+  "title": "RecipientEmailedEntryRequestV1",
+  "type": "object"
+}

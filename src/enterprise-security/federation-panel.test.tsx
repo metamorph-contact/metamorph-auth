@@ -55,7 +55,7 @@ function mount(options = {}) {
   )
   const owners = {
     recipient: identityRecipientFixture('ready'),
-    privacy: { required: false, acknowledge: vi.fn() },
+    privacy: { required: () => false, acknowledge: vi.fn() },
   }
   const view = render(
     <StrictMode>
@@ -137,7 +137,7 @@ it.each(['profile', 'acknowledgement'])(
         initial={profile}
         owners={{
           recipient: identityRecipientFixture('ready'),
-          privacy: { required: true, acknowledge },
+          privacy: { required: () => true, acknowledge },
         }}
         navigation={vi.fn()}
       />,

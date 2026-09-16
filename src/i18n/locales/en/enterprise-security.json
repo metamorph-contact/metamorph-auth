@@ -1,4 +1,6 @@
 {
+  "security.journey.providerTestDescription": "Test the configured identity provider with your administrator identity. Successful completion records readiness for this configuration.",
+  "security.journey.providerTestStart": "Start provider test",
   "security.preview.identity.title": "Authentication methods preview",
   "security.preview.identity.description": "Inspect the planned entry states using generated contract fixtures.",
   "security.preview.simulated": "Development preview \u00b7 Simulated data; no sign-in or policy change occurs.",
@@ -196,11 +198,15 @@
   "security.journey.color": "Avatar color",
   "security.journey.picture": "Your avatar uses initials and color. Provider picture URLs are never loaded directly.",
   "security.journey.privacy": "I acknowledge the current privacy notice",
+  "security.journey.privacyOptional": "I consent to the optional use described in the current privacy notice",
+  "security.journey.retryButton": "Try again",
   "security.journey.save": "Complete profile",
   "security.journey.factor": "An additional controlled factor is required.",
   "security.journey.verifyFactor": "Verify with a controlled factor",
   "security.journey.collision": "This identity needs explicit resolution. Sign in to the existing account and authorize linking; email alone cannot link accounts.",
   "security.journey.link": "Authorize existing-account link",
+  "security.journey.invitationsNext": "Next invitations",
+  "security.journey.invitationsRefresh": "Refresh invitations",
   "security.journey.invitations": "Review pending invitations. Signing in does not accept an offer.",
   "security.journey.accept": "Accept invitation",
   "security.journey.reject": "Reject invitation",
@@ -211,6 +217,9 @@
   "security.journey.rejected": "This sign-in was rejected. Start a new flow.",
   "security.journey.retry": "The operation did not complete. Retry the same input or cancel and start again.",
   "security.journey.cancel": "Cancel sign-in",
+  "security.journey.cancelPending": "Cancelling this sign-in\u2026",
+  "security.journey.cancelFailed": "Cancellation has not been confirmed. Try again.",
+  "security.journey.cancelled": "This sign-in was cancelled.",
   "security.journey.samlTitle": "Organization sign-in",
   "security.journey.loading": "Preparing a fresh sign-in flow\u2026",
   "security.journey.simulateReturn": "Simulate verified provider return",
@@ -238,5 +247,13 @@
       "escalated": "Critical alert delivery has escalated; independent retries continue."
     },
     "nextAlert": "Next recorded alert attempt: {{time}}."
-  }
+  },
+  "security.journey.samlEmailDescription": "Enter the email you want to use to continue this enterprise sign-in. You will review the verified provider before continuing.",
+  "security.journey.target.tenant": "Tenant membership",
+  "security.journey.target.admin": "Tenant administration \u00b7 {{role}}",
+  "security.journey.target.profile": "Profile access \u00b7 {{role}}",
+  "security.journey.target.team": "Team \u00b7 {{team}}",
+  "security.journey.target.role": "{{resource}} \u00b7 {{role}}",
+  "security.journey.invitedBy": "Invited by {{inviter}}",
+  "security.journey.testCompleted": "Provider test completed. You can return to provider administration."
 }

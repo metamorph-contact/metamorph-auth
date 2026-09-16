@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SamlHandoffEntryV1",
+  "description": "Opaque unsolicited assertion custody. This is start metadata, never\nauthentication evidence; I admits its original retained proof separately.",
+  "type": "object",
+  "properties": {
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "handoffProof": {
+      "$ref": "#/$defs/Secret32"
+    },
+    "providerRegionId": {
+      "$ref": "#/$defs/CatalogId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "handoffProof",
+    "providerRegionId",
+    "expiresAt"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+}

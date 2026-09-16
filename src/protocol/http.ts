@@ -162,8 +162,8 @@ export class AuthApi {
     this.origin = exactOrigin(origin)
   }
 
-  async post<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
-    return this.json('POST', path, body, schema, csrfToken, headers)
+  async post<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}, signal?: AbortSignal): Promise<Response> {
+    return this.json('POST', path, body, schema, csrfToken, headers, signal)
   }
 
   async put<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
@@ -181,6 +181,7 @@ export class AuthApi {
     schema: ResponseSchemaName,
     csrfToken?: string,
     additionalHeaders: Readonly<Record<string, string>> = {},
+    signal?: AbortSignal,
   ): Promise<Response> {
     const requestUrl = new URL(path, this.origin)
     if (!/^\/api\/auth\/v1\/[A-Za-z0-9/_-]+$/u.test(path) || requestUrl.origin !== this.origin ||
@@ -203,7 +204,9 @@ export class AuthApi {
         redirect: 'error',
         cache: 'no-store',
         referrerPolicy: 'no-referrer',
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        signal: signal === undefined
+          ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+          : AbortSignal.any([signal, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]),
         headers: {
           Accept: 'application/json',
           ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),

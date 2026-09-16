@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProductStrongActionPreparationResultV1",
+  "type": "object",
+  "properties": {
+    "attemptId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "operationKey": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "targetDigest": {
+      "$ref": "#/$defs/Digest32"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "operationKey",
+    "targetDigest",
+    "expiresAt"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

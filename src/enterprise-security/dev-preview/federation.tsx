@@ -138,8 +138,8 @@ function InteractiveJourney({ screenId }: { screenId: FederationIdentityScreen }
           owners={{
             recipient,
             privacy: {
-              required: true,
-              acknowledge: async (_signal, commandId) => ({
+              required: () => true,
+              acknowledge: async (_state, _signal, commandId) => ({
                 policy: {
                   policyId: JOURNEY_FIXTURE_FLOW,
                   policyVersion: '1',

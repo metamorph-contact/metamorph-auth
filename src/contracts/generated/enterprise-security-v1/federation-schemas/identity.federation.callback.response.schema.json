@@ -1,6 +1,12 @@
 {
   "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityFederationProgressV1. Do not edit.",
   "$defs": {
+    "CsiDigest32V1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "type": "string"
+    },
     "IdentityCeremonyProgressV1": {
       "additionalProperties": false,
       "properties": {
@@ -50,6 +56,7 @@
             "complete_profile",
             "first_login_enrollment",
             "accept_invitation",
+            "provider_test_completed",
             "ready",
             "rejected"
           ],
@@ -75,6 +82,17 @@
         },
         "primaryEmailChallengeId": {
           "$ref": "#/$defs/SecurityIdV1"
+        },
+        "privacyPolicy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrivacyPolicyReferenceV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Explicit current owner policy. Null comes only from an admitted empty\npolicy head; an unavailable head is a dependency denial."
         }
       },
       "required": [
@@ -106,6 +124,37 @@
         "expectedHomeStatusRevision",
         "provedAt",
         "expiresAt"
+      ],
+      "type": "object"
+    },
+    "PrivacyAcknowledgementPurposeV1": {
+      "enum": [
+        "required_notice",
+        "freely_given_consent"
+      ],
+      "type": "string"
+    },
+    "PrivacyPolicyReferenceV1": {
+      "additionalProperties": false,
+      "properties": {
+        "policyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "policyVersion": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "presentationDigest": {
+          "$ref": "#/$defs/CsiDigest32V1"
+        },
+        "purpose": {
+          "$ref": "#/$defs/PrivacyAcknowledgementPurposeV1"
+        }
+      },
+      "required": [
+        "policyId",
+        "policyVersion",
+        "purpose",
+        "presentationDigest"
       ],
       "type": "object"
     },

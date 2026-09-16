@@ -2,4 +2,4 @@
 import type { CredentialRetryMaterialV1 } from "./CredentialRetryMaterialV1";
 import type { Origin } from "./Origin";
 
-export type CredentialAttemptRecoveryResultV1 = { "kind": "recover", schemaVersion: number, attemptId: string, identityApiOrigin: Origin, recoveryCapability: string, retryMaterial: CredentialRetryMaterialV1, expiresAt: string, } | { "kind": "none", schemaVersion: number, };
+export type CredentialAttemptRecoveryResultV1 = { "kind": "unregistered", schemaVersion: number, attemptId: string, identityApiOrigin: Origin, credentialCapability: string, preparationRecoveryProof: string, expiresAt: string, } | { "kind": "recover", schemaVersion: number, attemptId: string, identityApiOrigin: Origin, recoveryCapability: string, retryMaterial: CredentialRetryMaterialV1, expiresAt: string, } | { "kind": "none", schemaVersion: number, };

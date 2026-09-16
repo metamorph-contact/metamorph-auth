@@ -19,6 +19,10 @@
               "const": "oidc",
               "type": "string"
             },
+            "responseIssuer": {
+              "$ref": "#/$defs/ProviderHttpsUrlV1",
+              "description": "Mandatory RFC 9207 issuer from the bounded server query parser."
+            },
             "state": {
               "$ref": "#/$defs/OneTimeProofV1"
             }
@@ -26,7 +30,8 @@
           "required": [
             "kind",
             "state",
-            "authorizationCode"
+            "authorizationCode",
+            "responseIssuer"
           ],
           "type": "object"
         },
@@ -90,6 +95,28 @@
             "expectedCeremonyRevision"
           ],
           "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "description": "Browser recovery of an already validated SP-initiated callback. Raw\ncodes/assertions remain confined to the separate protocol endpoints.",
+          "properties": {
+            "continuationId": {
+              "$ref": "#/$defs/SecurityIdV1"
+            },
+            "expectedCeremonyRevision": {
+              "$ref": "#/$defs/RevisionV1"
+            },
+            "kind": {
+              "const": "browser_resume",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "continuationId",
+            "expectedCeremonyRevision"
+          ],
+          "type": "object"
         }
       ]
     },
@@ -97,6 +124,13 @@
       "maxLength": 43,
       "minLength": 43,
       "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+      "type": "string"
+    },
+    "ProviderHttpsUrlV1": {
+      "format": "provider-https-url",
+      "maxLength": 2048,
+      "minLength": 9,
+      "pattern": "^[Hh][Tt][Tt][Pp][Ss]://(?![0-9.]+(?::|/|\\?|$))(?!\\[)[^:/?#@\\[\\]]+(?::[1-9][0-9]{0,4})?(?:[/?][^#]*)?$",
       "type": "string"
     },
     "ProviderSecretInputV1": {

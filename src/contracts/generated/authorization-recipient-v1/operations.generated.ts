@@ -18,6 +18,12 @@ export const recipientOperations = {
     "requestType": "RecipientInvitationDetailRequestV1",
     "responseType": "RecipientInvitationDetailResultV1"
   },
+  "emailedEntry": {
+    "method": "POST",
+    "path": "/api/authorization/v1/me/invitations/email-entry",
+    "requestType": "RecipientEmailedEntryRequestV1",
+    "responseType": "RecipientEmailedEntryResultV1"
+  },
   "list": {
     "method": "GET",
     "path": "/api/authorization/v1/me/invitations",

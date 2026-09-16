@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderRuntimeTestEntryV1",
+  "type": "object",
+  "properties": {
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "preparation": {
+      "$ref": "#/$defs/ProviderRuntimeTestPreparation"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "testId": {
+      "$ref": "#/$defs/Uuid7"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "testId",
+    "preparation",
+    "expiresAt"
+  ],
+  "$defs": {
+    "ProviderRuntimeTestPreparation": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

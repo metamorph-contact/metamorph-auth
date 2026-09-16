@@ -1,0 +1,92 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInboxBootstrapRequestV1. Do not edit.",
+  "$defs": {
+    "RecipientBrowserHeadV1": {
+      "additionalProperties": false,
+      "properties": {
+        "browserHeadId": {
+          "maxLength": 43,
+          "minLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "type": "string"
+        },
+        "browserInitializationId": {
+          "maxLength": 43,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "type": "string"
+        },
+        "placement": {
+          "$ref": "#/$defs/RecipientControllerPlacementV1"
+        }
+      },
+      "required": [
+        "browserHeadId",
+        "browserInitializationId",
+        "placement"
+      ],
+      "type": "object"
+    },
+    "RecipientControllerPlacementV1": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithmVersion": {
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "catalogDigest": {
+          "maxLength": 43,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "type": "string"
+        },
+        "catalogVersion": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._-]{1,64}$",
+          "type": "string"
+        },
+        "controllerRegionId": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "algorithmVersion",
+        "catalogVersion",
+        "catalogDigest",
+        "controllerRegionId"
+      ],
+      "type": "object"
+    },
+    "RecipientSchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInboxBootstrapRequestV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "browserAccountId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "head": {
+      "$ref": "#/$defs/RecipientBrowserHeadV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/RecipientSchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "browserAccountId",
+    "head"
+  ],
+  "title": "RecipientInboxBootstrapRequestV1",
+  "type": "object"
+}

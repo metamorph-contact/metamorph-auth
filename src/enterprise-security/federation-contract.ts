@@ -98,6 +98,10 @@ function failureProfileAdmits(
       return true
     case 'browser_read':
       return code !== 'security.operation.partial_result'
+    case 'public_federation':
+      return !PUBLIC_CEREMONY_FORBIDDEN.has(code) ||
+        ((operation === 'identity.methods.resolve' || operation === 'identity.federation.start' || operation === 'identity.federation.dashboard_launch') &&
+          (code === 'security.operation.conflict' || code === 'security.route.retry'))
     case 'public_ceremony':
       return !PUBLIC_CEREMONY_FORBIDDEN.has(code)
   }
@@ -211,7 +215,7 @@ export function prepareFederationRequest<K extends IdentityOperation>(
   if (!validator(wireValue)) throw new Error('Invalid Plan 06 request')
   if (
     operation === 'identity.federation.callback' &&
-    record(record(wireValue)?.proof)?.kind !== 'saml_handoff_continue'
+    !['saml_handoff_continue', 'browser_resume'].includes(String(record(record(wireValue)?.proof)?.kind))
   )
     throw new Error('Browser callbacks cannot submit protocol proofs')
   const boundId = boundMutationId(wireValue)
