@@ -1,0 +1,59 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ExternalIdentityStartRequestV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "ExternalIdentityProtocolV1": {
+      "enum": [
+        "saml",
+        "oidc"
+      ],
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.federation.start:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "clientRegistrationId": {
+      "$ref": "#/$defs/CatalogKeyV1"
+    },
+    "flowId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "protocol": {
+      "$ref": "#/$defs/ExternalIdentityProtocolV1"
+    },
+    "providerId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    },
+    "targetTenantId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "flowId",
+    "targetTenantId",
+    "providerId",
+    "protocol",
+    "clientRegistrationId"
+  ],
+  "title": "ExternalIdentityStartRequestV1",
+  "type": "object"
+}

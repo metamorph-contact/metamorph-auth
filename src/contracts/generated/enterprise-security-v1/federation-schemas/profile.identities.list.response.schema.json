@@ -1,0 +1,359 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ProfileConnectedIdentitiesPageV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "ConnectedIdentityCardV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "identity": {
+              "$ref": "#/$defs/SocialIdentityCardV1"
+            },
+            "kind": {
+              "const": "social",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "identity"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "identity": {
+              "$ref": "#/$defs/EnterpriseIdentityCardV1"
+            },
+            "kind": {
+              "const": "enterprise",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "identity"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "ConnectedIdentityCoreV1": {
+      "additionalProperties": false,
+      "properties": {
+        "lastUsedAt": {
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "linkId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "linkedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "recordRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "state": {
+          "$ref": "#/$defs/ConnectedIdentityStateV1"
+        },
+        "unlinkReadiness": {
+          "$ref": "#/$defs/IdentityUnlinkReadinessV1"
+        }
+      },
+      "required": [
+        "linkId",
+        "state",
+        "linkedAt",
+        "recordRevision",
+        "unlinkReadiness"
+      ],
+      "type": "object"
+    },
+    "ConnectedIdentityStateV1": {
+      "enum": [
+        "pending_activation",
+        "active",
+        "removing"
+      ],
+      "type": "string"
+    },
+    "DeviceLabelV1": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string"
+    },
+    "EnterpriseIdentityCardV1": {
+      "additionalProperties": false,
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/ConnectedIdentityCoreV1"
+        },
+        "issuerDisplay": {
+          "$ref": "#/$defs/IssuerDisplayV1"
+        },
+        "protocol": {
+          "$ref": "#/$defs/EnterpriseProtocolV1"
+        },
+        "providerId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "providerName": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "targetTenantId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        }
+      },
+      "required": [
+        "core",
+        "targetTenantId",
+        "providerId",
+        "providerName",
+        "protocol",
+        "issuerDisplay"
+      ],
+      "type": "object"
+    },
+    "EnterpriseProtocolV1": {
+      "enum": [
+        "saml",
+        "oidc"
+      ],
+      "type": "string"
+    },
+    "IdentityUnlinkReadinessV1": {
+      "description": "Advisory snapshot only. Unlink recomputes current realm/tenant policy,\nalternative login availability, and provider-derived session floors.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "evaluatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "fallbackMethod": {
+              "$ref": "#/$defs/LoginFallbackClassV1"
+            },
+            "otherTenantAccessMayChange": {
+              "type": "boolean"
+            },
+            "revokesDependentSessions": {
+              "type": "boolean"
+            },
+            "state": {
+              "const": "ready",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "evaluatedAt",
+            "fallbackMethod",
+            "revokesDependentSessions",
+            "otherTenantAccessMayChange"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "evaluatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "state": {
+              "const": "blocked_no_alternative",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "evaluatedAt"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "evaluatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "state": {
+              "const": "unavailable",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "evaluatedAt"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "IssuerDisplayV1": {
+      "maxLength": 2048,
+      "minLength": 1,
+      "pattern": "^[!-~]+$",
+      "type": "string"
+    },
+    "LoginFallbackClassV1": {
+      "enum": [
+        "password",
+        "passkey",
+        "other_social_identity",
+        "other_enterprise_identity"
+      ],
+      "type": "string"
+    },
+    "OpaqueCursorV1": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^[!-~]+$",
+      "type": "string"
+    },
+    "PageResultV1": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/ConnectedIdentityCardV1"
+          },
+          "maxItems": 100,
+          "type": "array"
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueCursorV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "partialFailures": {
+          "items": {
+            "$ref": "#/$defs/PartialOwnerFailureV1"
+          },
+          "maxItems": 16,
+          "type": "array"
+        }
+      },
+      "required": [
+        "items",
+        "partialFailures"
+      ],
+      "type": "object"
+    },
+    "PartialOwnerFailureCodeV1": {
+      "enum": [
+        "owner_unavailable",
+        "route_changed",
+        "deadline_exceeded"
+      ],
+      "type": "string"
+    },
+    "PartialOwnerFailureV1": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PartialOwnerFailureCodeV1"
+        },
+        "ownerRegionId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "retryCursor": {
+          "$ref": "#/$defs/OpaqueCursorV1"
+        }
+      },
+      "required": [
+        "ownerRegionId",
+        "retryCursor",
+        "code"
+      ],
+      "type": "object"
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "SocialIdentityCardV1": {
+      "additionalProperties": false,
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/ConnectedIdentityCoreV1"
+        },
+        "provider": {
+          "$ref": "#/$defs/SocialProviderV1"
+        },
+        "realmId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        }
+      },
+      "required": [
+        "core",
+        "realmId",
+        "provider"
+      ],
+      "type": "object"
+    },
+    "SocialProviderV1": {
+      "description": "Exact realm social adapters in CAT-SEC-005. Microsoft social is not a\ntenant-configured Entra enterprise provider.",
+      "enum": [
+        "google",
+        "microsoft",
+        "github"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.identities.list:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accountRevision": {
+      "$ref": "#/$defs/RevisionV1"
+    },
+    "asOf": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "page": {
+      "$ref": "#/$defs/PageResultV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "accountRevision",
+    "asOf",
+    "page"
+  ],
+  "title": "ProfileConnectedIdentitiesPageV1",
+  "type": "object"
+}

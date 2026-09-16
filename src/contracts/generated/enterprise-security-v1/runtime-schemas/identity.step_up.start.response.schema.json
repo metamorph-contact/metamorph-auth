@@ -81,16 +81,84 @@
       "type": "object"
     },
     "IdentityCeremonyStepV1": {
-      "enum": [
-        "verify_email",
-        "verify_factor",
-        "complete_profile",
-        "first_login_enrollment",
-        "accept_invitation",
-        "ready",
-        "rejected"
-      ],
-      "type": "string"
+      "oneOf": [
+        {
+          "enum": [
+            "verify_email",
+            "verify_factor",
+            "complete_profile",
+            "first_login_enrollment",
+            "accept_invitation",
+            "provider_test_completed",
+            "ready",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        {
+          "const": "resolve_identity",
+          "description": "Explicit collision resolution; never merge an account by submitted email.",
+          "type": "string"
+        },
+        {
+          "const": "confirm_federation",
+          "description": "Explicit user confirmation of a flow-bound unsolicited SAML handoff.",
+          "type": "string"
+        }
+      ]
+    },
+    "IdentityStepUpLocalChallengeV1": {
+      "description": "Exact local controlled-factor material. The challenge remains bound to the\nserver-side action ceremony and cannot be used as an action proof itself.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "challenge": {
+              "$ref": "#/$defs/OneTimeProofV1"
+            },
+            "expiresAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "kind": {
+              "const": "passkey",
+              "type": "string"
+            },
+            "rpId": {
+              "$ref": "#/$defs/WebAuthnRpIdV1"
+            },
+            "userVerification": {
+              "$ref": "#/$defs/WebAuthnUserVerificationV1"
+            }
+          },
+          "required": [
+            "kind",
+            "rpId",
+            "challenge",
+            "userVerification",
+            "expiresAt"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "expiresAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "kind": {
+              "const": "totp",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "expiresAt"
+          ],
+          "type": "object"
+        }
+      ]
     },
     "IdentitySubjectReproofReceiptV1": {
       "additionalProperties": false,
@@ -118,6 +186,12 @@
       ],
       "type": "object"
     },
+    "OneTimeProofV1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+      "type": "string"
+    },
     "ProviderHttpsUrlV1": {
       "format": "provider-https-url",
       "maxLength": 2048,
@@ -137,6 +211,19 @@
     },
     "SecuritySchemaVersionV1": {
       "const": 1
+    },
+    "WebAuthnRpIdV1": {
+      "maxLength": 253,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+      "type": "string"
+    },
+    "WebAuthnUserVerificationV1": {
+      "enum": [
+        "preferred",
+        "required"
+      ],
+      "type": "string"
     }
   },
   "$id": "urn:metamorph:enterprise-security:v1:api:identity.step_up.start:response",
@@ -146,6 +233,9 @@
     {
       "additionalProperties": false,
       "properties": {
+        "challenge": {
+          "$ref": "#/$defs/IdentityStepUpLocalChallengeV1"
+        },
         "kind": {
           "const": "local",
           "type": "string"
@@ -156,7 +246,8 @@
       },
       "required": [
         "kind",
-        "progress"
+        "progress",
+        "challenge"
       ],
       "type": "object"
     },

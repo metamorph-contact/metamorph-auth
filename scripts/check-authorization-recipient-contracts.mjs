@@ -12,7 +12,7 @@ const read = (path) => JSON.parse(readFileSync(path, 'utf8'))
 const sourceManifest = read(resolve(docs, 'manifest.json'))
 const consumerManifest = read(resolve(generated, 'manifest.json'))
 assert.deepEqual(consumerManifest, sourceManifest, 'recipient manifest differs from authorization owner')
-assert.deepEqual(Object.keys(sourceManifest.operations).sort(), ['accept', 'bootstrap', 'detail', 'list', 'reject', 'status'])
+assert.deepEqual(Object.keys(sourceManifest.operations).sort(), ['accept', 'bootstrap', 'detail', 'emailedEntry', 'list', 'reject', 'status'])
 
 const ajv = new Ajv2020({ strict: false, allErrors: true })
 addFormats(ajv)

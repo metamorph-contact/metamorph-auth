@@ -1,3 +1,6 @@
+import type { IdentityFlowResumeReferenceV1 } from '../contracts/generated/csi07/IdentityFlowResumeReferenceV1'
+import type { FlowResumeFromStartRequestV1 } from '../contracts/generated/csi07/FlowResumeFromStartRequestV1'
+import type { StartRecovery } from '../security/session-receipts'
 import type { BrowserHeadState } from '../browser/head-store'
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
 import { admittedIdentityApi, catalogNavigationUri, catalogProductReturnUri, controllerApiForRegion, identityApiForRegion } from '../catalog/boundaries'
@@ -20,6 +23,8 @@ import type { CredentialAttemptRegistrationRequestV1 } from '../contracts/genera
 import type { CredentialAttemptRegistrationResultV1 } from '../contracts/generated/csi07/CredentialAttemptRegistrationResultV1'
 import type { CredentialAttemptRecoveryResultV1 } from '../contracts/generated/csi07/CredentialAttemptRecoveryResultV1'
 import type { CredentialAttemptRequestV1 } from '../contracts/generated/csi07/CredentialAttemptRequestV1'
+import type { CredentialPreparationRecoveryRequestV1 } from '../contracts/generated/csi07/CredentialPreparationRecoveryRequestV1'
+import type { CredentialPreparationRecoveryResultV1 } from '../contracts/generated/csi07/CredentialPreparationRecoveryResultV1'
 import type { CredentialAttemptResultV1 } from '../contracts/generated/csi07/CredentialAttemptResultV1'
 import type { CredentialCapabilityRequestV1 } from '../contracts/generated/csi07/CredentialCapabilityRequestV1'
 import type { CredentialCapabilityResultV1 } from '../contracts/generated/csi07/CredentialCapabilityResultV1'
@@ -67,8 +72,9 @@ import type { SignupProfileV1 } from '../contracts/generated/csi11/SignupProfile
 import type { SignupProgressV1 } from '../contracts/generated/csi11/SignupProgressV1'
 import type { SignupResendRequestV1 } from '../contracts/generated/csi11/SignupResendRequestV1'
 import type { SignupResolveRequestV1 } from '../contracts/generated/csi11/SignupResolveRequestV1'
-import type { DestinationContinuationFragment, EmailVerificationFragment, InitialEntryFragment } from '../security/fragment'
+import type { DestinationContinuationFragment, EmailVerificationFragment, InitialEntryFragment, FederationReturnFragment } from '../security/fragment'
 import type { AuthApi } from './http'
+import { ProtocolError } from './http'
 import { randomSecret32, randomUuid7 } from './random'
 import { normalizeEmailForWire } from '../presentation/validation'
 
@@ -188,6 +194,78 @@ export async function createIdentityFlow(
   return Object.freeze({ catalog, controller, bootstrap, head })
 }
 
+export async function resumeFederationFlow(catalog: LoadedIdentityCatalog, head: BrowserHeadState, fragment: FederationReturnFragment): Promise<IdentityFlow> {
+  if (head.placement.controllerRegionId !== fragment.controller) throw new Error('Browser controller changed')
+  const controller = controllerApiForRegion(catalog, fragment.controller)
+  const bootstrap = await controller.post<EmptyV1, FlowBootstrapV1>(
+    `/api/auth/v1/flows/${safeId(fragment.flow)}/bootstrap`, {schemaVersion:1}, 'flowBootstrap',
+  )
+  assertBootstrap(catalog, bootstrap)
+  if (bootstrap.flowId !== fragment.flow || bootstrap.authProjectionId !== fragment.projection
+    || bootstrap.catalogVersion !== fragment.catalog || bootstrap.catalogDigest !== fragment.digest) throw new Error('Federation flow changed')
+  return Object.freeze({catalog,head,controller,bootstrap})
+}
+export async function resumeIdentityFlow(
+  catalog: LoadedIdentityCatalog, head: BrowserHeadState, reference: IdentityFlowResumeReferenceV1,
+): Promise<IdentityFlow> {
+  if (reference.schemaVersion !== 1 || head.placement.controllerRegionId !== reference.controllerRegionId
+    || Date.parse(reference.expiresAt) <= Date.now()) throw new Error('Identity flow changed')
+  const controller = controllerApiForRegion(catalog, reference.controllerRegionId)
+  const bootstrap = await controller.post<EmptyV1, FlowBootstrapV1>(
+    `/api/auth/v1/flows/${safeId(reference.flowId)}/bootstrap`, {schemaVersion:1}, 'flowBootstrap',
+  )
+  assertBootstrap(catalog, bootstrap)
+  if (bootstrap.flowId !== reference.flowId || bootstrap.authProjectionId !== reference.authProjectionId
+    || bootstrap.catalogVersion !== reference.catalogVersion || bootstrap.catalogDigest !== reference.catalogDigest
+    || bootstrap.flowResume?.expiresAt !== reference.expiresAt) throw new Error('Identity flow changed')
+  return Object.freeze({ catalog, head, controller, bootstrap })
+}
+
+export async function resumeFlowFromStart(
+  catalog: LoadedIdentityCatalog, head: BrowserHeadState, reference: StartRecovery,
+): Promise<IdentityFlow> {
+  const controller = controllerApiForRegion(catalog, head.placement.controllerRegionId)
+  const bootstrap = await controller.post<FlowResumeFromStartRequestV1, FlowBootstrapV1>(
+    '/api/auth/v1/flows/resume-from-start',
+    { schemaVersion: 1, authProjectionId: reference.projection, recoveryReceipt: reference.recovery }, 'flowBootstrap',
+  )
+  assertBootstrap(catalog, bootstrap)
+  if (bootstrap.authProjectionId !== reference.projection || bootstrap.catalogVersion !== reference.catalog
+      || bootstrap.catalogDigest !== reference.digest) throw new Error('Original identity flow changed')
+  return Object.freeze({ catalog, head, controller, bootstrap })
+}
+
+export async function recoverFederationEstablishment(flow: IdentityFlow, signal: AbortSignal): Promise<AccountEstablishmentResultV1> {
+  signal.throwIfAborted()
+  const recovery = await flow.controller.post<EmptyV1, CredentialAttemptRecoveryResultV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempt-recovery`,
+    {schemaVersion:1}, 'credentialAttemptRecovery', flow.bootstrap.csrfToken,
+  )
+  signal.throwIfAborted()
+  if (recovery.kind !== 'recover') throw new Error('Federation establishment is unavailable')
+  const home = admittedIdentityApi(flow.catalog, recovery.identityApiOrigin)
+  const outcome = await home.post<EstablishmentRecoveryRequestV1, AccountEstablishmentResultV1>(
+    `/api/auth/v1/account-establishments/${safeId(recovery.attemptId)}/recover`,
+    {schemaVersion:1,recoveryCapability:recovery.recoveryCapability}, 'accountEstablishment',
+  )
+  signal.throwIfAborted()
+  if (outcome.kind !== 'established' && outcome.kind !== 'useExisting') throw new Error('Federation establishment is unavailable')
+  return outcome
+}
+/** Publish only the H-established account into CSI before inbox admission.
+ * Product/target authorization remains the existing explicit continuation. */
+export async function admitAccountForInbox(flow:IdentityFlow,result:AccountEstablishmentResultV1,signal:AbortSignal):Promise<import('../contracts/generated/csi07/RecipientAccountAdmissionV1').RecipientAccountAdmissionV1> {
+  signal.throwIfAborted()
+  if(result.kind!=='established'&&result.kind!=='useExisting')throw new Error('Federation establishment is unavailable')
+  const admitted=await flow.controller.post<AccountContinuationRequestV1,import('../contracts/generated/csi07/RecipientAccountAdmissionV1').RecipientAccountAdmissionV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/recipient-account-establishments`,
+    {schemaVersion:1,kind:'establishment',establishmentOperationId:result.operationId,outcome:result.outcome},
+    'recipientAccountAdmission',flow.bootstrap.csrfToken,{'Idempotency-Key':result.operationId},
+  )
+  signal.throwIfAborted()
+  return admitted
+}
+
 export async function continueAccountEstablishment(flow: IdentityFlow, result: AccountEstablishmentResultV1): Promise<string | null> {
   if (result.kind !== 'established' && result.kind !== 'useExisting') return null
   let next = await flow.controller.post<AccountContinuationRequestV1, AccountContinuationResultV1>(
@@ -220,7 +298,7 @@ export async function continueAccountEstablishment(flow: IdentityFlow, result: A
   return next.navigationUri
 }
 
-export async function signIn(flow: IdentityFlow, email: string, password: string): Promise<{ result: AccountEstablishmentResultV1; navigationUri: string | null }> {
+export async function signIn(flow: IdentityFlow, email: string, password: string): Promise<AccountEstablishmentResultV1> {
   const canonicalEmail = normalizeEmailForWire(email)
   if (canonicalEmail === null) throw new Error('Invalid email')
   assertBoundedPassword(password)
@@ -254,24 +332,158 @@ export async function signIn(flow: IdentityFlow, email: string, password: string
     { schemaVersion: 1, email: canonicalEmail, password, attemptId: continued.attemptId, capability: continued.destinationCapability, registrationProof: registration.registrationProof },
     'accountEstablishment', undefined, { 'Idempotency-Key': continued.attemptId },
   )
-  return { result, navigationUri: await continueAccountEstablishment(flow, result) }
+  return result
 }
 
-export async function recoverCredentialAttempt(flow: IdentityFlow): Promise<{ result: AccountEstablishmentResultV1 | null; navigationUri: string | null }> {
+/** Prepare the existing cancellable CSI operation for provider protocol work.
+ * Recovery reads current controller cookie/CSRF authority before each call.
+ * No identity-provider receipt is treated as an account establishment. */
+export async function currentFederationAuthorization(flow: IdentityFlow, preparationEmail?: string): Promise<string | null> {
+  if (flow.bootstrap.providerTestEntry != null) return currentProviderRuntimeTestAuthorization(flow)
+
+  const recovery = await flow.controller.post<EmptyV1, CredentialAttemptRecoveryResultV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempt-recovery`,
+    { schemaVersion: 1 }, 'credentialAttemptRecovery', flow.bootstrap.csrfToken,
+  )
+  if (recovery.kind === 'none') return null
+  if (recovery.kind === 'recover') return recovery.retryMaterial.federationFlowAuthorization
+  const home = admittedIdentityApi(flow.catalog, recovery.identityApiOrigin)
+  const original = await home.post<CredentialPreparationRecoveryRequestV1, CredentialPreparationRecoveryResultV1>(
+    '/api/auth/v1/federation/credential-preparations/recover',
+    {schemaVersion:1, preparationRecoveryProof:recovery.preparationRecoveryProof}, 'credentialPreparationRecovery',
+  )
+  if (original.kind === 'notPrepared' && preparationEmail === undefined) return null
+  const attempt = original.kind === 'recovered' ? original.preparation : await home.post<CredentialAttemptRequestV1, CredentialAttemptResultV1>(
+    '/api/auth/v1/federation/credential-attempts',
+    {schemaVersion:1, email:preparationEmail!, capability:recovery.credentialCapability}, 'credentialAttempt', undefined,
+    {'Idempotency-Key':recovery.attemptId},
+  )
+  const registered = await flow.controller.post<CredentialAttemptRegistrationRequestV1, CredentialAttemptRegistrationResultV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempts`,
+    {schemaVersion:1, attemptReceipt:attempt.attemptReceipt, credentialCapability:recovery.credentialCapability, recoveryCapability:attempt.recoveryCapability},
+    'credentialRegistration', flow.bootstrap.csrfToken,
+  )
+  return registered.federationFlowAuthorization
+}
+type ProviderTestAuthorization = { authorization?: string; pending?: Promise<string> }
+const providerTestAuthorizations = new WeakMap<IdentityFlow, ProviderTestAuthorization>()
+export function releaseProviderRuntimeTest(flow: IdentityFlow): void {
+  const state = providerTestAuthorizations.get(flow)
+  if (state) state.authorization = undefined
+  providerTestAuthorizations.delete(flow)
+  if (flow.bootstrap.providerTestEntry) flow.bootstrap.providerTestEntry.preparation = ''
+}
+export async function currentProviderRuntimeTestAuthorization(flow: IdentityFlow): Promise<string> {
+  const entry = flow.bootstrap.providerTestEntry
+  const context = flow.bootstrap.providerTest
+  if (!entry || !entry.preparation || !context || entry.testId !== context.testId
+    || Date.parse(context.expiresAt) <= Date.now() || Date.parse(flow.bootstrap.expiresAt) <= Date.now()) {
+    throw new Error('security.ceremony.expired')
+  }
+  let state = providerTestAuthorizations.get(flow)
+  if (!state) { state = {}; providerTestAuthorizations.set(flow, state) }
+  if (state.authorization) return state.authorization
+  if (state.pending) return state.pending
+  const original = state
+  original.pending = (async () => {
+    const { accounts } = await loadAccounts(flow)
+    const account = accounts.find(value => value.reference.browserAccountId === context.browserAccountId)
+    if (!account || account.reference.homeRegionId !== context.providerRegionId) throw new Error('security.owner.unavailable')
+    const result = await flow.controller.post<
+      import('../contracts/generated/csi07/ProviderRuntimeTestFlowRequestV1').ProviderRuntimeTestFlowRequestV1,
+      import('../contracts/generated/csi07/ProviderRuntimeTestFlowResultV1').ProviderRuntimeTestFlowResultV1
+    >(`/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/provider-runtime-test`, {
+      schemaVersion: 1, preparation: entry.preparation, validationReceipt: account.summary.validationReceipt,
+    }, 'providerRuntimeTestFlow', flow.bootstrap.csrfToken, {'Idempotency-Key': context.testId})
+    if (result.flowId !== flow.bootstrap.flowId || Date.parse(result.expiresAt) > Date.parse(context.expiresAt)
+      || Date.parse(result.expiresAt) <= Date.now() || providerTestAuthorizations.get(flow) !== original) {
+      throw new Error('security.ceremony.mismatch')
+    }
+    original.authorization = result.authorization
+    return result.authorization
+  })()
+  try { return await original.pending } finally { original.pending = undefined }
+}
+
+type FederationPreparation = {
+  email: string
+  capability?: Extract<CredentialCapabilityResultV1, {action:'federationRoute'}>
+  route?: CredentialRouteResolutionV1
+  continued?: CredentialRouteContinuationResultV1
+  attempt?: CredentialAttemptResultV1
+  pending?: Promise<void>
+  complete: boolean
+}
+const federationPreparations = new WeakMap<IdentityFlow, FederationPreparation>()
+export async function prepareFederationAttempt(flow: IdentityFlow, email: string): Promise<void> {
+  const canonicalEmail = normalizeEmailForWire(email)
+  if (canonicalEmail === null) throw new Error('Invalid email')
+  let preparation = federationPreparations.get(flow)
+  if (preparation !== undefined && preparation.email !== canonicalEmail) throw new Error('Federation flow input changed')
+  if (preparation?.complete) return
+  if (preparation?.pending) return preparation.pending
+  preparation ??= {email:canonicalEmail,complete:false}
+  federationPreparations.set(flow,preparation)
+  const original = preparation
+  const pending = (async () => {
+    if (await currentFederationAuthorization(flow, canonicalEmail) !== null) {original.complete=true;return}
+    if (original.capability === undefined) {
+      const capability = await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
+        `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
+        {schemaVersion:1,action:'federationRoute'}, 'credentialCapability', flow.bootstrap.csrfToken,
+      )
+      if (capability.action !== 'federationRoute') throw new Error('Wrong credential capability')
+      original.capability=capability
+    }
+    const initialHome=identityApiForRegion(flow.catalog,flow.bootstrap.initialRegionId,flow.bootstrap.initialIdentityApiOrigin)
+    original.route ??= await initialHome.post<CredentialRouteRequestV1, CredentialRouteResolutionV1>(
+      '/api/auth/v1/federation/routes', {schemaVersion:1,email:canonicalEmail,capability:original.capability.routeCapability}, 'routeResolution',
+    )
+    if (original.continued === undefined) {
+      const continued=await flow.controller.post<RouteContinuationRequestV1, CredentialRouteContinuationResultV1>(
+        `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/route-continuations`,
+        {schemaVersion:1,routeDecision:original.route.routeDecision,homeSeed:original.route.homeSeed}, 'routeContinuation',flow.bootstrap.csrfToken,
+      )
+      if (continued.action !== 'signIn') throw new Error('Wrong route continuation')
+      original.continued=continued
+    }
+    const continued=original.continued
+    const home=identityApiForRegion(flow.catalog,continued.regionId,continued.identityApiOrigin)
+    original.attempt ??= await home.post<CredentialAttemptRequestV1, CredentialAttemptResultV1>(
+      '/api/auth/v1/federation/credential-attempts',
+      {schemaVersion:1,email:canonicalEmail,capability:continued.destinationCapability}, 'credentialAttempt',undefined,
+      {'Idempotency-Key':continued.attemptId},
+    )
+    await flow.controller.post<CredentialAttemptRegistrationRequestV1, CredentialAttemptRegistrationResultV1>(
+      `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempts`,
+      {schemaVersion:1,attemptReceipt:original.attempt.attemptReceipt,credentialCapability:continued.destinationCapability,recoveryCapability:original.attempt.recoveryCapability},
+      'credentialRegistration',flow.bootstrap.csrfToken,
+    )
+    original.complete=true
+  })()
+  original.pending=pending
+  try {await pending} finally {
+    // Keep the exact admitted route, H operation and registration material on
+    // ambiguous responses. Retries must not replace or extend their deadlines.
+    original.pending=undefined
+  }
+}
+
+export async function recoverCredentialAttempt(flow: IdentityFlow): Promise<AccountEstablishmentResultV1 | null> {
   const recovery = await flow.controller.post<EmptyV1, CredentialAttemptRecoveryResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempt-recovery`,
     { schemaVersion: 1 },
     'credentialAttemptRecovery',
     flow.bootstrap.csrfToken,
   )
-  if (recovery.kind === 'none') return { result: null, navigationUri: null }
+  if (recovery.kind !== 'recover') return null
   const home = admittedIdentityApi(flow.catalog, recovery.identityApiOrigin)
   const result = await home.post<EstablishmentRecoveryRequestV1, AccountEstablishmentResultV1>(
     `/api/auth/v1/account-establishments/${safeId(recovery.attemptId)}/recover`,
     { schemaVersion: 1, recoveryCapability: recovery.recoveryCapability },
     'accountEstablishment',
   )
-  return { result, navigationUri: await continueAccountEstablishment(flow, result) }
+  return result
 }
 
 export async function loadAccounts(flow: IdentityFlow): Promise<DisplayAccountsResult> {
@@ -629,3 +841,17 @@ export async function uploadSignupPicture(
 }
 
 export { randomSecret32, randomUuid7 }
+
+/** Cancels only this cookie-backed C flow. The server commits the local fence
+ * and exact original H/P cancellation deliveries before acknowledging it. */
+export async function cancelIdentityFlow(flow: IdentityFlow, attemptId: string): Promise<void> {
+  const result = await flow.controller.post<unknown, import('../contracts/generated/csi10/BrowserLogoutResultV1').BrowserLogoutResultV1>(
+    `/api/auth/v1/flows/${flow.bootstrap.flowId}/cancellation`,
+    {scope:'identityFlow',schemaVersion:1,prepareAttemptId:attemptId,flowId:flow.bootstrap.flowId,
+      head:{browserHeadId:flow.head.browserHeadId,browserInitializationId:flow.head.browserInitializationId,placement:flow.head.placement}},
+    'logoutResult',flow.bootstrap.csrfToken,{'Idempotency-Key':attemptId},
+  )
+  if(result.scope!=='identityFlow'||!['partial','complete','acknowledged'].includes(result.state)) {
+    throw new ProtocolError('auth.logout.retry_required',true,undefined,'retryLogout')
+  }
+}

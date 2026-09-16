@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderRuntimeTestContextV1",
+  "description": "Safe metadata projected only after C verifies I's preparation signature.",
+  "type": "object",
+  "properties": {
+    "browserAccountId": {
+      "$ref": "#/$defs/BrowserAccountId"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "protocol": {
+      "$ref": "#/$defs/ProviderRuntimeTestProtocolV1"
+    },
+    "providerId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "providerRegionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "tenantId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "testId": {
+      "$ref": "#/$defs/Uuid7"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "testId",
+    "tenantId",
+    "providerId",
+    "browserAccountId",
+    "providerRegionId",
+    "protocol",
+    "expiresAt"
+  ],
+  "$defs": {
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "ProviderRuntimeTestProtocolV1": {
+      "type": "string",
+      "enum": [
+        "oidc",
+        "saml"
+      ]
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

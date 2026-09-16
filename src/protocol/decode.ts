@@ -8,12 +8,14 @@ type RuntimeValidator = ((input: unknown) => boolean) & {
 export type ResponseSchemaName =
   | 'protocolError' | 'flowBootstrap' | 'browserAnchor' | 'credentialCapability'
   | 'routeResolution' | 'routeContinuation' | 'credentialAttempt' | 'credentialRegistration'
-  | 'credentialAttemptRecovery' | 'accountEstablishment' | 'accounts' | 'accountMetadata'
-  | 'accountValidation' | 'accountSelection' | 'accountAuthorization' | 'accountContinuation'
+  | 'credentialAttemptRecovery' | 'credentialPreparationRecovery' | 'accountEstablishment' | 'accounts' | 'accountMetadata'
+  | 'accountValidation' | 'accountSelection' | 'accountAuthorization' | 'accountContinuation' | 'providerRuntimeTestFlow'
+  | 'strongActionDelegation'
   | 'signupPreparation' | 'signupRegistration' | 'signupContinuation' | 'verifiedSignupTransfer'
   | 'destinationReceipt' | 'authorizationFinalization' | 'signupProgress' | 'signupCompletion'
   | 'emailPreview' | 'emailVerification' | 'recoveryAccepted' | 'recoveryCompleted'
   | 'logoutOptions' | 'logoutAccountMetadata' | 'logoutResult'
+  | 'recipientAccountAdmission' | 'recipientBootstrap' | 'recipientList' | 'recipientDetail' | 'recipientOperation' | 'recipientDecision' | 'recipientEmailedEntryRequest' | 'recipientEmailedEntry'
 
 const validators = {
   protocolError: generated.protocolError,
@@ -25,13 +27,24 @@ const validators = {
   credentialAttempt: generated.credentialAttempt,
   credentialRegistration: generated.credentialRegistration,
   credentialAttemptRecovery: generated.credentialAttemptRecovery,
+  credentialPreparationRecovery: generated.credentialPreparationRecovery,
   accountEstablishment: generated.accountEstablishment,
   accounts: generated.accounts,
   accountMetadata: generated.accountMetadata,
   accountValidation: generated.accountValidation,
   accountSelection: generated.accountSelection,
   accountAuthorization: generated.accountAuthorization,
+  providerRuntimeTestFlow: generated.providerRuntimeTestFlow,
+  strongActionDelegation: generated.strongActionDelegation,
   accountContinuation: generated.accountContinuation,
+  recipientAccountAdmission: generated.recipientAccountAdmission,
+  recipientBootstrap: generated.recipientBootstrap,
+  recipientList: generated.recipientList,
+  recipientDetail: generated.recipientDetail,
+  recipientOperation: generated.recipientOperation,
+  recipientDecision: generated.recipientDecision,
+  recipientEmailedEntryRequest: generated.recipientEmailedEntryRequest,
+  recipientEmailedEntry: generated.recipientEmailedEntry,
   signupPreparation: generated.signupPreparation,
   signupRegistration: generated.signupRegistration,
   signupContinuation: generated.signupContinuation,

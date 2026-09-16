@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IdentityFlowResumeReferenceV1",
+  "description": "Advisory recovery metadata only. The bootstrap read independently admits\nthe original current C anchor/head/flow cookie; this reference grants none.",
+  "type": "object",
+  "properties": {
+    "authProjectionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "catalogDigest": {
+      "$ref": "#/$defs/Digest32"
+    },
+    "catalogVersion": {
+      "$ref": "#/$defs/CatalogVersion"
+    },
+    "controllerRegionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "flowId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "flowId",
+    "controllerRegionId",
+    "authProjectionId",
+    "catalogVersion",
+    "catalogDigest",
+    "expiresAt"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$"
+    },
+    "Digest32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

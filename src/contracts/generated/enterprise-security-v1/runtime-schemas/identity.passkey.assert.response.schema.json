@@ -42,16 +42,31 @@
       "type": "object"
     },
     "IdentityCeremonyStepV1": {
-      "enum": [
-        "verify_email",
-        "verify_factor",
-        "complete_profile",
-        "first_login_enrollment",
-        "accept_invitation",
-        "ready",
-        "rejected"
-      ],
-      "type": "string"
+      "oneOf": [
+        {
+          "enum": [
+            "verify_email",
+            "verify_factor",
+            "complete_profile",
+            "first_login_enrollment",
+            "accept_invitation",
+            "provider_test_completed",
+            "ready",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        {
+          "const": "resolve_identity",
+          "description": "Explicit collision resolution; never merge an account by submitted email.",
+          "type": "string"
+        },
+        {
+          "const": "confirm_federation",
+          "description": "Explicit user confirmation of a flow-bound unsolicited SAML handoff.",
+          "type": "string"
+        }
+      ]
     },
     "IdentitySubjectReproofReceiptV1": {
       "additionalProperties": false,

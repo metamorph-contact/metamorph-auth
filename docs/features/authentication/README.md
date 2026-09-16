@@ -70,7 +70,9 @@ credential result or action proof.
 Packet K's SAML/OIDC, emergency, JIT profile, and SCIM activation previews use
 a third development-only lazy module. Its JIT sample carries the generated
 profile-completion request shape, including handle, first name, avatar fallback,
-and a null privacy handoff; it does not submit a profile or invent a receipt.
+and a null privacy handoff in the original inspection scenarios. G's interactive
+ready preview exercises the real profile form/transport with an explicitly DEV-only
+privacy receipt and never invokes an actual profile publisher.
 Packet L's recipient inbox uses a fourth
 lazy module and the separately generated authorization recipient contract. It
 shows pinned offers, redacted claim-required teasers, queued decisions, local
@@ -109,3 +111,41 @@ All 14 focused identity checks and both readonly reviews are CLEAN after the
 committed-mount BFCache recovery fix. Final coverage/handoff audit is complete; both readonly reviewers are CLEAN.
 Actual owner and first product-handler/live qualification remain in SaaS's
 EA-10I integrator ledger.
+## Plan06G browser composition — 2026-09-15
+
+Owned scoped method discovery/SAML confirmation/JIT contact/profile and per-offer
+recipient decision/status journeys are implemented. Rust-generated twelve-
+operation types/routes/schemas and identical standalone validators bind exact
+callback/challenge/provisional metadata. Actual CSI establishment recovery,
+current factor/link/privacy/contact and guarded recipient suppliers remain
+mandatory; no ready progress or DEV receipt issues an account or target access.
+Cancellation, scope exit, page suspension and expiry erase private custody; actual
+CSI durable cancellation must also fence in-flight publication. Same original
+request/privacy receipt recovers ambiguous responses; definite denials permit new
+commands. Live callback origin/region comes from the verified catalog.
+
+37 focused Auth checks and both TypeScript builds pass. Production bundle admits
+about 287 KiB gzip under its original 330 KiB limit, with inline fragment/CSP,
+no-eval and DEV fixture exclusion checks. Browser exercises are synthetic protocol
+receipts, not actual IdP/CSI/cross-process qualification. The SaaS Plan06G handoff
+and EA-06I ledger own actual supplier installation and human testing. All readonly bug/security/performance final reviews are clear.
+
+EA-06I remains in progress. Its live method/start adapter uses current CSI/CSRF
+admission. SP callback return scrubs advisory identifiers, bootstraps the same
+cookie-bound CSI flow and resumes with the independent issuer return cookie.
+Actual JIT challenge/provisional/privacy metadata drives the profile form;
+optional consent remains optional. Account continuation recovers H's existing
+protected CSI outcome. Recipient, controlled-factor/link, privacy presentation
+publication and fresh unsolicited SAML owners still need composition. Generated
+artifacts, targeted checks and the packet's readonly reviews are pending; the
+earlier Plan06G check counts do not qualify this new integration.
+
+EA-06I now supplies unsolicited SAML entry through the exact signed catalog
+product entry registration. The product creates the normal P cookie/start;
+C returns opaque original handoff metadata in its current bootstrap. G prepares
+the actual H operation, shows the verified provider after redemption, and
+requires explicit confirmation before the retained JIT/sign-in journey. A
+native advisory flow reference supports reload with the current C cookie;
+assertion, CSRF and CSI authorization custody is never stored in browser
+storage. Independent Original I expiry and source admission remain mandatory.
+Configured startup and targeted behavioral verification remain pending.

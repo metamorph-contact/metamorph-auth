@@ -1,0 +1,50 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInvitationDecisionRequestV1. Do not edit.",
+  "$defs": {
+    "RecipientInvitationExpectedV1": {
+      "additionalProperties": false,
+      "properties": {
+        "invitationVersion": {
+          "pattern": "^[1-9][0-9]{0,19}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "invitationVersion"
+      ],
+      "type": "object"
+    },
+    "RecipientSchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInvitationDecisionRequestV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "emailedToken": {
+      "pattern": "^[A-Za-z0-9_-]{16,1024}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expected": {
+      "$ref": "#/$defs/RecipientInvitationExpectedV1"
+    },
+    "mutationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/RecipientSchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "mutationId",
+    "expected"
+  ],
+  "title": "RecipientInvitationDecisionRequestV1",
+  "type": "object"
+}

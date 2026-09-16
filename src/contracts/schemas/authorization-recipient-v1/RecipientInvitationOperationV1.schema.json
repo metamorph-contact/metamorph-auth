@@ -1,0 +1,51 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInvitationOperationV1. Do not edit.",
+  "$defs": {
+    "RecipientOperationStateV1": {
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "superseded"
+      ],
+      "type": "string"
+    },
+    "RecipientSchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInvitationOperationV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "invitationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "operationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "safeErrorCode": {
+      "pattern": "^[a-z][a-z0-9._-]{0,95}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/RecipientSchemaVersionV1"
+    },
+    "state": {
+      "$ref": "#/$defs/RecipientOperationStateV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "state",
+    "invitationId"
+  ],
+  "title": "RecipientInvitationOperationV1",
+  "type": "object"
+}

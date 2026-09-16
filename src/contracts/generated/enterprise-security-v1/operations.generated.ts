@@ -892,7 +892,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/identity.federation.callback.request.schema.json",
     "requestType": "ExternalIdentityCallbackRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.federation.callback.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
   },
   "identity.federation.dashboard_launch": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.federation.dashboard_launch.request.schema.json",
@@ -922,19 +922,25 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.start.request.schema.json",
     "requestType": "IdentityEmailStartRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.start.response.schema.json",
-    "responseType": "IdentityAcceptedV1"
+    "responseType": "IdentityJitPrimaryEmailStartResultV1"
   },
   "identity.jit.primary_email.verify": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.verify.request.schema.json",
     "requestType": "IdentityEmailVerifyRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.verify.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
+  },
+  "identity.jit.privacy.acknowledge": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.request.schema.json",
+    "requestType": "IdentityJitPrivacyAcknowledgeRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.response.schema.json",
+    "responseType": "PrivacyAcknowledgementHandoffV1"
   },
   "identity.jit.profile_complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.profile_complete.request.schema.json",
     "requestType": "IdentityProfileCompleteRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.profile_complete.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
   },
   "identity.methods.resolve": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.methods.resolve.request.schema.json",

@@ -33,6 +33,7 @@ function messageFor(code: string): string {
 function targetLabel(card: RecipientInvitationCardV1): string {
   switch (card.target.kind) {
     case 'tenant': return card.tenantDisplay
+    case 'homeRole': return card.target.roleDisplay
     case 'team': return card.target.teamDisplay
     case 'spaceRole':
     case 'projectRole': return `${card.target.resourceDisplay} · ${card.target.roleDisplay}`

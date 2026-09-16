@@ -1,0 +1,59 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::SelfPageRequestV1. Do not edit.",
+  "$defs": {
+    "OpaqueCursorV1": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^[!-~]+$",
+      "type": "string"
+    },
+    "PageLimitV1": {
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "PageRequestV1": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueCursorV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "$ref": "#/$defs/PageLimitV1"
+        }
+      },
+      "required": [
+        "limit"
+      ],
+      "type": "object"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.identities.list:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A self-only paginated read. The subject is resolved from the verified CSI\naccount session; no tenant or user selector is accepted from the browser.",
+  "properties": {
+    "page": {
+      "$ref": "#/$defs/PageRequestV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "page"
+  ],
+  "title": "SelfPageRequestV1",
+  "type": "object"
+}
