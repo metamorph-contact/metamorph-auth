@@ -52,7 +52,14 @@ const stepUpRequest: IdentityStepUpStartRequestV1 = {
   schemaVersion: 1, attemptId: 'fixture-action-attempt', operationKey: 'admin.authentication.apply',
   targetDigest: 'fixture-target-digest', expectedSessionRevision: '1', requestedMethod: { kind: 'passkey' },
 }
-const stepUpStart: IdentityStepUpStartResultV1 = { kind: 'local', progress: verifyFactor }
+const stepUpStart: IdentityStepUpStartResultV1 = {
+  kind: 'local',
+  progress: verifyFactor,
+  challenge: {
+    kind: 'passkey', rpId: assertion.rpId, challenge: assertion.challenge,
+    userVerification: assertion.userVerification, expiresAt: assertion.expiresAt,
+  },
+}
 
 function wait(signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {

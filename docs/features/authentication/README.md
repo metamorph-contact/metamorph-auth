@@ -96,3 +96,23 @@ about 287 KiB gzip under its original 330 KiB limit, with inline fragment/CSP,
 no-eval and DEV fixture exclusion checks. Browser exercises are synthetic protocol
 receipts, not actual IdP/CSI/cross-process qualification. The SaaS Plan06G handoff
 and EA-06I ledger own actual supplier installation and human testing. All readonly bug/security/performance final reviews are clear.
+
+EA-06I remains in progress. Its live method/start adapter uses current CSI/CSRF
+admission. SP callback return scrubs advisory identifiers, bootstraps the same
+cookie-bound CSI flow and resumes with the independent issuer return cookie.
+Actual JIT challenge/provisional/privacy metadata drives the profile form;
+optional consent remains optional. Account continuation recovers H's existing
+protected CSI outcome. Recipient, controlled-factor/link, privacy presentation
+publication and fresh unsolicited SAML owners still need composition. Generated
+artifacts, targeted checks and the packet's readonly reviews are pending; the
+earlier Plan06G check counts do not qualify this new integration.
+
+EA-06I now supplies unsolicited SAML entry through the exact signed catalog
+product entry registration. The product creates the normal P cookie/start;
+C returns opaque original handoff metadata in its current bootstrap. G prepares
+the actual H operation, shows the verified provider after redemption, and
+requires explicit confirmation before the retained JIT/sign-in journey. A
+native advisory flow reference supports reload with the current C cookie;
+assertion, CSRF and CSI authorization custody is never stored in browser
+storage. Independent Original I expiry and source admission remain mandatory.
+Configured startup and targeted behavioral verification remain pending.

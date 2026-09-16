@@ -84,31 +84,8 @@
             "code"
           ],
           "type": "object"
-        },
-        {
-          "additionalProperties": false,
-          "properties": {
-            "code": {
-              "$ref": "#/$defs/RecoveryCodeV1"
-            },
-            "kind": {
-              "const": "recovery_code",
-              "type": "string"
-            }
-          },
-          "required": [
-            "kind",
-            "code"
-          ],
-          "type": "object"
         }
       ]
-    },
-    "RecoveryCodeV1": {
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^[0-9A-HJKMNP-TV-Z]{4}(?:-[0-9A-HJKMNP-TV-Z]{4}){4}$",
-      "type": "string"
     },
     "RevisionV1": {
       "maxLength": 20,

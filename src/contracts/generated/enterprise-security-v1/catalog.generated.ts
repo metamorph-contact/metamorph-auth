@@ -1255,11 +1255,20 @@ export const enterpriseSecurityCatalog = {
         },
         "assurance": "public_ceremony",
         "operations": [
-          "identity.methods.resolve",
           "identity.password_recovery.start",
           "identity.factor_recovery.start",
-          "identity.federation.start",
           "identity.social.start"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "csi_flow"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.methods.resolve",
+          "identity.federation.start"
         ]
       },
       {
@@ -1363,7 +1372,8 @@ export const enterpriseSecurityCatalog = {
           "identity.federation.callback",
           "identity.jit.primary_email.start",
           "identity.jit.primary_email.verify",
-          "identity.jit.profile_complete"
+          "identity.jit.profile_complete",
+          "identity.jit.privacy.acknowledge"
         ]
       },
       {

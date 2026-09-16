@@ -1,0 +1,255 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInvitationDetailResultV1. Do not edit.",
+  "$defs": {
+    "RecipientHomeRoleBoundaryV1": {
+      "enum": [
+        "admin",
+        "profile"
+      ],
+      "type": "string"
+    },
+    "RecipientInvitationCardV1": {
+      "additionalProperties": false,
+      "properties": {
+        "claimRequired": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "invitationId": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        "invitationKind": {
+          "$ref": "#/$defs/RecipientInvitationKindV1"
+        },
+        "invitationVersion": {
+          "pattern": "^[1-9][0-9]{0,19}$",
+          "type": "string"
+        },
+        "inviterDisplay": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        "operationId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "$ref": "#/$defs/RecipientInvitationStateV1"
+        },
+        "statusUncertain": {
+          "type": "boolean"
+        },
+        "target": {
+          "$ref": "#/$defs/RecipientTargetSummaryV1"
+        },
+        "tenantDisplay": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        "tenantId": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        "terminalReason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RecipientTerminalReasonV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "invitationId",
+        "tenantId",
+        "invitationKind",
+        "state",
+        "invitationVersion",
+        "createdAt",
+        "expiresAt",
+        "inviterDisplay",
+        "tenantDisplay",
+        "target",
+        "statusUncertain",
+        "claimRequired"
+      ],
+      "type": "object"
+    },
+    "RecipientInvitationKindV1": {
+      "enum": [
+        "tenant_member",
+        "guest",
+        "home_role",
+        "project_role",
+        "team_membership"
+      ],
+      "type": "string"
+    },
+    "RecipientInvitationStateV1": {
+      "enum": [
+        "pending",
+        "accepted_provisioning",
+        "revoking",
+        "completed",
+        "revoked",
+        "expired",
+        "superseded",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "RecipientSchemaVersionV1": {
+      "const": 1
+    },
+    "RecipientTargetSummaryV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tenant",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "boundary": {
+              "$ref": "#/$defs/RecipientHomeRoleBoundaryV1"
+            },
+            "kind": {
+              "const": "homeRole",
+              "type": "string"
+            },
+            "roleDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "boundary",
+            "roleDisplay"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "team",
+              "type": "string"
+            },
+            "teamDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "teamDisplay"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "spaceRole",
+              "type": "string"
+            },
+            "resourceDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            "roleDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceDisplay",
+            "roleDisplay"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "projectRole",
+              "type": "string"
+            },
+            "resourceDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            "roleDisplay": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceDisplay",
+            "roleDisplay"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "RecipientTerminalReasonV1": {
+      "enum": [
+        "recipient_rejected",
+        "inviter_revoked",
+        "expired",
+        "superseded",
+        "failed"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInvitationDetailResultV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "invitation": {
+      "$ref": "#/$defs/RecipientInvitationCardV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/RecipientSchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "invitation"
+  ],
+  "title": "RecipientInvitationDetailResultV1",
+  "type": "object"
+}

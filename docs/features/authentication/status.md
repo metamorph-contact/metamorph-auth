@@ -1,6 +1,18 @@
 # Shared Identity Frontend Status
 
-- Date: 2026-09-15
+EA-06I is in progress: current CSI/CSRF method/start admission and same-flow SP
+return/recovery are being composed with the real JIT and H establishment owners.
+Typed privacy metadata and acknowledgement preserve optional consent. Native
+unsolicited SAML entry, original start-response recovery and explicit durable
+per-flow cancellation are written. Password and federation enter the actual
+identity invitation inbox before product continuation. Recipient composition
+now has an independent backend owner/listener/worker construction path.
+Configured process startup, emailed ingress, factor/link and actual policy/effect
+delivery owners remain open.
+Generated artifacts, targeted checks and readonly reviews for this change have
+not completed. Earlier qualification below belongs to its dated packets.
+
+- Date: 2026-09-16
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -312,3 +324,24 @@ Imported main's EA-02H authority-freshness key/vector/deadline contracts and
 regenerated the combined Rust-owned manifest. Plan06 federation journeys remain
 bound to current CSI owner admission; a regional lease does not grant a session.
 The existing README and transport documentation remain accurate.
+
+EA-06I remains in development. The live recipient supplier admits the actual
+H-established account into CSI before bounded inbox reads and explicit
+accept/reject/status recovery. SAML and emailed invitation entry retain their
+original P/C deadlines and erase private custody at expiry/pagehide/scope exit.
+Safe offer/uncertain-command display can survive short reader receipt expiry.
+
+Auth has a dedicated provider-test entry panel and current native C/H account
+binding. It starts the configured protocol with the original test command and
+projects the distinct native provider_test_completed result. Cancellation can
+abort a pending launch; a lost cancellation acknowledgement retains the exact
+command for retry. It offers no product/account continuation after completion.
+Both frontend project builds pass after provider-test contract regeneration,
+coordinated start-bound changes and cancellation cleanup fixes. Native runtime
+validators are regenerated.
+
+Current factor/action/link and Common policy/effect producers, protected startup
+and final catalog publication remain pending in the SaaS integrator ledger.
+Lodestone stable-ID append/reconciliation remains an adjacent-owner blocker.
+Packet behavioral checks, readonly reviews and final commit/push have not run.
+No live IdP qualification is claimed.

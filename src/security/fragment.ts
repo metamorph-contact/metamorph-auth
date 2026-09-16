@@ -1,4 +1,4 @@
-const MAX_FRAGMENT_BYTES = 16 * 1024
+const MAX_FRAGMENT_BYTES = 36 * 1024
 const TOKEN = /^[A-Za-z0-9._~-]{1,1024}$/u
 const PROTECTED = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}(?:(?:\.[A-Za-z0-9_-]*){2})?$/u
 
@@ -49,8 +49,13 @@ export type DestinationContinuationFragment = Readonly<{
 }>
 
 export type SamlHandoffFragment = Readonly<{ kind: 'samlHandoff'; handoffProof: string; providerRegionId: string }>
+export type FederationReturnFragment = Readonly<{
+  kind: 'federationReturn'; projection: string; controller: string; catalog: string; digest: string
+  flow: string; attempt: string; provider: string; issuer: string
+}>
 
 export type AuthFragment =
+  | FederationReturnFragment
   | SamlHandoffFragment
   | InitialEntryFragment
   | EmailVerificationFragment
@@ -118,6 +123,15 @@ function parseFragment(hash: string): AuthFragment {
   }
   if (params.get('v') !== '1') throw new InvalidAuthFragmentError()
   const kind = params.get('kind')
+  if (kind === 'federationReturn') {
+    exact(params, ['v', 'kind', 'projection', 'controller', 'catalog', 'digest', 'flow', 'attempt', 'provider', 'issuer'])
+    const ids = ['flow', 'attempt', 'provider'].map((name) => value(params, name))
+    if (ids.some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(id))) throw new InvalidAuthFragmentError()
+    const controller = value(params, 'controller'); const issuer = value(params, 'issuer')
+    if ([controller, issuer].some((id) => id.length > 96 || !/^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u.test(id))) throw new InvalidAuthFragmentError()
+    return Object.freeze({ kind, projection: value(params, 'projection'), controller, issuer,
+      catalog: value(params, 'catalog'), digest: digestValue(params, 'digest'), flow: ids[0]!, attempt: ids[1]!, provider: ids[2]! })
+  }
   if (kind === 'initial' || kind === 'relocation') {
     exact(params, ['v', 'kind', 'projection', 'controller', 'catalog', 'digest', 'recovery', 'start'])
     return Object.freeze({
@@ -127,7 +141,7 @@ function parseFragment(hash: string): AuthFragment {
       catalog: value(params, 'catalog'),
       digest: digestValue(params, 'digest'),
       recovery: protectedValue(params, 'recovery', 3 * 1024),
-      start: protectedValue(params, 'start', 8 * 1024),
+      start: protectedValue(params, 'start', kind === 'initial' ? 24 * 1024 : 8 * 1024),
     })
   }
   if (kind === 'signupVerification') {

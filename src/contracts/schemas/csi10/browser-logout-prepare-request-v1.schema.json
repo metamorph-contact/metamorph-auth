@@ -5,6 +5,38 @@
     {
       "type": "object",
       "properties": {
+        "flowId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "head": {
+          "$ref": "#/$defs/BrowserHeadReferenceV1"
+        },
+        "prepareAttemptId": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "type": "string",
+          "const": "identityFlow"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "schemaVersion",
+        "prepareAttemptId",
+        "flowId",
+        "head"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
         "browserAccountId": {
           "$ref": "#/$defs/BrowserAccountId"
         },
@@ -151,6 +183,11 @@
       "maxLength": 43,
       "minLength": 43,
       "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     }
   }
 }
