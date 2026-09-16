@@ -69,7 +69,7 @@ export const emergencyRoutes = {
     "idempotency": "required_header"
   },
   "identity.emergency.factor_test.start": {
-    "operationId": "OP-IDN-044",
+    "operationId": "OP-IDN-046",
     "operationKey": "identity.emergency.factor_test.start",
     "binding": "default",
     "method": "POST",
@@ -84,7 +84,7 @@ export const emergencyRoutes = {
     "idempotency": "required_header"
   },
   "identity.emergency.factor_test.complete": {
-    "operationId": "OP-IDN-045",
+    "operationId": "OP-IDN-047",
     "operationKey": "identity.emergency.factor_test.complete",
     "binding": "default",
     "method": "POST",

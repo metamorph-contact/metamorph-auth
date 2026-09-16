@@ -6,42 +6,49 @@ import type { IdentityMethodResolutionV1 } from '../contracts/generated/enterpri
 import { identityFederationClient } from './federation-client'
 import { FederationJourney, live } from './federation-journey'
 import { randomUuid7 } from '../protocol/random'
+import { FederationHttpError } from './federation-contract'
+import type { SocialProviderV1 } from '../contracts/generated/enterprise-security-v1/types/SocialProviderV1'
 import i18n from '../i18n'
 import en from '../i18n/locales/en/enterprise-security.json'
 i18n.addResourceBundle('en', 'enterprise-security', en)
 
-/** Advisory discovery stays scoped to the current flow/email. Password
+/** Advisory external identity discovery stays scoped to the current flow/email. Password
  * submission continues through its existing current-policy owner. */
 export function FederationMethodChoices({
   flow,
   email,
   disabled,
   navigate,
+  onCustodyChange,
 }: {
   flow: IdentityFlow
   email: string
   disabled: boolean
-  navigate: (uri: string) => Promise<void>
+  navigate: (uri: string, signal: AbortSignal, expiresAt: string) => Promise<void>
+  onCustodyChange?: (held: boolean) => void
 }) {
   const { t } = useTranslation('enterprise-security')
   const normalized = email.trim().toLowerCase()
+  const routeHint = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(normalized) ? normalized : null
   const [resolution, setResolution] = useState<{
-    email: string
+    email: string | null
     value: IdentityMethodResolutionV1
   }>()
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string>()
   const [pending, setPending] = useState(false)
   const [expired, setExpired] = useState(false)
   const journeyRef = useRef<FederationJourney | undefined>(undefined)
+  const busy = useRef(false)
   const [generation, setGeneration] = useState(0)
   useEffect(() => {
     journeyRef.current?.stop()
     journeyRef.current = undefined
     setResolution(undefined)
-    setFailed(false)
+    setFailed(undefined)
+    busy.current = false
+    onCustodyChange?.(false)
     setPending(false)
     setExpired(false)
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(normalized)) return
     const controller = new AbortController()
     const timer = window.setTimeout(() => {
       void Promise.resolve()
@@ -53,7 +60,7 @@ export function FederationMethodChoices({
               flowId: flow.bootstrap.flowId,
               realmId: flow.catalog.projection.realmId,
               clientRegistrationId: flow.catalog.projection.clientId,
-              routeHint: normalized,
+              routeHint,
             },
             randomUuid7(),
             controller.signal,
@@ -62,11 +69,11 @@ export function FederationMethodChoices({
         .then((value) => {
           if (!controller.signal.aborted) {
             live(value.expiresAt)
-            setResolution({ email: normalized, value })
+            setResolution({ email: routeHint, value })
           }
         })
-        .catch(() => {
-          if (!controller.signal.aborted) setFailed(true)
+        .catch((error: unknown) => {
+          if (!controller.signal.aborted) setFailed(externalIdentityErrorKey(error))
         })
     }, 300)
     const scrub = () => {
@@ -75,6 +82,7 @@ export function FederationMethodChoices({
       journeyRef.current = undefined
       setResolution(undefined)
       setExpired(true)
+      onCustodyChange?.(false)
     }
     window.addEventListener('pagehide', scrub)
     return () => {
@@ -83,9 +91,10 @@ export function FederationMethodChoices({
       journeyRef.current = undefined
       window.clearTimeout(timer)
       window.removeEventListener('pagehide', scrub)
+      onCustodyChange?.(false)
     }
-  }, [flow, normalized, generation])
-  const visible = resolution?.email === normalized ? resolution.value : undefined
+  }, [flow, routeHint, generation, onCustodyChange])
+  const visible = resolution?.email === routeHint ? resolution.value : undefined
   useEffect(() => {
     if (!visible) return
     const duration =
@@ -99,6 +108,7 @@ export function FederationMethodChoices({
       journeyRef.current = undefined
       setResolution(undefined)
       setExpired(true)
+      onCustodyChange?.(false)
     }
     if (duration <= 0) {
       expire()
@@ -106,7 +116,7 @@ export function FederationMethodChoices({
     }
     const timer = window.setTimeout(expire, duration)
     return () => window.clearTimeout(timer)
-  }, [visible, flow])
+  }, [visible, flow, onCustodyChange])
   useEffect(() => {
     const restored = (event: PageTransitionEvent) => {
       if (event.persisted) setGeneration((v) => v + 1)
@@ -114,45 +124,59 @@ export function FederationMethodChoices({
     window.addEventListener('pageshow', restored)
     return () => window.removeEventListener('pageshow', restored)
   }, [])
-  async function start(provider: NonNullable<typeof visible>['federationProviders'][number]) {
-    if (!visible || pending || disabled || expired) return
+  async function start(provider: NonNullable<typeof visible>['federationProviders'][number] | SocialProviderV1) {
+    if (!visible || busy.current || disabled || expired) return
+    busy.current = true
     try {
       if (!journeyRef.current?.hasUnresolvedCommand) {
         journeyRef.current?.stop()
         journeyRef.current = new FederationJourney(
           flow.bootstrap.flowId,
           flow.catalog.projection.clientId,
-          identityFederationClient(flow, provider.providerRegionId),
+          identityFederationClient(flow, typeof provider === 'string' ? undefined : provider.providerRegionId),
           flow.bootstrap.expiresAt,
         )
       }
-    } catch {
-      setFailed(true)
+    } catch (error) {
+      busy.current = false
+      setFailed(externalIdentityErrorKey(error))
       return
     }
     const journey = journeyRef.current
     setPending(true)
-    setFailed(false)
+    onCustodyChange?.(true)
+    setFailed(undefined)
     const scrub = () => journey.stop()
     window.addEventListener('pagehide', scrub)
     try {
       live(flow.bootstrap.expiresAt)
       live(flow.catalog.projection.expiresAt)
-      const uri = await journey.start(visible, provider)
+      const uri = await (typeof provider === 'string' ? journey.startSocial(visible, provider) : journey.start(visible, provider))
       live(flow.bootstrap.expiresAt)
       live(flow.catalog.projection.expiresAt)
-      await navigate(uri)
+      if (journey.isStopped || journeyRef.current !== journey) return
+      const navigationExpiry = new Date(Math.min(Date.parse(visible.expiresAt), Date.parse(journey.navigationExpiresAt))).toISOString()
+      await navigate(uri, journey.signal, navigationExpiry)
       journey.stop()
       journeyRef.current = undefined
-    } catch {
-      setFailed(true)
+    } catch (error) {
+      if (!journey.isStopped) setFailed(externalIdentityErrorKey(error))
     } finally {
       window.removeEventListener('pagehide', scrub)
-      setPending(false)
+      if (journeyRef.current === journey || journeyRef.current === undefined) {
+        busy.current = false
+        setPending(false)
+        onCustodyChange?.(journey.hasUnresolvedCommand && !journey.isStopped)
+      }
     }
   }
   return (
     <Stack gap={2}>
+      {visible?.socialProviders.map((provider) => (
+        <Button key={provider} label={t(`security.social.${provider}`)} variant="outline" tone="neutral"
+          disabled={disabled || pending || expired} loading={pending}
+          onClick={() => { void start(provider) }} />
+      ))}
       {visible?.federationProviders.map((provider) => (
         <Button
           key={`${provider.targetTenantId}/${provider.providerId}`}
@@ -166,8 +190,21 @@ export function FederationMethodChoices({
           }}
         />
       ))}
-      {failed && <Text tone="secondary">{t('security.journey.unavailable')}</Text>}
+      {failed && <Text tone="secondary">{t(failed)}</Text>}
       {expired && <Text>{t('security.journey.expired')}</Text>}
     </Stack>
   )
+}
+
+export function externalIdentityErrorKey(error: unknown): string {
+  if (!(error instanceof FederationHttpError)) return 'security.journey.unavailable'
+  switch (error.envelope.error.code) {
+    case 'security.method.disabled':
+    case 'security.request.forbidden': return 'security.social.denied'
+    case 'security.ceremony.expired': return 'security.journey.expired'
+    case 'security.ceremony.mismatch':
+    case 'security.request.invalid': return 'security.social.invalid'
+    case 'security.request.rate_limited': return 'security.social.rateLimited'
+    default: return 'security.journey.unavailable'
+  }
 }

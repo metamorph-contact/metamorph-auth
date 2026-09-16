@@ -12,6 +12,14 @@ DTO is not a grant. Request attempt/continuation correlation is distinct from
 the server activation ID; actual critical-delivery state/incident/retry is shown.
 The lightweight gate avoids loading emergency assets for ordinary sign-in. Seven focused identity tests and TypeScript/schema checks pass.
 
+Plan 07 adds email-independent realm social choices and exact typed starts to
+combined entry. Only current server-advertised Google/Microsoft/GitHub choices
+render. Native callbacks are server GET/303 continuations into existing CSI
+signup/admission/account choice, not browser OAuth code/token handlers. SaaS
+EA-07I now composes the signed deployment/policy/native route graph, durable
+signup resumption and cross-region returning-account handoff. Real adjacent
+CSI/contact/privacy/session suppliers remain required inputs; no fixture or
+advisory ready progress can establish an account.
 
 Metamorph Auth is the realm common identity browser application. It renders a
 catalog-admitted product presentation while Metamorph SaaS owns credentials,

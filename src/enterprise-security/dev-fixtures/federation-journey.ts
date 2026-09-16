@@ -44,6 +44,7 @@ export function federationJourneyFixture(
     continuationId: JOURNEY_FIXTURE_CONTINUATION,
     methods: ['password', 'federation'],
     federationProviders: structuredClone(fixtureFederationProviders),
+    socialProviders: [],
     expiresAt,
   }
   const initial: IdentityFederationProgressV1 = {

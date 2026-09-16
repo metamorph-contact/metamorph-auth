@@ -1268,8 +1268,7 @@ export const enterpriseSecurityCatalog = {
         "assurance": "public_ceremony",
         "operations": [
           "identity.password_recovery.start",
-          "identity.factor_recovery.start",
-          "identity.social.start"
+          "identity.factor_recovery.start"
         ]
       },
       {
@@ -1280,7 +1279,8 @@ export const enterpriseSecurityCatalog = {
         "assurance": "public_ceremony",
         "operations": [
           "identity.methods.resolve",
-          "identity.federation.start"
+          "identity.federation.start",
+          "identity.social.start"
         ]
       },
       {
@@ -1456,6 +1456,26 @@ export const enterpriseSecurityCatalog = {
         "assurance": "public_ceremony",
         "operations": [
           "identity.social.callback"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "social_signup_journey"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.continue"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "social_handoff_token"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.handoff"
         ]
       },
       {

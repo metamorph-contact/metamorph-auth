@@ -9,6 +9,7 @@ import type { IdentityProfileCompleteRequestV1 } from '../contracts/generated/en
 import type { IdentityIdpSamlHandoffRedeemResultV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityIdpSamlHandoffRedeemResultV1'
 import type { AccountEstablishmentResultV1 } from '../contracts/generated/csi07/AccountEstablishmentResultV1'
 import type { FederationClient } from './federation-client'
+import type { SocialProviderV1 } from '../contracts/generated/enterprise-security-v1/types/SocialProviderV1'
 import { federationCommandWasDenied } from './federation-contract'
 import { randomUuid7 } from '../protocol/random'
 
@@ -138,6 +139,7 @@ export class FederationJourney {
   private controller = new AbortController()
   private stopped = false
   private busy = false
+  private navigationDeadline: string | undefined
   constructor(
     readonly flowId: string,
     readonly clientId: string,
@@ -150,10 +152,20 @@ export class FederationJourney {
   get isStopped(): boolean {
     return this.stopped
   }
+  get signal(): AbortSignal {
+    return this.controller.signal
+  }
+  get navigationExpiresAt(): string {
+    this.active()
+    if (this.navigationDeadline === undefined) throw new Error('security.ceremony.mismatch')
+    live(this.navigationDeadline)
+    return this.navigationDeadline
+  }
   stop(): void {
     this.stopped = true
     this.controller.abort()
     this.pending = undefined
+    this.navigationDeadline = undefined
   }
   private active(): void {
     live(this.flowExpiresAt)
@@ -221,9 +233,32 @@ export class FederationJourney {
         live(resolution.expiresAt)
         live(result.expiresAt)
         if (result.providerId !== provider.providerId) throw new Error('security.ceremony.mismatch')
+        this.navigationDeadline = result.expiresAt
         return result.navigationUri
       },
     )
+  }
+  async startSocial(
+    resolution: IdentityMethodResolutionV1,
+    provider: SocialProviderV1,
+  ): Promise<string> {
+    live(resolution.expiresAt)
+    if (!resolution.methods.includes('social') || !resolution.socialProviders.includes(provider))
+      throw new Error('security.method.disabled')
+    const input = {
+      schemaVersion: 1 as const, flowId: this.flowId, provider,
+      clientRegistrationId: this.clientId, targetTenantIntentId: null,
+    }
+    return this.command('social-start', input, () => input, async (request, id, signal) => {
+      const result = await this.client.call('identity.social.start', request, id, signal)
+      this.active()
+      live(resolution.expiresAt)
+      live(result.expiresAt)
+      if (result.provider !== provider || Date.parse(result.expiresAt) > Date.parse(this.flowExpiresAt))
+        throw new Error('security.ceremony.mismatch')
+      this.navigationDeadline = result.expiresAt
+      return result.navigationUri
+    })
   }
   async resume(callbackId: string, providerId: string): Promise<FederationJourneyState> {
     const input = {schemaVersion:1 as const,callbackId,providerId,
@@ -298,9 +333,10 @@ export class FederationJourney {
         // that transition gets a new deadline; retries within D never extend it.
         live(p.expiresAt)
         live(result.progress.expiresAt)
-        if (result.progress.continuationId !== p.continuationId ||
-            result.progress.continuationId !== state.handoff.callbackId ||
-            BigInt(result.progress.ceremonyRevision) < BigInt(p.ceremonyRevision) ||
+        // The confirmed callback may retain the C continuation or mint the
+        // separate D-purpose continuation. The request's callback/proof pair,
+        // not equality between those distinct identifiers, binds the handoff.
+        if (BigInt(result.progress.ceremonyRevision) < BigInt(p.ceremonyRevision) ||
             Date.parse(result.progress.expiresAt) > Date.parse(this.flowExpiresAt))
           throw new Error('security.ceremony.mismatch')
         if (Date.parse(result.progress.expiresAt) > Date.parse(p.expiresAt) &&

@@ -19,8 +19,9 @@ Live emergency UI/transport wiring is Plan 08D; actual CSI/local-secret/common
 owner installation remains SaaS EA-08I. No live emergency receipt or human test
 is claimed by this generated contract change.
 
-- Date: 2026-09-15
-EA-06I is in progress: current CSI/CSRF method/start admission and same-flow SP
+## Plan 06 integrator and Plan 07 social identity — 2026-09-16
+
+EA-06I is development-complete for repository-owned work: current CSI/CSRF method/start admission and same-flow SP
 return/recovery are being composed with the real JIT and H establishment owners.
 Typed privacy metadata and acknowledgement preserve optional consent. Native
 unsolicited SAML entry, original start-response recovery and explicit durable
@@ -28,11 +29,29 @@ per-flow cancellation are written. Password and federation enter the actual
 identity invitation inbox before product continuation. Recipient composition
 now has an independent backend owner/listener/worker construction path.
 Configured process startup, emailed ingress, factor/link and actual policy/effect
-delivery owners remain open.
-Generated artifacts, targeted checks and readonly reviews for this change have
-not completed. Earlier qualification below belongs to its dated packets.
+delivery owners remain external deployment gates. Plan 07's SaaS integrator now
+hosts native start/callback/link-callback, durable signup continuation and
+cross-region returning-account handoff; this frontend still handles no provider
+code or token. Generated artifacts are unchanged by the integrator additions.
 
-- Date: 2026-09-16
+## Plan 07 E — 2026-09-15
+
+Owned typed social entry/start consumers are implemented. Current advisory
+provider choices render without requiring email; exact command custody, safe
+typed errors, expiry/suspension teardown and guarded post-fade navigation are
+implemented. Rust-owned 13-operation schemas/types/routes and identical
+standalone validators regenerate. Native callbacks remain server GET/303
+continuations into the existing canonical signup/admission/account chooser;
+there is no social password evidence or browser OAuth token/code handling.
+Provider/transport doubles and focused existing protocol checks pass, not actual
+configured-provider/CSI qualification. Final reviews/checks and real supplier/
+human handoffs are recorded in the SaaS Plan 07 execution/EA-07I ledger.
+Final E evidence: 37 focused checks, TypeScript, Rust-owned 2,037-artifact drift,
+derived validator checks and quick production asset admission pass. Initial JS
+is 288,838 gzip bytes under the unchanged 330 KiB budget. All three final readonly
+reviews are CLEAN, including the retained exact-attempt post-fade deadline fix.
+
+- Date: 2026-09-15
 - State: CSI-17 development slice accepted by the human; CSI-18 documentation
   reset implemented, long-running tests deferred
 - Repository: Development-in-progress
@@ -370,3 +389,27 @@ and final catalog publication remain pending in the SaaS integrator ledger.
 Lodestone stable-ID append/reconciliation remains an adjacent-owner blocker.
 Packet behavioral checks, readonly reviews and final commit/push have not run.
 No live IdP qualification is claimed.
+
+## Plan 08 main reconciliation — 2026-09-17
+
+Plan 07 social identity and Plan 08 emergency access now share the regenerated
+enterprise contract pack. Social continuation/handoff retain `OP-IDN-044/045`;
+emergency factor-test start/complete use `OP-IDN-046/047`. The Auth client keeps
+both social entry translations and the protected emergency journey. External
+CSI/common-effect installation, live provider and mailbox receipts, database
+migration execution and human outage qualification remain in SaaS EA-08I. The
+combined TypeScript build, exact federation/emergency validators and 27 focused
+social, federation and emergency tests pass against the 2,079-artifact pack.
+Post-merge review also closes purpose escape: an emergency CSI flow renders only
+its email and emergency-entry controls, while the controller rejects ordinary
+password, recovery, federation and social capabilities. Email-independent social
+method resolution accepts the contract's null route hint without preparing an
+invented email route. It now obtains a fresh controller-issued `socialRoute`
+authorization bound to the current realm, initial region, product, browser,
+flow generation and CSRF. Auth retains that live authorization through the
+following social start, deduplicates concurrent issuance, forwards caller
+cancellation independently and clears the shared issuance before email route
+preparation. The server rejects
+that purpose on enterprise federation routes and stops issuing it once email
+routing or account work has started. The focused Auth regression set passes 26
+tests.

@@ -253,6 +253,12 @@
       "complete": "Verify password and authenticator"
     }
   },
+  "security.social.google": "Continue with Google",
+  "security.social.microsoft": "Continue with Microsoft",
+  "security.social.github": "Continue with GitHub",
+  "security.social.denied": "This sign-in method is not allowed for this flow.",
+  "security.social.invalid": "This sign-in could not be verified. Start a fresh flow.",
+  "security.social.rateLimited": "Too many attempts. Wait before retrying the same sign-in.",
   "security.journey.samlEmailDescription": "Enter the email you want to use to continue this enterprise sign-in. You will review the verified provider before continuing.",
   "security.journey.target.tenant": "Tenant membership",
   "security.journey.target.admin": "Tenant administration \u00b7 {{role}}",
