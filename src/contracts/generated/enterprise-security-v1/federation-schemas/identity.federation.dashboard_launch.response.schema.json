@@ -1,0 +1,60 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ExternalIdentityStartV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "ProviderHttpsUrlV1": {
+      "format": "provider-https-url",
+      "maxLength": 2048,
+      "minLength": 9,
+      "pattern": "^[Hh][Tt][Tt][Pp][Ss]://(?![0-9.]+(?::|/|\\?|$))(?!\\[)[^:/?#@\\[\\]]+(?::[1-9][0-9]{0,4})?(?:[/?][^#]*)?$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.federation.dashboard_launch:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attemptId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "expiresAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "navigationUri": {
+      "$ref": "#/$defs/ProviderHttpsUrlV1"
+    },
+    "providerId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "redirectRegistrationId": {
+      "$ref": "#/$defs/CatalogKeyV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "providerId",
+    "redirectRegistrationId",
+    "navigationUri",
+    "expiresAt"
+  ],
+  "title": "ExternalIdentityStartV1",
+  "type": "object"
+}

@@ -8,4 +8,8 @@ import type { AuthorityFreshnessStateV1 } from "./AuthorityFreshnessStateV1";
  * verifies its signature, purpose, audience, nonce, key, epochs, heads and
  * receiver-start deadline before applying any newer restrictive floors.
  */
-export type AuthorityFreshnessProofClaimsV1 = { schemaVersion: 1, receiverNonce: string, key: AuthorityFreshnessKeyV1, sourceRouteEpoch: string, receiverRouteEpoch: string, state: AuthorityFreshnessStateV1, observedAt: string, expiresAt: string, };
+export type AuthorityFreshnessProofClaimsV1 = { schemaVersion: 1, receiverNonce: string, key: AuthorityFreshnessKeyV1, sourceRouteEpoch: string, receiverRouteEpoch: string, state: AuthorityFreshnessStateV1, observedAt: string,
+/**
+ * Original earliest source-owned session/evidence/policy deadline.
+ */
+minimumAuthorityExpiresAt: string, expiresAt: string, };

@@ -1,0 +1,42 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityDashboardLaunchRequestV1. Do not edit.",
+  "$defs": {
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.federation.dashboard_launch:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "launchId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "providerId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    },
+    "signedLaunchRef": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "targetTenantId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "launchId",
+    "targetTenantId",
+    "providerId",
+    "signedLaunchRef"
+  ],
+  "title": "IdentityDashboardLaunchRequestV1",
+  "type": "object"
+}

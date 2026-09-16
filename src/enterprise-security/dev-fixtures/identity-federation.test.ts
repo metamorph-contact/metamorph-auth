@@ -13,7 +13,7 @@ describe('EA-01K federation and activation fixtures', () => {
   it('keeps SAML handoff distinct from OIDC and never returns a callback proof', async () => {
     const saml = await identityFederationFixture('ready', 'saml').load('SCR-IDN-006', new AbortController().signal)
     const oidc = await identityFederationFixture('ready', 'oidc').load('SCR-IDN-006', new AbortController().signal)
-    expect(saml).toMatchObject({ kind: 'federation', request: { protocol: 'saml' }, handoff: { continuation: { nextStep: 'verify_factor' } } })
+    expect(saml).toMatchObject({ kind: 'federation', request: { protocol: 'saml' }, handoff: { continuation: { nextStep: 'confirm_federation' } } })
     expect(oidc).toMatchObject({ kind: 'federation', request: { protocol: 'oidc' }, handoff: null })
     expect(JSON.stringify(saml)).not.toContain('authorizationCode')
     expect(JSON.stringify(saml)).not.toContain('relayState')

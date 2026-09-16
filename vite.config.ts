@@ -130,28 +130,7 @@ export default defineConfig(({ command }) => ({
     strictPort: true,
     headers: securityHeaders(false),
   },
-  build: {
-    sourcemap: false,
-    rolldownOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('/node_modules/ajv') || id.includes('/node_modules/ajv-formats')) return 'protocol-validation'
-          if (id.includes('/node_modules/react-aria') || id.includes('/node_modules/react-stately') ||
-              id.includes('/node_modules/@internationalized/') || id.includes('/node_modules/@radix-ui/react-select') ||
-              id.includes('/node_modules/@radix-ui/react-popover') || id.includes('/node_modules/@radix-ui/react-slider')) return 'signup-controls'
-          if (id.includes('/polymorph/packages/ui/src/identity-signup') ||
-              id.includes('/polymorph/packages/ui/src/controls/ColorInput') ||
-              id.includes('/polymorph/packages/ui/src/controls/ImageEditor') ||
-              id.includes('/polymorph/packages/ui/src/controls/Select') ||
-              id.includes('/polymorph/packages/ui/src/controls/Slider') ||
-              id.includes('/polymorph/packages/ui/src/overlays/Popover') ||
-              id.includes('/polymorph/packages/ui/src/overlays/sheet')) return 'signup-controls'
-          if (id.includes('/polymorph/packages/')) return 'polymorph'
-          if (id.includes('/node_modules/@tanstack/')) return 'router'
-          if (id.includes('/node_modules/react') || id.includes('/node_modules/scheduler')) return 'react'
-          return undefined
-        },
-      },
-    },
-  },
+  // Let the bundler partition shared vocabulary by actual route reachability.
+  // A package-wide manual chunk pulls the full UI entry's effects into startup.
+  build: { sourcemap: false },
 }));

@@ -3,4 +3,4 @@ import type { BrowserAccountId } from "./BrowserAccountId";
 import type { BrowserHeadReferenceV1 } from "./BrowserHeadReferenceV1";
 import type { Secret32 } from "./Secret32";
 
-export type BrowserLogoutPrepareRequestV1 = { "scope": "identityAccount", schemaVersion: number, prepareAttemptId: Secret32, browserAccountId: BrowserAccountId, head: BrowserHeadReferenceV1, } | { "scope": "identityBrowserAll", schemaVersion: number, prepareAttemptId: Secret32, head: BrowserHeadReferenceV1, };
+export type BrowserLogoutPrepareRequestV1 = { "scope": "identityFlow", schemaVersion: number, prepareAttemptId: Secret32, flowId: string, head: BrowserHeadReferenceV1, } | { "scope": "identityAccount", schemaVersion: number, prepareAttemptId: Secret32, browserAccountId: BrowserAccountId, head: BrowserHeadReferenceV1, } | { "scope": "identityBrowserAll", schemaVersion: number, prepareAttemptId: Secret32, head: BrowserHeadReferenceV1, };

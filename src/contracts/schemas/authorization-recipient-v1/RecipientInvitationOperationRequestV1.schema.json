@@ -1,0 +1,17 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInvitationOperationRequestV1. Do not edit.",
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInvitationOperationRequestV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "operationId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId"
+  ],
+  "title": "RecipientInvitationOperationRequestV1",
+  "type": "object"
+}

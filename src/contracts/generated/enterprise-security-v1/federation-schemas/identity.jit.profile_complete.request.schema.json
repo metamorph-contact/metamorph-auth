@@ -1,0 +1,202 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentityProfileCompleteRequestV1. Do not edit.",
+  "$defs": {
+    "CsiDigest32V1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "type": "string"
+    },
+    "IdentityCeremonyRefV1": {
+      "additionalProperties": false,
+      "properties": {
+        "attemptId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "continuationId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expectedCeremonyRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "continuationId",
+        "expectedCeremonyRevision"
+      ],
+      "type": "object"
+    },
+    "IdentityJitProfileInputV1": {
+      "additionalProperties": false,
+      "properties": {
+        "approvedPictureRefId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SecurityIdV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Approved profile-media import receipt; never a remote provider URL."
+        },
+        "avatarColor": {
+          "$ref": "#/$defs/JitAvatarColorV1"
+        },
+        "firstName": {
+          "$ref": "#/$defs/ProviderDisplayNameV1"
+        },
+        "handle": {
+          "$ref": "#/$defs/JitHandleV1",
+          "description": "Owner validates normalized uniqueness within the target tenant."
+        },
+        "lastName": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProviderDisplayNameV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "handle",
+        "firstName",
+        "avatarColor"
+      ],
+      "type": "object"
+    },
+    "JitAvatarColorV1": {
+      "maxLength": 7,
+      "minLength": 7,
+      "pattern": "^#[0-9a-f]{6}$",
+      "type": "string"
+    },
+    "JitHandleV1": {
+      "maxLength": 48,
+      "minLength": 3,
+      "pattern": "^[a-z0-9][a-z0-9_-]{1,46}[a-z0-9]$",
+      "type": "string"
+    },
+    "PrivacyAcknowledgementHandoffV1": {
+      "additionalProperties": false,
+      "properties": {
+        "acknowledgementReceiptId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "actorBindingDigest": {
+          "$ref": "#/$defs/CsiDigest32V1"
+        },
+        "ceremonyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "policy": {
+          "$ref": "#/$defs/PrivacyPolicyReferenceV1"
+        }
+      },
+      "required": [
+        "policy",
+        "ceremonyId",
+        "acknowledgementReceiptId",
+        "actorBindingDigest"
+      ],
+      "type": "object"
+    },
+    "PrivacyAcknowledgementPurposeV1": {
+      "enum": [
+        "required_notice",
+        "freely_given_consent"
+      ],
+      "type": "string"
+    },
+    "PrivacyPolicyReferenceV1": {
+      "additionalProperties": false,
+      "properties": {
+        "policyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "policyVersion": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "presentationDigest": {
+          "$ref": "#/$defs/CsiDigest32V1"
+        },
+        "purpose": {
+          "$ref": "#/$defs/PrivacyAcknowledgementPurposeV1"
+        }
+      },
+      "required": [
+        "policyId",
+        "policyVersion",
+        "purpose",
+        "presentationDigest"
+      ],
+      "type": "object"
+    },
+    "ProviderDisplayNameV1": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f\\u061c\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]+$",
+      "type": "string",
+      "x-maxUtf8Bytes": 120,
+      "x-nfc": true,
+      "x-trimmed": true
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.jit.profile_complete:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "ceremony": {
+      "$ref": "#/$defs/IdentityCeremonyRefV1"
+    },
+    "expectedProvisionalIdentityRevision": {
+      "$ref": "#/$defs/RevisionV1"
+    },
+    "primaryEmailChallengeId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "privacyAcknowledgement": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PrivacyAcknowledgementHandoffV1"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required when the current purpose/version policy mandates acknowledgement."
+    },
+    "profile": {
+      "$ref": "#/$defs/IdentityJitProfileInputV1"
+    }
+  },
+  "required": [
+    "ceremony",
+    "expectedProvisionalIdentityRevision",
+    "primaryEmailChallengeId",
+    "profile"
+  ],
+  "title": "IdentityProfileCompleteRequestV1",
+  "type": "object"
+}

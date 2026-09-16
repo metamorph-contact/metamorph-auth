@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StrongActionDelegationResultV1",
+  "type": "object",
+  "properties": {
+    "capability": {
+      "type": "string"
+    },
+    "csrf": {
+      "$ref": "#/$defs/Secret32"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "identityApiOrigin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "identityApiOrigin",
+    "capability",
+    "csrf",
+    "expiresAt"
+  ],
+  "$defs": {
+    "Origin": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 1,
+      "pattern": "^https?://[^/?#]+$"
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+}
