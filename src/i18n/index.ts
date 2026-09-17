@@ -7,6 +7,7 @@ import authenticationEn from './locales/en/authentication.json'
 import errorsEn from './locales/en/errors.json'
 import imageEditorEn from './locales/en/image-editor.json'
 import catalogEn from './locales/en/catalog.json'
+import scimEn from './locales/en/scim.json'
 
 export const SUPPORTED_LOCALES = ['en'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
@@ -26,7 +27,15 @@ function mergeBundles(...bundles: Readonly<Record<string, string>>[]): Record<st
   return messages
 }
 
-export const EN_MESSAGES = Object.freeze(mergeBundles(commonEn, authenticationEn, errorsEn, imageEditorEn, catalogEn, conditionalEn))
+export const EN_MESSAGES = Object.freeze(mergeBundles(
+  commonEn,
+  authenticationEn,
+  errorsEn,
+  imageEditorEn,
+  catalogEn,
+  conditionalEn,
+  scimEn,
+))
 
 void i18n.use(initReactI18next).init({
   lng: 'en',

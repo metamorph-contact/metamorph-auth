@@ -23,7 +23,7 @@ const progress = (nextStep: IdentityCeremonyProgressV1['nextStep']): IdentityCer
   nextStep, subjectReproof: null, expiresAt,
 })
 const methods: IdentityMethodResolutionV1 = {
-  schemaVersion: 1, continuationId: 'fixture-continuation', methods: ['federation'], federationProviders: fixtureFederationProviders, expiresAt,
+  schemaVersion: 1, continuationId: 'fixture-continuation', methods: ['federation'], federationProviders: fixtureFederationProviders, socialProviders: [], expiresAt,
 }
 const profileRequest: IdentityProfileCompleteRequestV1 = {
   ceremony: { schemaVersion: 1, attemptId: 'fixture-attempt', continuationId: 'fixture-continuation', expectedCeremonyRevision: '1' },

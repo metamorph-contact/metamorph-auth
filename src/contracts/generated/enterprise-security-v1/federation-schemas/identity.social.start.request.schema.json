@@ -1,0 +1,64 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::IdentitySocialStartRequestV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "SocialProviderV1": {
+      "description": "Exact realm social adapters in CAT-SEC-005. Microsoft social is not a\ntenant-configured Entra enterprise provider.",
+      "enum": [
+        "google",
+        "microsoft",
+        "github"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:identity.social.start:request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Social sign-in begins in the identity realm before a target tenant exists.",
+  "properties": {
+    "clientRegistrationId": {
+      "$ref": "#/$defs/CatalogKeyV1"
+    },
+    "flowId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "provider": {
+      "$ref": "#/$defs/SocialProviderV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    },
+    "targetTenantIntentId": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "flowId",
+    "provider",
+    "clientRegistrationId"
+  ],
+  "title": "IdentitySocialStartRequestV1",
+  "type": "object"
+}

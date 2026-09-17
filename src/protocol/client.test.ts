@@ -1,11 +1,84 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { chooseAccount, completeRecovery, loadAccounts, startSignup, type DisplayAccount, type IdentityFlow, type SignupStartAttempt } from './client'
+import {
+  cachedRealmSocialAuthorization,
+  clearRealmSocialAuthorization,
+  chooseAccount,
+  completeRecovery,
+  currentRealmSocialAuthorization,
+  loadAccounts,
+  startSignup,
+  type DisplayAccount,
+  type IdentityFlow,
+  type SignupStartAttempt,
+} from './client'
 import { AuthApi, ProtocolError } from './http'
 
 const operationId = '01890f3a-6e3a-7c15-8c65-450b85e12a01'
 const expiresAt = '2030-01-01T00:00:00Z'
+
+describe('realm social authorization', () => {
+  it('reuses the live purpose-scoped capability and clears it for email routing', async () => {
+    const post = vi.fn().mockResolvedValue({
+      action: 'socialRoute',
+      schemaVersion: 1,
+      federationFlowAuthorization: 'realm.social.authorization',
+      expiresAt,
+    })
+    const flow = {
+      controller: { post },
+      bootstrap: { flowId: operationId, csrfToken: 'c'.repeat(43), expiresAt },
+    } as unknown as IdentityFlow
+    const signal = new AbortController().signal
+
+    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe(
+      'realm.social.authorization',
+    )
+    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe(
+      'realm.social.authorization',
+    )
+    expect(cachedRealmSocialAuthorization(flow)).toBe('realm.social.authorization')
+    expect(post).toHaveBeenCalledWith(
+      `/api/auth/v1/flows/${operationId}/credential-capabilities`,
+      { schemaVersion: 1, action: 'socialRoute' },
+      'credentialCapability',
+      'c'.repeat(43),
+      {},
+      expect.any(AbortSignal),
+    )
+    expect(post.mock.calls[0]?.[5]).not.toBe(signal)
+    expect(post).toHaveBeenCalledTimes(1)
+    clearRealmSocialAuthorization(flow)
+    expect(cachedRealmSocialAuthorization(flow)).toBeNull()
+  })
+
+  it('keeps concurrent callers cancellation-independent', async () => {
+    let resolveCapability: ((value: unknown) => void) | undefined
+    const post = vi.fn().mockImplementation(
+      () => new Promise(resolve => { resolveCapability = resolve }),
+    )
+    const flow = {
+      controller: { post },
+      bootstrap: { flowId: operationId, csrfToken: 'c'.repeat(43), expiresAt },
+    } as unknown as IdentityFlow
+    const first = new AbortController()
+    const second = new AbortController()
+
+    const abandoned = currentRealmSocialAuthorization(flow, first.signal)
+    const retained = currentRealmSocialAuthorization(flow, second.signal)
+    first.abort(new Error('abandoned'))
+    await expect(abandoned).rejects.toThrow('abandoned')
+    resolveCapability?.({
+      action: 'socialRoute',
+      schemaVersion: 1,
+      federationFlowAuthorization: 'realm.social.authorization',
+      expiresAt,
+    })
+    await expect(retained).resolves.toBe('realm.social.authorization')
+    expect(post).toHaveBeenCalledTimes(1)
+  })
+})
 
 describe('password ingress', () => {
   it('allows a multibyte replacement above the old 1024-byte sign-in guard', async () => {

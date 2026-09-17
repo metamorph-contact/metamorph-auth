@@ -6,6 +6,26 @@ targeted checks and readonly reviews. Final handoff audit is complete and both r
 common proof/session/facts/effects, producer and transport installation, the
 first protected product handler and human live evidence remain in EA-10I.
 Earlier increment records below preserve their then-current testing state.
+Plan 08D mounts `EmergencyEntryGate` in common identity credentials only for
+an actual admitted emergency-purpose `EmergencyEntryContext` matched to current
+flow, tenant and cataloged identity home. It verifies fresh UV passkey or local
+password+TOTP and reason, preserves exact uncertain command retries and shows
+absolute window/review obligations. Private readiness pins stay server-side.
+Expiry, flow/account changes, pagehide/BFCache clear proof/retry memory. Actual
+CSI controller completion through registered callback/fences and the next
+immutable identity UI catalog release remain SaaS EA-08I-02/05; the activation
+DTO is not a grant. Request attempt/continuation correlation is distinct from
+the server activation ID; actual critical-delivery state/incident/retry is shown.
+The lightweight gate avoids loading emergency assets for ordinary sign-in. Seven focused identity tests and TypeScript/schema checks pass.
+
+Plan 07 adds email-independent realm social choices and exact typed starts to
+combined entry. Only current server-advertised Google/Microsoft/GitHub choices
+render. Native callbacks are server GET/303 continuations into existing CSI
+signup/admission/account choice, not browser OAuth code/token handlers. SaaS
+EA-07I now composes the signed deployment/policy/native route graph, durable
+signup resumption and cross-region returning-account handoff. Real adjacent
+CSI/contact/privacy/session suppliers remain required inputs; no fixture or
+advisory ready progress can establish an account.
 
 Metamorph Auth is the realm common identity browser application. It renders a
 catalog-admitted product presentation while Metamorph SaaS owns credentials,
@@ -111,6 +131,28 @@ All 14 focused identity checks and both readonly reviews are CLEAN after the
 committed-mount BFCache recovery fix. Final coverage/handoff audit is complete; both readonly reviewers are CLEAN.
 Actual owner and first product-handler/live qualification remain in SaaS's
 EA-10I integrator ledger.
+## Plan 09 live SCIM workspace — EA-09F
+
+The controlled identity page at
+`/$locale/auth/$authProjectionId/$catalogVersion/scim/activate` consumes the
+closed protected SCIM entry before catalog fetch. It chooses only a verified
+catalog region endpoint, sends no browser session, validates generated request/
+response shapes and bounds, and retains exact uncertain retries only in memory.
+Independent email verification and a distinct completion capability lead to
+`pending_provisioning`; canonical identity and team access are not inferred.
+Pagehide removes the flow and capabilities; restored pages require a fresh
+entry. Completion or terminal failure clears entry custody. All visible copy is
+in `src/i18n/locales/en/scim.json`. The local generator/check scripts consume the
+three SaaS Rust operation schemas and the sole HTTP register.
+
+These are live adapters with explicit unavailable owner states. Actual runtime,
+primary-email/global proof, encrypted notification delivery and authorization
+recipient behavior remain in the SaaS 09I ledger. Development UI/contract checks
+are distinct from human interoperability or live authority acceptance.
+
+EA-09F is development-complete: 34 focused frontend checks and TypeScript/
+owning validator checks pass; final readonly bug/security/performance rereviews
+are CLEAN. Human/runtime and adjacent-owner integration remain in SaaS EA-09I.
 ## Plan06G browser composition — 2026-09-15
 
 Owned scoped method discovery/SAML confirmation/JIT contact/profile and per-offer

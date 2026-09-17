@@ -10,6 +10,7 @@
             "complete_profile",
             "first_login_enrollment",
             "accept_invitation",
+            "pending_provisioning",
             "provider_test_completed",
             "ready",
             "rejected"

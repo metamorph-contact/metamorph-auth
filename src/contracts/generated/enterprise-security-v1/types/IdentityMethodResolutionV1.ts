@@ -7,4 +7,9 @@ export type IdentityMethodResolutionV1 = { schemaVersion: 1, continuationId: str
  * Advisory current DNS-owned/runtime-ready choices. Start independently
  * rechecks authority; this projection grants no account or tenant access.
  */
-federationProviders: Array<{ targetTenantId: string, providerId: string, providerRevision: string, protocol: EnterpriseProtocolV1, providerDisplayName: string, providerRegionId: string, }>, expiresAt: string, };
+federationProviders: Array<{ targetTenantId: string, providerId: string, providerRevision: string, protocol: EnterpriseProtocolV1, providerDisplayName: string, providerRegionId: string, }>,
+/**
+ * Advisory realm-deployed, current-policy-permitted social choices.
+ * Absence means unavailable/denied, not an entered account's existence.
+ */
+socialProviders: Array<"google" | "microsoft" | "github">, expiresAt: string, };

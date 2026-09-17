@@ -140,6 +140,30 @@ function assertBootstrap(catalog: LoadedIdentityCatalog, bootstrap: FlowBootstra
     throw new Error('Flow bootstrap does not match the verified presentation')
   }
   identityApiForRegion(catalog, bootstrap.initialRegionId, bootstrap.initialIdentityApiOrigin)
+  const emergency = bootstrap.emergencyEntry
+  const emergencyShapeValid = emergency !== null &&
+    emergency.schemaVersion === 1 &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.launchId) &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.targetTenantId) &&
+    Number.isFinite(Date.parse(emergency.expiresAt)) &&
+    Date.parse(emergency.expiresAt) > Date.now() &&
+    Date.parse(emergency.expiresAt) <= Date.parse(bootstrap.expiresAt) &&
+    (emergency.purpose === 'entry'
+      ? emergency.targetUserId === null && emergency.resultNonce === null
+      : emergency.purpose === 'factor_test' &&
+        emergency.targetUserId !== null &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(emergency.targetUserId) &&
+        emergency.resultNonce !== null &&
+        /^[A-Za-z0-9_-]{43}$/u.test(emergency.resultNonce))
+  if (
+    (bootstrap.intent === 'emergency') !== (emergency !== null) ||
+    (emergency !== null && !emergencyShapeValid) ||
+    (emergency === null) !== (bootstrap.emergencyAuthorization === null) ||
+    (bootstrap.emergencyAuthorization !== null &&
+      (!/^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}(?:(?:\.[A-Za-z0-9_-]*){2})?$/u.test(bootstrap.emergencyAuthorization) ||
+        bootstrap.emergencyAuthorization.length > 16 * 1024))
+  ) throw new Error('Invalid emergency flow bootstrap')
+  if (emergency !== null) identityApiForRegion(catalog, emergency.identityHomeRegionId)
 }
 
 async function mapAvailableBounded<Input, Output>(
@@ -405,6 +429,97 @@ export async function currentProviderRuntimeTestAuthorization(flow: IdentityFlow
   try { return await original.pending } finally { original.pending = undefined }
 }
 
+type RealmSocialAuthorization = {
+  authorization?: string
+  expiresAt?: number
+  controller?: AbortController
+  pending?: Promise<string>
+}
+const realmSocialAuthorizations = new WeakMap<IdentityFlow, RealmSocialAuthorization>()
+
+export function clearRealmSocialAuthorization(flow: IdentityFlow): void {
+  realmSocialAuthorizations.get(flow)?.controller?.abort()
+  realmSocialAuthorizations.delete(flow)
+}
+
+export function cachedRealmSocialAuthorization(flow: IdentityFlow): string | null {
+  const state = realmSocialAuthorizations.get(flow)
+  if (state?.authorization === undefined || state.expiresAt === undefined || state.expiresAt <= Date.now()) {
+    if (state?.pending === undefined) realmSocialAuthorizations.delete(flow)
+    return null
+  }
+  return state.authorization
+}
+
+function waitForRealmSocialAuthorization(
+  pending: Promise<string>,
+  signal?: AbortSignal,
+): Promise<string> {
+  if (signal === undefined) return pending
+  if (signal.aborted) return Promise.reject(signal.reason)
+  return new Promise((resolve, reject) => {
+    const aborted = () => reject(signal.reason)
+    signal.addEventListener('abort', aborted, { once: true })
+    pending.then(
+      authorization => {
+        signal.removeEventListener('abort', aborted)
+        resolve(authorization)
+      },
+      error => {
+        signal.removeEventListener('abort', aborted)
+        reject(error)
+      },
+    )
+  })
+}
+
+/** Issue and retain the controller-scoped authorization used by realm social
+ * discovery and its immediately following start. Email route preparation
+ * clears this state before creating a different operation. */
+export async function currentRealmSocialAuthorization(
+  flow: IdentityFlow,
+  signal?: AbortSignal,
+): Promise<string> {
+  const cached = cachedRealmSocialAuthorization(flow)
+  if (cached !== null) return cached
+  if (signal?.aborted) throw signal.reason
+  let state = realmSocialAuthorizations.get(flow)
+  if (state?.pending !== undefined) return waitForRealmSocialAuthorization(state.pending, signal)
+  state = { controller: new AbortController() }
+  realmSocialAuthorizations.set(flow, state)
+  const original = state
+  original.pending = (async () => {
+    try {
+      const capability = await flow.controller.post<
+        CredentialCapabilityRequestV1,
+        CredentialCapabilityResultV1
+      >(
+        `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
+        { schemaVersion: 1, action: 'socialRoute' },
+        'credentialCapability',
+        flow.bootstrap.csrfToken,
+        {},
+        original.controller!.signal,
+      )
+      if (capability.action !== 'socialRoute') throw new Error('Wrong social capability')
+      const expiresAt = Math.min(Date.parse(capability.expiresAt), Date.parse(flow.bootstrap.expiresAt))
+      if (!Number.isFinite(expiresAt) || expiresAt <= Date.now() || realmSocialAuthorizations.get(flow) !== original) {
+        throw new Error('security.ceremony.expired')
+      }
+      original.authorization = capability.federationFlowAuthorization
+      original.expiresAt = expiresAt
+      return capability.federationFlowAuthorization
+    } finally {
+      original.pending = undefined
+      original.controller = undefined
+      if (realmSocialAuthorizations.get(flow) === original && original.authorization === undefined) {
+        realmSocialAuthorizations.delete(flow)
+      }
+    }
+  })()
+  return waitForRealmSocialAuthorization(original.pending, signal)
+}
+
 type FederationPreparation = {
   email: string
   capability?: Extract<CredentialCapabilityResultV1, {action:'federationRoute'}>
@@ -418,6 +533,7 @@ const federationPreparations = new WeakMap<IdentityFlow, FederationPreparation>(
 export async function prepareFederationAttempt(flow: IdentityFlow, email: string): Promise<void> {
   const canonicalEmail = normalizeEmailForWire(email)
   if (canonicalEmail === null) throw new Error('Invalid email')
+  clearRealmSocialAuthorization(flow)
   let preparation = federationPreparations.get(flow)
   if (preparation !== undefined && preparation.email !== canonicalEmail) throw new Error('Federation flow input changed')
   if (preparation?.complete) return

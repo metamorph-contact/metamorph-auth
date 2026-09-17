@@ -7,7 +7,7 @@ import type { SecurityApiErrorV1 } from '../contracts/generated/enterprise-secur
 type ResponseValidator = (input: unknown) => boolean
 const validators = plan03ResponseValidators as unknown as Readonly<Record<string, ResponseValidator>>
 
-function providerHttpsUrl(value: string): boolean {
+export function providerHttpsUrl(value: string): boolean {
   try {
     const url = new URL(value)
     const host = url.hostname

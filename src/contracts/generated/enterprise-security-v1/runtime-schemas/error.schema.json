@@ -1,5 +1,5 @@
 {
-  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::error::SecurityApiErrorV1. Do not edit.",
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::SecurityApiErrorV1. Do not edit.",
   "$defs": {
     "CatalogKeyV1": {
       "maxLength": 96,

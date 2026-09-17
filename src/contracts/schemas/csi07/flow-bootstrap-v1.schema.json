@@ -32,6 +32,26 @@
         }
       ]
     },
+    "emergencyAuthorization": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EmergencyFlowAuthorization"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "emergencyEntry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProductEmergencyEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "expiresAt": {
       "type": "string",
       "format": "date-time"
@@ -151,7 +171,8 @@
         "addAccount",
         "switchAccount",
         "continueSignup",
-        "strongAction"
+        "strongAction",
+        "emergency"
       ]
     },
     "BrowserAccountId": {
@@ -176,6 +197,20 @@
       "maxLength": 43,
       "minLength": 1,
       "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "EmergencyFlowAuthorization": {
+      "type": "string",
+      "maxLength": 16384,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "EmergencyFlowPurposeV1": {
+      "description": "Product-owned launch scope for an emergency-only CSI flow. This value is\ncarried inside the product-signed start envelope and then replaced by a\ncontroller-signed, identity-home-encrypted authorization. It never proves\nthat the hinted identity is designated or ready.",
+      "type": "string",
+      "enum": [
+        "entry",
+        "factor_test"
+      ]
     },
     "FlowNextStepV1": {
       "type": "string",
@@ -267,6 +302,62 @@
         "productNameMessageKey",
         "logoAssetId",
         "themeId"
+      ]
+    },
+    "ProductEmergencyEntryV1": {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "identityHomeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "launchId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "purpose": {
+          "$ref": "#/$defs/EmergencyFlowPurposeV1"
+        },
+        "resultNonce": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Secret32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "targetTenantId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "targetUserId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid7"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "purpose",
+        "launchId",
+        "targetTenantId",
+        "identityHomeRegionId",
+        "expiresAt"
       ]
     },
     "ProductStrongActionEntryV1": {
