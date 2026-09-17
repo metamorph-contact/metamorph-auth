@@ -42,8 +42,15 @@ closes the focused post-cutover security/engineering review.
 Plan 02 Packet G adds the optional source-P product-route-move receipt to the
 generated CSI-07 account-selection request and typed client. The normal caller
 omits it; only a future explicit product-flow relocation may supply the proof.
-Profile and admin session/device pages are product-owned and live in
-Octamorph, so this identity frontend has no corresponding fixture to replace.
+Admin audit and session/device pages remain product-owned in Octamorph. Audit
+Packet 2.3 instead assigns the common self security-activity account page to
+this CSI-11 owner. Its production route is
+`/{locale}/account/security-activity?accountSlotId=<uuidv7>` when the same
+artifact is mounted on a product origin. It bootstraps exactly that account and
+calls the same-origin SaaS-owned activity API with the returned CSRF token;
+there is no cross-origin cookie/CORS path or client-selected user. The page
+labels only the generated reduced activity enum and never owns raw audit event
+names.
 
 Security invariants are catalog-pinned origins and navigation, protected
 fragment scrubbing before parsing, exact browser/tab recovery state, no

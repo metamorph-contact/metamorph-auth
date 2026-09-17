@@ -48,6 +48,36 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.audit.export.status.response.schema.json",
     "responseType": "SecurityAsyncResultV1"
   },
+  "admin.audit.legal_holds.create": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.create.request.schema.json",
+    "requestType": "AuditLegalHoldCreateRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.create.response.schema.json",
+    "responseType": "AuditLegalHoldMutationResultV1"
+  },
+  "admin.audit.legal_holds.list": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.list.request.schema.json",
+    "requestType": "AuditLegalHoldsListRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.list.response.schema.json",
+    "responseType": "AuditLegalHoldsListV1"
+  },
+  "admin.audit.legal_holds.release": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.release.request.schema.json",
+    "requestType": "AuditLegalHoldReleaseRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.release.response.schema.json",
+    "responseType": "AuditLegalHoldMutationResultV1"
+  },
+  "admin.audit.retention.read": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.retention.read.request.schema.json",
+    "requestType": "AuditRetentionStatusRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.retention.read.response.schema.json",
+    "responseType": "AuditRetentionStatusV1"
+  },
+  "admin.audit.retention.update": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.retention.update.request.schema.json",
+    "requestType": "AuditRetentionUpdateRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.retention.update.response.schema.json",
+    "responseType": "AuditRetentionMutationResultV1"
+  },
   "admin.audit.search": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.audit.search.request.schema.json",
     "requestType": "AuditSearchRequestV1",

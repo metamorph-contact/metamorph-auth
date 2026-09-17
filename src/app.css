@@ -183,6 +183,50 @@ body {
   gap: var(--pm-space-3);
 }
 
+.identity-security-activity-account,
+.identity-security-activity-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pm-space-3);
+}
+
+.identity-security-activity-account {
+  justify-content: flex-start;
+}
+
+.identity-security-activity-list {
+  display: grid;
+  gap: var(--pm-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.identity-security-activity-card {
+  display: grid;
+  gap: var(--pm-space-2);
+  padding: var(--pm-space-4);
+  border: 1px solid var(--pm-border-default);
+  border-radius: var(--pm-radius-surface);
+  background: var(--pm-bg-surface);
+}
+
+.identity-security-activity-heading > span {
+  color: var(--pm-text-secondary);
+  font-size: var(--pm-text-sm-size);
+}
+
+.identity-security-activity-heading > span[data-outcome='denied'],
+.identity-security-activity-heading > span[data-outcome='failed'] {
+  color: var(--pm-danger-text);
+}
+
+.identity-security-activity-error {
+  display: grid;
+  gap: var(--pm-space-3);
+}
+
 @media (width <= 30rem) {
   .identity-account {
     grid-template-columns: auto minmax(0, 1fr);

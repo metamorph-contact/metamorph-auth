@@ -1807,6 +1807,18 @@ const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${ba
 const verifyEmailRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/verify-email`, component: VerifyEmailPage })
 const recoverPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/recover-password`, component: RecoverPasswordPage })
 const logoutRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/logout`, component: LogoutPage })
+const accountSecurityActivityRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/$locale/account/security-activity',
+  beforeLoad: async ({ params }) => {
+    if (!isSupportedLocale(params.locale) || window.location.hash !== '') throw notFound()
+    const { accountSlotFromSearch } = await import('./enterprise-security/account-activity-client')
+    accountSlotFromSearch(window.location.search)
+    await setLocale(params.locale)
+    installPresentationTheme('shadcn-neutral')
+  },
+  component: lazyRouteComponent(() => import('./enterprise-security/account-activity'), 'AccountSecurityActivityPage'),
+})
 const conditionalStepUpRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: `${base}/conditional-step-up/$continuationId`,
@@ -1834,7 +1846,7 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
 const scimActivationRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/scim/activate`, component: lazyRouteComponent(() => import("./enterprise-security/scim-page"), "ScimActivationPage") })
 const routeTree = rootRoute.addChildren([
   samlEntryRoute, authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
-  conditionalStepUpRoute, scimActivationRoute,
+  conditionalStepUpRoute, scimActivationRoute, accountSecurityActivityRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })

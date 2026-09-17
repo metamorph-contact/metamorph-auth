@@ -189,6 +189,7 @@ const auditEvent: CustomerSecurityAuditEventV1 = {
   "causationEventId": null,
   "clientId": null,
   "correlationId": "018f0000-0000-7000-8000-000000000001",
+  "delegationId": null,
   "details": {
     "kind": "security_decision",
     "value": {
@@ -200,7 +201,9 @@ const auditEvent: CustomerSecurityAuditEventV1 = {
   "eventCategory": "authentication",
   "eventId": "018f0000-0000-7000-8000-000000000001",
   "eventType": "authentication.security.denied",
+  "initiator": null,
   "mutationId": "018f0000-0000-7000-8000-000000000001",
+  "normalizedFilterDigest": null,
   "occurredAt": "2026-01-01T00:00:00Z",
   "operationKey": "admin.members.force_reset",
   "policyRevision": null,
@@ -209,6 +212,7 @@ const auditEvent: CustomerSecurityAuditEventV1 = {
   "realmId": "fixture-realm",
   "reason": "policy",
   "regionId": "fixture-region",
+  "requestId": null,
   "result": "denied",
   "schemaVersion": 2,
   "scopeKind": "user",
@@ -223,6 +227,7 @@ const auditEvent: CustomerSecurityAuditEventV1 = {
     "id": "018f0000-0000-7000-8000-000000000001",
     "kind": "user"
   },
+  "targetParent": null,
   "tenantId": "018f0000-0000-7000-8000-000000000001"
 };
 const integrationEvent: SecurityIntegrationEventV1 = {

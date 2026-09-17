@@ -54,6 +54,8 @@ const schemas = {
   logoutOptions: 'src/contracts/schemas/csi10/browser-logout-options-result-v1.schema.json',
   logoutAccountMetadata: 'src/contracts/schemas/csi10/logout-account-metadata-result-v1.schema.json',
   logoutResult: 'src/contracts/schemas/csi10/browser-logout-result-v1.schema.json',
+  productBootstrap: 'src/contracts/schemas/csi10/bootstrap-result-v1.schema.json',
+  profileActivity: '../metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/api/profile.activity.list.response.schema.json',
 }
 
 function replaceNumericFormats(value) {

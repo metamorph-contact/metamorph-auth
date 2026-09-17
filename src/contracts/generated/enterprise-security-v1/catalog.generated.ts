@@ -1170,6 +1170,51 @@ export const enterpriseSecurityCatalog = {
       },
       {
         "access": {
+          "capability": "read",
+          "feature": "audit_logs",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.audit.retention.read",
+          "admin.audit.legal_holds.list"
+        ]
+      },
+      {
+        "access": {
+          "capability": "update",
+          "feature": "audit_logs",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.retention.update"
+        ]
+      },
+      {
+        "access": {
+          "capability": "create",
+          "feature": "audit_logs",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.legal_holds.create"
+        ]
+      },
+      {
+        "access": {
+          "capability": "delete",
+          "feature": "audit_logs",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.legal_holds.release"
+        ]
+      },
+      {
+        "access": {
           "capability": "create",
           "feature": "audit_exports",
           "kind": "rbac"
@@ -2007,6 +2052,20 @@ export const enterpriseSecurityCatalog = {
       "id": "EVT-AUD-037",
       "owner": "common_audit",
       "wireType": "authentication.security.preview_prepared"
+    },
+    {
+      "channel": "customer_audit",
+      "consumer": "lodestone_append",
+      "id": "EVT-AUD-038",
+      "owner": "common_audit",
+      "wireType": "authentication.audit.retention.changed"
+    },
+    {
+      "channel": "customer_audit",
+      "consumer": "lodestone_append",
+      "id": "EVT-AUD-039",
+      "owner": "common_audit",
+      "wireType": "authentication.audit.legal_hold.changed"
     },
     {
       "channel": "integration",

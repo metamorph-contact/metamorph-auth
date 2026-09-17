@@ -16,6 +16,7 @@ export type ResponseSchemaName =
   | 'emailPreview' | 'emailVerification' | 'recoveryAccepted' | 'recoveryCompleted'
   | 'logoutOptions' | 'logoutAccountMetadata' | 'logoutResult'
   | 'recipientAccountAdmission' | 'recipientBootstrap' | 'recipientList' | 'recipientDetail' | 'recipientOperation' | 'recipientDecision' | 'recipientEmailedEntryRequest' | 'recipientEmailedEntry'
+  | 'profileActivity'
 
 const validators = {
   protocolError: generated.protocolError,
@@ -45,6 +46,7 @@ const validators = {
   recipientDecision: generated.recipientDecision,
   recipientEmailedEntryRequest: generated.recipientEmailedEntryRequest,
   recipientEmailedEntry: generated.recipientEmailedEntry,
+  profileActivity: generated.profileActivity,
   signupPreparation: generated.signupPreparation,
   signupRegistration: generated.signupRegistration,
   signupContinuation: generated.signupContinuation,

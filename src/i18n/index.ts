@@ -8,6 +8,7 @@ import errorsEn from './locales/en/errors.json'
 import imageEditorEn from './locales/en/image-editor.json'
 import catalogEn from './locales/en/catalog.json'
 import scimEn from './locales/en/scim.json'
+import securityActivityEn from './locales/en/security-activity.json'
 
 export const SUPPORTED_LOCALES = ['en'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
@@ -35,6 +36,7 @@ export const EN_MESSAGES = Object.freeze(mergeBundles(
   catalogEn,
   conditionalEn,
   scimEn,
+  securityActivityEn,
 ))
 
 void i18n.use(initReactI18next).init({
