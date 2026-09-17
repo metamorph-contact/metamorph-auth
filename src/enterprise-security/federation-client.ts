@@ -1,5 +1,11 @@
 import { saveFederationReturn, clearIdentityFlowResume } from '../security/session-receipts'
-import { currentFederationAuthorization, prepareFederationAttempt, type IdentityFlow } from '../protocol/client'
+import {
+  cachedRealmSocialAuthorization,
+  currentFederationAuthorization,
+  currentRealmSocialAuthorization,
+  prepareFederationAttempt,
+  type IdentityFlow,
+} from '../protocol/client'
 import { identityApiForRegion } from '../catalog/boundaries'
 import type {
   FederationRequestMap,
@@ -62,12 +68,32 @@ export function identityFederationClient(
     const route = federationRoutes[request.operation]
     if (route.surface !== 'regional_identity') throw new Error('Wrong federation surface')
     if (signal.aborted) throw signal.reason
+    let authorization: string | null
     if (request.operation === 'identity.methods.resolve') {
       const input: unknown = JSON.parse(request.body)
-      if (input === null || typeof input !== 'object' || !('routeHint' in input) || typeof input.routeHint !== 'string') throw new Error('Invalid method resolution')
-      await prepareFederationAttempt(flow, input.routeHint)
+      if (
+        input === null ||
+        typeof input !== 'object' ||
+        !('routeHint' in input) ||
+        (input.routeHint !== null && typeof input.routeHint !== 'string')
+      )
+        throw new Error('Invalid method resolution')
+      // Realm social choices are email-independent. Only an actual email hint
+      // needs the existing route preparation and its normalized-email checks.
+      if (typeof input.routeHint === 'string') {
+        await prepareFederationAttempt(flow, input.routeHint)
+        authorization = await currentFederationAuthorization(flow)
+      } else {
+        authorization = await currentRealmSocialAuthorization(flow, signal)
+      }
+    } else if (request.operation === 'identity.social.start') {
+      authorization =
+        cachedRealmSocialAuthorization(flow) ??
+        (await currentFederationAuthorization(flow)) ??
+        (await currentRealmSocialAuthorization(flow, signal))
+    } else {
+      authorization = await currentFederationAuthorization(flow)
     }
-    const authorization = await currentFederationAuthorization(flow)
     if (authorization === null) throw new Error('Federation flow is unavailable')
     if (signal.aborted) throw signal.reason
     if (request.operation === 'identity.federation.callback') {

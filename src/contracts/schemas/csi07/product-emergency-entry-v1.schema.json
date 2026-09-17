@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProductEmergencyEntryV1",
+  "type": "object",
+  "properties": {
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "identityHomeRegionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "launchId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "purpose": {
+      "$ref": "#/$defs/EmergencyFlowPurposeV1"
+    },
+    "resultNonce": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Secret32"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "targetTenantId": {
+      "$ref": "#/$defs/Uuid7"
+    },
+    "targetUserId": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Uuid7"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "purpose",
+    "launchId",
+    "targetTenantId",
+    "identityHomeRegionId",
+    "expiresAt"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "EmergencyFlowPurposeV1": {
+      "description": "Product-owned launch scope for an emergency-only CSI flow. This value is\ncarried inside the product-signed start envelope and then replaced by a\ncontroller-signed, identity-home-encrypted authorization. It never proves\nthat the hinted identity is designated or ready.",
+      "type": "string",
+      "enum": [
+        "entry",
+        "factor_test"
+      ]
+    },
+    "Secret32": {
+      "type": "string",
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "Uuid7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

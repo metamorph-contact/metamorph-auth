@@ -336,11 +336,23 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.domains.verify.response.schema.json",
     "responseType": "AdminDomainProofCheckResultV1"
   },
+  "admin.emergency.alert_test.read": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestReadRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
+  "admin.emergency.alert_test.start": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestStartRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
   "admin.emergency.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.read.request.schema.json",
     "requestType": "AdminEmergencyReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.read.response.schema.json",
-    "responseType": "PageResultV1<EmergencyAssignmentCardV1>"
+    "responseType": "AdminEmergencyReadResultV1"
   },
   "admin.emergency.readiness": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.readiness.request.schema.json",
@@ -874,6 +886,18 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/identity.emergency.entry.request.schema.json",
     "requestType": "IdentityEmergencyEntryRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.entry.response.schema.json",
+    "responseType": "IdentityAcceptedV1"
+  },
+  "identity.emergency.factor_test.complete": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.complete.request.schema.json",
+    "requestType": "IdentityEmergencyFactorTestCompleteRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.complete.response.schema.json",
+    "responseType": "IdentityEmergencyFactorTestReceiptV1"
+  },
+  "identity.emergency.factor_test.start": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.start.request.schema.json",
+    "requestType": "IdentityEmergencyFactorTestStartRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.start.response.schema.json",
     "responseType": "IdentityAcceptedV1"
   },
   "identity.factor_recovery.complete": {

@@ -76,7 +76,7 @@ for (const name of readdirSync(path.join(docs, 'api'))) {
     operationSchemaCount += 1;
   }
 }
-assert.equal(operationSchemaCount, 237 * 2);
+assert.equal(operationSchemaCount, 242 * 2);
 assert.equal(entrySchemaCount, 1);
 for (const name of readdirSync(path.join(docs, 'events'))) {
   const schema = read(`events/${name}`);

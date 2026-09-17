@@ -828,7 +828,19 @@ export const enterpriseSecurityCatalog = {
         "assurance": "session",
         "operations": [
           "admin.emergency.read",
-          "admin.emergency.readiness"
+          "admin.emergency.readiness",
+          "admin.emergency.alert_test.read"
+        ]
+      },
+      {
+        "access": {
+          "capability": "execute",
+          "feature": "emergency_access",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.emergency.alert_test.start"
         ]
       },
       {
@@ -1256,8 +1268,7 @@ export const enterpriseSecurityCatalog = {
         "assurance": "public_ceremony",
         "operations": [
           "identity.password_recovery.start",
-          "identity.factor_recovery.start",
-          "identity.social.start"
+          "identity.factor_recovery.start"
         ]
       },
       {
@@ -1268,7 +1279,8 @@ export const enterpriseSecurityCatalog = {
         "assurance": "public_ceremony",
         "operations": [
           "identity.methods.resolve",
-          "identity.federation.start"
+          "identity.federation.start",
+          "identity.social.start"
         ]
       },
       {
@@ -1449,6 +1461,26 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "kind": "public_ceremony",
+          "priorProof": "social_signup_journey"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.continue"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "social_handoff_token"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.handoff"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
           "priorProof": "account_bound_social_transaction"
         },
         "assurance": "strong",
@@ -1469,21 +1501,23 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "anonymous_entry"
+          "priorProof": "emergency_csi_flow"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.entry"
+          "identity.emergency.entry",
+          "identity.emergency.factor_test.start"
         ]
       },
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "emergency_entry_ticket"
+          "priorProof": "emergency_ceremony_ticket"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.activate"
+          "identity.emergency.activate",
+          "identity.emergency.factor_test.complete"
         ]
       },
       {
