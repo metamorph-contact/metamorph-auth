@@ -1171,19 +1171,18 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "capability": "read",
-          "feature": "audit_logs",
+          "feature": "audit_retention",
           "kind": "rbac"
         },
         "assurance": "session",
         "operations": [
-          "admin.audit.retention.read",
-          "admin.audit.legal_holds.list"
+          "admin.audit.retention.read"
         ]
       },
       {
         "access": {
           "capability": "update",
-          "feature": "audit_logs",
+          "feature": "audit_retention",
           "kind": "rbac"
         },
         "assurance": "strong",
@@ -1193,8 +1192,19 @@ export const enterpriseSecurityCatalog = {
       },
       {
         "access": {
+          "capability": "read",
+          "feature": "legal_holds",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.audit.legal_holds.list"
+        ]
+      },
+      {
+        "access": {
           "capability": "create",
-          "feature": "audit_logs",
+          "feature": "legal_holds",
           "kind": "rbac"
         },
         "assurance": "strong",
@@ -1205,7 +1215,7 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "capability": "delete",
-          "feature": "audit_logs",
+          "feature": "legal_holds",
           "kind": "rbac"
         },
         "assurance": "strong",
@@ -1237,6 +1247,39 @@ export const enterpriseSecurityCatalog = {
       },
       {
         "access": {
+          "capability": "delete",
+          "feature": "audit_exports",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.export.cancel"
+        ]
+      },
+      {
+        "access": {
+          "capability": "read",
+          "feature": "audit_exports",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.export.download.authorize"
+        ]
+      },
+      {
+        "access": {
+          "capability": "read",
+          "feature": "audit_exports",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.audit.export.download"
+        ]
+      },
+      {
+        "access": {
           "capability": "update",
           "feature": "integrations",
           "kind": "rbac"
@@ -1255,6 +1298,28 @@ export const enterpriseSecurityCatalog = {
         "assurance": "session",
         "operations": [
           "admin.audit.siem.status"
+        ]
+      },
+      {
+        "access": {
+          "capability": "update",
+          "feature": "integrations",
+          "kind": "rbac"
+        },
+        "assurance": "strong",
+        "operations": [
+          "admin.audit.siem.replay"
+        ]
+      },
+      {
+        "access": {
+          "capability": "read",
+          "feature": "integrations",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.audit.siem.dead_letters.read"
         ]
       },
       {

@@ -49,7 +49,9 @@ const requestEntries = []
 const responseEntries = []
 let errorEntry
 for (const file of (await readdir(directory)).sort()) {
-  if (file === "scim-entry.schema.json") continue;
+  // Shared structural schemas are consumed by their owning specialised
+  // validators; they are not Plan 03 request/response operations.
+  if (file === 'conditional-source-evidence.schema.json' || file === 'scim-entry.schema.json') continue
   const side =
     file === 'error.schema.json'
       ? 'error'

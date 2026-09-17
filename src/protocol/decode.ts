@@ -14,7 +14,7 @@ export type ResponseSchemaName =
   | 'signupPreparation' | 'signupRegistration' | 'signupContinuation' | 'verifiedSignupTransfer'
   | 'destinationReceipt' | 'authorizationFinalization' | 'signupProgress' | 'signupCompletion'
   | 'emailPreview' | 'emailVerification' | 'recoveryAccepted' | 'recoveryCompleted'
-  | 'logoutOptions' | 'logoutAccountMetadata' | 'logoutResult'
+  | 'logoutOptions' | 'logoutAccountMetadata' | 'logoutResult' | 'productBootstrap'
   | 'recipientAccountAdmission' | 'recipientBootstrap' | 'recipientList' | 'recipientDetail' | 'recipientOperation' | 'recipientDecision' | 'recipientEmailedEntryRequest' | 'recipientEmailedEntry'
   | 'profileActivity'
 
@@ -62,6 +62,7 @@ const validators = {
   logoutOptions: generated.logoutOptions,
   logoutAccountMetadata: generated.logoutAccountMetadata,
   logoutResult: generated.logoutResult,
+  productBootstrap: generated.productBootstrap,
 } as unknown as Readonly<Record<ResponseSchemaName, RuntimeValidator>>
 
 export function decodeProtocolResponse<T>(name: ResponseSchemaName, text: string, maxBytes = 256 * 1024): T {

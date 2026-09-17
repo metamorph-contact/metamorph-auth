@@ -36,18 +36,6 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.alerts.resolve.response.schema.json",
     "responseType": "AlertMutationResultV1"
   },
-  "admin.audit.export.create": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.export.create.request.schema.json",
-    "requestType": "AuditExportRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.export.create.response.schema.json",
-    "responseType": "SecurityAsyncResultV1"
-  },
-  "admin.audit.export.status": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.export.status.request.schema.json",
-    "requestType": "SecurityAsyncStatusRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.export.status.response.schema.json",
-    "responseType": "SecurityAsyncResultV1"
-  },
   "admin.audit.legal_holds.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.audit.legal_holds.create.request.schema.json",
     "requestType": "AuditLegalHoldCreateRequestV1",
@@ -83,18 +71,6 @@ export const enterpriseSecurityOperations = {
     "requestType": "AuditSearchRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.audit.search.response.schema.json",
     "responseType": "PageResultV1<SecurityAuditEventV1>"
-  },
-  "admin.audit.siem.configure": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.siem.configure.request.schema.json",
-    "requestType": "AuditSiemConfigureRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.siem.configure.response.schema.json",
-    "responseType": "SecurityAsyncResultV1"
-  },
-  "admin.audit.siem.status": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.audit.siem.status.request.schema.json",
-    "requestType": "SecurityAsyncStatusRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.audit.siem.status.response.schema.json",
-    "responseType": "SecurityAsyncResultV1"
   },
   "admin.audit.stream_status": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.audit.stream_status.request.schema.json",
@@ -1465,7 +1441,69 @@ export const enterpriseSecurityOperations = {
     "responseType": "ScimUserV1"
   }
 } as const;
-export const externalCsiOperations = {
+export const externalOperations = {
+  "admin.audit.export.cancel": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-cancel-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditExportCancelRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-job.schema.json",
+    "responseType": "metamorph_audit_logs::AuditExportJobV1"
+  },
+  "admin.audit.export.create": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-create-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditExportCreateRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-job.schema.json",
+    "responseType": "metamorph_audit_logs::AuditExportJobV1"
+  },
+  "admin.audit.export.download": {
+    "authority": "metamorph-audit-logs/audit-logs-v1+regional-attachment",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-download-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditExportDownloadRequestV1",
+    "responseType": "metamorph_identity_controller::AuditExportDownloadV1"
+  },
+  "admin.audit.export.download.authorize": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-download-authorize-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditExportDownloadAuthorizeRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-download-lease.schema.json",
+    "responseType": "metamorph_audit_logs::AuditExportDownloadLeaseV1"
+  },
+  "admin.audit.export.status": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-item-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditExportItemRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-job.schema.json",
+    "responseType": "metamorph_audit_logs::AuditExportJobV1"
+  },
+  "admin.audit.siem.configure": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-configure-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditSiemConfigureRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-config.schema.json",
+    "responseType": "metamorph_audit_logs::AuditSiemConfigV1"
+  },
+  "admin.audit.siem.dead_letters.read": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-dead-letter-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditSiemDeadLetterRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-dead-letter-page.schema.json",
+    "responseType": "metamorph_audit_logs::AuditSiemDeadLetterPageV1"
+  },
+  "admin.audit.siem.replay": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-replay-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditSiemReplayRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-config.schema.json",
+    "responseType": "metamorph_audit_logs::AuditSiemConfigV1"
+  },
+  "admin.audit.siem.status": {
+    "authority": "metamorph-audit-logs/audit-logs-v1",
+    "requestSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-item-request.schema.json",
+    "requestType": "metamorph_audit_logs::AuditSiemItemRequestV1",
+    "responseSchema": "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/siem-health.schema.json",
+    "responseType": "metamorph_audit_logs::AuditSiemHealthV1"
+  },
   "identity.password_recovery.complete": {
     "authority": "metamorph-identity-controller/CSI-11",
     "requestType": "metamorph_identity_controller::PasswordRecoveryCompleteRequestV1",
