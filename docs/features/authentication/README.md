@@ -4,7 +4,8 @@ Plan 10 owned packets A–E are development-complete on `codex/plan10`. The
 [development handoff](../../../../metamorph-saas/docs/features/authentication/work/enterprise-authentication/10-conditional-network-access-handoff.md) records all coverage rows, actual routes,
 targeted checks and readonly reviews. Final handoff audit is complete and both readonly reviewers are CLEAN. External
 common proof/session/facts/effects, producer and transport installation, the
-first protected product handler and human live evidence remain in EA-10I.
+configured Octamorph product gateway and human live evidence remain in EA-10I;
+the repository-owned protected Laminar handler/gateway is implemented.
 Earlier increment records below preserve their then-current testing state.
 Plan 08D mounts `EmergencyEntryGate` in common identity credentials only for
 an actual admitted emergency-purpose `EmergencyEntryContext` matched to current
