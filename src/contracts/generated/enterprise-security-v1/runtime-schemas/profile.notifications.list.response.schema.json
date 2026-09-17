@@ -21,7 +21,7 @@
       "type": "string"
     },
     "OpaqueCursorV1": {
-      "maxLength": 1024,
+      "maxLength": 21846,
       "minLength": 1,
       "pattern": "^[!-~]+$",
       "type": "string"

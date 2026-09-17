@@ -2,7 +2,7 @@
   "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::SelfPageRequestV1. Do not edit.",
   "$defs": {
     "OpaqueCursorV1": {
-      "maxLength": 1024,
+      "maxLength": 21846,
       "minLength": 1,
       "pattern": "^[!-~]+$",
       "type": "string"
