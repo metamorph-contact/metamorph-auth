@@ -3,4 +3,11 @@
 import type { IdentityCeremonyRefV1 } from "./IdentityCeremonyRefV1";
 import type { IdentityStepUpProofV1 } from "./IdentityStepUpProofV1";
 
-export type IdentityStepUpCompleteRequestV1 = { ceremony: IdentityCeremonyRefV1, proof: IdentityStepUpProofV1, };
+export type IdentityStepUpCompleteRequestV1 = {
+/**
+ * A fresh operation identity for this exact completion payload. It is
+ * intentionally distinct from the ceremony attempt so an ambiguous
+ * transport failure can replay the same proof without conflating begin
+ * and completion idempotency.
+ */
+mutationId: string, ceremony: IdentityCeremonyRefV1, proof: IdentityStepUpProofV1, };

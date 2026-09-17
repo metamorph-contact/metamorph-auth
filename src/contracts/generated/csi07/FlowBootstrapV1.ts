@@ -4,10 +4,17 @@ import type { CatalogId } from "./CatalogId";
 import type { CatalogVersion } from "./CatalogVersion";
 import type { Digest32 } from "./Digest32";
 import type { FlowNextStepV1 } from "./FlowNextStepV1";
+import type { IdentityFlowResumeReferenceV1 } from "./IdentityFlowResumeReferenceV1";
 import type { Locale } from "./Locale";
 import type { Origin } from "./Origin";
 import type { PresentationV1 } from "./PresentationV1";
+import type { ProductEmergencyEntryV1 } from "./ProductEmergencyEntryV1";
+import type { ProductStrongActionEntryV1 } from "./ProductStrongActionEntryV1";
+import type { ProviderRuntimeTestContextV1 } from "./ProviderRuntimeTestContextV1";
+import type { ProviderRuntimeTestEntryV1 } from "./ProviderRuntimeTestEntryV1";
+import type { RecipientEmailedInvitationEntryV1 } from "./RecipientEmailedInvitationEntryV1";
 import type { RelocationRecoveryV1 } from "./RelocationRecoveryV1";
+import type { SamlHandoffEntryV1 } from "./SamlHandoffEntryV1";
 import type { Secret32 } from "./Secret32";
 
-export type FlowBootstrapV1 = { schemaVersion: number, flowId: string, csrfToken: Secret32, presentation: PresentationV1, locale: Locale, initialRegionId: CatalogId, initialIdentityApiOrigin: Origin, intent: AuthenticationIntentV1, expiresAt: string, nextStep: FlowNextStepV1, relocation: RelocationRecoveryV1 | null, authProjectionId: CatalogId, catalogVersion: CatalogVersion, catalogDigest: Digest32, catalogUri: string, catalogExpiresAt: string, };
+export type FlowBootstrapV1 = { schemaVersion: number, flowResume: IdentityFlowResumeReferenceV1 | null, flowId: string, csrfToken: Secret32, presentation: PresentationV1, locale: Locale, initialRegionId: CatalogId, initialIdentityApiOrigin: Origin, intent: AuthenticationIntentV1, providerTest: ProviderRuntimeTestContextV1 | null, providerTestEntry: ProviderRuntimeTestEntryV1 | null, samlHandoff: SamlHandoffEntryV1 | null, emailedInvitation: RecipientEmailedInvitationEntryV1 | null, strongActionEntry: ProductStrongActionEntryV1 | null, emergencyEntry: ProductEmergencyEntryV1 | null, emergencyAuthorization: string | null, expiresAt: string, nextStep: FlowNextStepV1, relocation: RelocationRecoveryV1 | null, authProjectionId: CatalogId, catalogVersion: CatalogVersion, catalogDigest: Digest32, catalogUri: string, catalogExpiresAt: string, };

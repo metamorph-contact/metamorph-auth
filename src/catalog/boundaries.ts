@@ -74,6 +74,8 @@ export function catalogNavigationUri(catalog: LoadedIdentityCatalog, value: stri
     const validPath = catalog.projection.supportedLocales.some((locale) => {
       const base = `/${encodeURIComponent(locale)}/auth/${encodeURIComponent(catalog.projection.authProjectionId)}/${encodeURIComponent(catalog.projection.catalogVersion)}`
       return suffixes.some((suffix) => url.pathname === `${base}/${suffix}`)
+        || (url.hash === '' && url.pathname.startsWith(`${base}/conditional-step-up/`)
+          && /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(url.pathname.slice(`${base}/conditional-step-up/`.length)))
     })
     if (validPath) return url.href
     throw new Error('Common identity navigation path is not cataloged')

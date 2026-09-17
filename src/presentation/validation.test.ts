@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
-import { exceedsUtf8Limit, utf8Length, validBoundedText, validEmail } from './validation'
+import {
+  boundedPasswordInput,
+  normalizeEmailForWire,
+  exceedsUtf8Limit,
+  PASSWORD_WIRE_MAX_BYTES,
+  utf8Length,
+  validBoundedText,
+  validEmail,
+  validPasswordInput,
+} from './validation'
 
 describe('identity form bounds', () => {
   it('counts UTF-8 bytes rather than JavaScript code units', () => {
@@ -14,7 +23,29 @@ describe('identity form bounds', () => {
     expect(validEmail(`${'é'.repeat(122)}@example.com`)).toBe(false)
   })
 
+  it('sends Unicode and A-label domains with the same canonical bytes', () => {
+    expect(normalizeEmailForWire('Person@BÜCHER.example')).toBe('person@xn--bcher-kva.example')
+    expect(normalizeEmailForWire('person@xn--bcher-kva.example')).toBe('person@xn--bcher-kva.example')
+    expect(normalizeEmailForWire(' Person@GMAIL.COM ')).toBe('person@gmail.com')
+    expect(normalizeEmailForWire('pérson@example.com')).toBeNull()
+    expect(normalizeEmailForWire('person@example.com.')).toBeNull()
+    expect(normalizeEmailForWire('person@127.0.0.1')).toBeNull()
+    expect(normalizeEmailForWire(`person@${'\u00ad'.repeat(520)}example.com`)).toBeNull()
+  })
+
   it('rejects protocol control characters', () => {
     expect(validBoundedText('valid\nnot', 32)).toBe(false)
+  })
+
+  it('admits multibyte passwords through the shared 16-KiB wire boundary', () => {
+    const accepted = '界'.repeat(384)
+    const exact = '😀'.repeat(PASSWORD_WIRE_MAX_BYTES / 4)
+    const oversized = `${exact}a`
+    expect(utf8Length(accepted)).toBeGreaterThan(1_024)
+    expect(validPasswordInput(accepted)).toBe(true)
+    expect(boundedPasswordInput(accepted)).toBe(accepted)
+    expect(validPasswordInput(exact)).toBe(true)
+    expect(boundedPasswordInput(oversized)).toBeNull()
+    expect(validPasswordInput(oversized)).toBe(false)
   })
 })

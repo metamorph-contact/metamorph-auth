@@ -1,12 +1,15 @@
 {
-  "artifactDigestSha256": "b53a0dd154f3e0f63633b03d4d13b4183011369790fc802e5a27a23d861b7b5e",
+  "artifactDigestSha256": "18da2083cc3ca59577b19388ad1ca503866acef1bbe71a8197d2d5bc8617bf09",
   "artifactHashes": {
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/fixtures.generated.ts": "5e476e739f762591867424fae013a42384cfe63191e8a225b9914f8ff9f2755c",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/fixtures.json": "e18ae21dee684f831f0052187cff839518900be9b5fa033daa0b029cd0ced0e8",
-    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/operations.generated.ts": "13e40b8002236e5fd6f5b4d4d507327cc815cbc1363eca6ad25acb7e7bd29ad3",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/operations.generated.ts": "6a6e0beb52f9c86f1fb357f8fdd7f0f349928d9a94b0ac01f994637adfdc91cf",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientBrowserHeadV1.ts": "1a593844691415f6a47c36823a76aecad993cba5d629d9896e3cbcdfeabac61a",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientClaimRequiredV1.ts": "2380aaf12ed1605c84a028e020968dbbacd0944a328b116775bf3eeaef97276d",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientControllerPlacementV1.ts": "b70c3490b9acef2746c76c47c3da8fe0d1f967d2e72ae52fcb92be2bbee39d8e",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientEmailedEntryRequestV1.ts": "8ce7a550755e47e0a7d7b8aa5adc83282b3facb8f7ccedb758bd2395c937425b",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientEmailedEntryResultV1.ts": "47207dda8aefab51c87b5e978c2b04c7b1a2ae24228a9f25805581a7982251c3",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientHomeRoleBoundaryV1.ts": "66df9d1552ba394ea0e3d9c588c1b1d048cda0b29a47e11edd4ff1c13a7fd93a",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientHomeRouteV1.ts": "da0402b3c019cb96f5d511403c71f5385f246af9e3ac4e1a02a2e1fb91f3273e",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInboxBootstrapRequestV1.ts": "4a46a5b063a3d50f42e2853b1ce7fbf0d3e5f6f71549fa11e0f6524826f0de4e",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInboxBootstrapResultV1.ts": "a59e55e7cd0abcb56b06344c63b3c1c22b665556f945b5a7c14f6dfaf84b2748",
@@ -22,17 +25,30 @@
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInvitationListResultV1.ts": "2639536a1c785dfee4030ce1731004544187b829f464126e89e67e54dfa57768",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInvitationOperationRequestV1.ts": "9badaa05ccf6615f9b536792cae7b74482422c35a0fc7e36279762f853d80373",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInvitationOperationV1.ts": "5aa8024bcb857762067e2f250a14a68ed1c08a90e0495c3da5992db5558306c5",
-    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInvitationStateV1.ts": "f06e474c36263f75fa50e9d8adf1c9000da9f0dd0cfcb49ec316484af7f7cd20",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientInvitationStateV1.ts": "c0763f2a2edaac7c59950c073f93fac5dbc25308fc1112b379a1227b3e92d06a",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientOperationStateV1.ts": "fa1ae82f540f994be728e195c7a57af0d0bcbd7d9c7b9e061b99f5659c1496aa",
-    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientTargetSummaryV1.ts": "4d9ee76df03c0bcd3c6eab086776019eb3f6d91ede190508678501472b202549",
+    "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientTargetSummaryV1.ts": "7ca0184f7a902f2e207d37104e0d6fdf07f34dc46d9cd5e1f88bb195d3b9eec8",
     "metamorph-auth/src/contracts/generated/authorization-recipient-v1/types/RecipientTerminalReasonV1.ts": "31bad477e82dc1ef3650582aba789c8ba4edf613702387fc5b7534e7b704dc8b",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientEmailedEntryRequestV1.schema.json": "5fb8753766288d64e427312fc47398590b0edad8e045d5602d602ef876c39c7e",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientEmailedEntryResultV1.schema.json": "1b58382aa8bbab03b96cda6d5f8492e75611acd616112226f7196a4bb86bd07b",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInboxBootstrapRequestV1.schema.json": "2065810f83cddd19221eaf953a676b6a5fb1b5d760a6c52ddee1cc746a607e88",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInboxBootstrapResultV1.schema.json": "92dd0455d0aaced1e0e7b897046da9e1bb7121230a84440e64a7a7eeb26b1f38",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationDecisionRequestV1.schema.json": "bfb3ab7ed4df805b283b68a44833de795cffb1a1e6b1ecb4d8ac5aae6b4fbb8c",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationDetailRequestV1.schema.json": "576a0854bf50eda28c4486a9161871cbe31649ceea3c80b7d31ef17840f4a009",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationDetailResultV1.schema.json": "167a33917ddc76618821a43ce6557e4d5f384fb98099b7da6accb600eebaefbb",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationListRequestV1.schema.json": "d6c105b00bbd2d8e6aae07b978b700ed1c1fb7194183883b5c2080f1fd84e650",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationListResultV1.schema.json": "b028db6918ce2dd16c92cdb72da798c38b2d14de960a74faa8d5010e2654ad15",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationOperationRequestV1.schema.json": "00ee6cc22e399a849d853f4b36d798d9f5c4cbe0d41335fe812bf5de02bef0e1",
+    "metamorph-auth/src/contracts/schemas/authorization-recipient-v1/RecipientInvitationOperationV1.schema.json": "9f4ed08487a9bd727c553d7f7f9df0ce08ac24ff9214e931a16601320fcd7c2e",
+    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientEmailedEntryRequestV1.schema.json": "5fb8753766288d64e427312fc47398590b0edad8e045d5602d602ef876c39c7e",
+    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientEmailedEntryResultV1.schema.json": "1b58382aa8bbab03b96cda6d5f8492e75611acd616112226f7196a4bb86bd07b",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInboxBootstrapRequestV1.schema.json": "2065810f83cddd19221eaf953a676b6a5fb1b5d760a6c52ddee1cc746a607e88",
-    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInboxBootstrapResultV1.schema.json": "a9721010667c461a7f661a6ea1aed377ae405e090ba88802dcec0fdbf39ae0d7",
+    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInboxBootstrapResultV1.schema.json": "92dd0455d0aaced1e0e7b897046da9e1bb7121230a84440e64a7a7eeb26b1f38",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationDecisionRequestV1.schema.json": "bfb3ab7ed4df805b283b68a44833de795cffb1a1e6b1ecb4d8ac5aae6b4fbb8c",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationDetailRequestV1.schema.json": "576a0854bf50eda28c4486a9161871cbe31649ceea3c80b7d31ef17840f4a009",
-    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationDetailResultV1.schema.json": "01b6ea355defff54662dd7bfcf49a8705c9db26c64fe6e3397a1230aea845b13",
+    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationDetailResultV1.schema.json": "167a33917ddc76618821a43ce6557e4d5f384fb98099b7da6accb600eebaefbb",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationListRequestV1.schema.json": "d6c105b00bbd2d8e6aae07b978b700ed1c1fb7194183883b5c2080f1fd84e650",
-    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationListResultV1.schema.json": "0b98119ac0533c228bc0ba4a191edbe1c0c0fd9a2a7d746d0fe5564adeee9bfe",
+    "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationListResultV1.schema.json": "b028db6918ce2dd16c92cdb72da798c38b2d14de960a74faa8d5010e2654ad15",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationOperationRequestV1.schema.json": "00ee6cc22e399a849d853f4b36d798d9f5c4cbe0d41335fe812bf5de02bef0e1",
     "metamorph-saas/docs/features/authorization/contracts/generated/recipient-inbox-v1/schemas/RecipientInvitationOperationV1.schema.json": "9f4ed08487a9bd727c553d7f7f9df0ce08ac24ff9214e931a16601320fcd7c2e"
   },
@@ -59,6 +75,12 @@
       "requestType": "RecipientInvitationDetailRequestV1",
       "responseType": "RecipientInvitationDetailResultV1"
     },
+    "emailedEntry": {
+      "method": "POST",
+      "path": "/api/authorization/v1/me/invitations/email-entry",
+      "requestType": "RecipientEmailedEntryRequestV1",
+      "responseType": "RecipientEmailedEntryResultV1"
+    },
     "list": {
       "method": "GET",
       "path": "/api/authorization/v1/me/invitations",
@@ -80,8 +102,8 @@
   },
   "schemaVersion": 1,
   "sourceInputs": {
-    "metamorph-saas/crates/authorization-recipient-contract/Cargo.toml": "0883461efd4125316e75c3dc781ca5e7f70036d57aef52ec3602e3b03c45417c",
-    "metamorph-saas/crates/authorization-recipient-contract/src/bin/recipient_contracts.rs": "b9e0055b6532a08127fbb14ec3f62755bfee2fd5fe7e7009ef311de730230fa7",
-    "metamorph-saas/crates/authorization-recipient-contract/src/lib.rs": "5fe986aab4a1903683d9b57375eb79a1397ad4e6f626d59b8868ba156f331969"
+    "metamorph-saas/crates/authorization-recipient-contract/Cargo.toml": "b6a8bf274d54780f6f3199f5f2bd092cbc0c05e412236a3a61011fe833678ee2",
+    "metamorph-saas/crates/authorization-recipient-contract/src/bin/recipient_contracts.rs": "6ff09178df5ba2d00d6ecac59e20a705a9710c08d69ae58a3eee035e9d3c031a",
+    "metamorph-saas/crates/authorization-recipient-contract/src/lib.rs": "bf335c6d70c7074e7908c1db7421f7e4e5c377ba6d71438d58fda4be7060c404"
   }
 }

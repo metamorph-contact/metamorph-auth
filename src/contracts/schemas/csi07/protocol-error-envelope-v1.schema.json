@@ -53,6 +53,7 @@
         "auth.credentials.rate_limited",
         "auth.password.policy",
         "auth.signup.organization_name.invalid",
+        "auth.signup.domain.conflict",
         "auth.signup.handle.unavailable",
         "auth.account.temporarily_unavailable",
         "auth.account_session.invalid",

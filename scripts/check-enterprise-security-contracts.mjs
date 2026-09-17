@@ -57,6 +57,7 @@ const error = ajv.compile(read('api/error.schema.json'));
 const audit = ajv.compile(read('events/customer-audit.schema.json'));
 const integration = ajv.compile(read('events/integration.schema.json'));
 let operationSchemaCount = 0;
+let entrySchemaCount = 0;
 for (const name of readdirSync(path.join(docs, 'api'))) {
   const schema = read(`api/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/api/${name}`);
@@ -67,14 +68,62 @@ for (const name of readdirSync(path.join(docs, 'api'))) {
   } catch (cause) {
     throw new Error(`invalid generated operation schema ${name}`, { cause });
   }
-  operationSchemaCount += 1;
+  if (name === 'scim-entry.schema.json') {
+    assert.equal(schema.$id, 'urn:metamorph:enterprise-security:v1:scim-entry');
+    entrySchemaCount += 1;
+  } else {
+    assert.ok(/\.(request|response)\.schema\.json$/.test(name), `unexpected operation schema: ${name}`);
+    operationSchemaCount += 1;
+  }
 }
-assert.equal(operationSchemaCount, 242 * 2);
+const { enterpriseSecurityOperations } = await import(pathToFileURL(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/contracts/generated/enterprise-security-v1/operations.generated.ts')).href);
+const expectedOperationSchemas = Object.values(enterpriseSecurityOperations)
+  .flatMap((operation) => operation.requestSchema === undefined ? [] : [path.basename(operation.requestSchema), path.basename(operation.responseSchema)]);
+assert(expectedOperationSchemas.length > 0);
+assert.equal(new Set(expectedOperationSchemas).size, expectedOperationSchemas.length);
+assert.deepEqual(new Set(readdirSync(path.join(docs, 'api')).filter((name) => name !== 'error.schema.json' && name !== 'scim-entry.schema.json')), new Set(expectedOperationSchemas));
+assert.equal(operationSchemaCount, expectedOperationSchemas.length);
+assert.equal(entrySchemaCount, 1);
 for (const name of readdirSync(path.join(docs, 'events'))) {
   const schema = read(`events/${name}`);
   assert.equal(manifest.schemaIds[schema.$id], `metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/events/${name}`);
 }
-assert.equal(Object.keys(manifest.schemaIds).length, operationSchemaCount + 5);
+assert.equal(Object.keys(manifest.schemaIds).length, operationSchemaCount + entrySchemaCount + 6);
+const sourceSchema = read('sources/conditional-source-evidence.schema.json');
+assert.equal(manifest.schemaIds[sourceSchema.$id], 'metamorph-saas/docs/features/authentication/contracts/generated/enterprise-security-v1/sources/conditional-source-evidence.schema.json');
+const sourceEvidence = ajv.compile(sourceSchema);
+// Structural wire checks only; the backend owns cryptographic admission.
+const signedSourceFixture = {
+  claims: {
+    schemaVersion: 1,
+    tenantId: '018f0000-0000-7000-8000-000000000001',
+    sourceId: '018f0000-0000-7000-8000-000000000002',
+    sourceRevision: '3', issuerId: 'fixture-issuer', audienceId: 'fixture-audience',
+    keyId: 'fixture-key', keyGeneration: '2',
+    evidenceId: '018f0000-0000-7000-8000-000000000005',
+    collectedAt: '2026-09-15T10:00:00Z', expiresAt: '2026-09-15T10:01:00Z',
+    body: { kind: 'posture', userId: '018f0000-0000-7000-8000-000000000003',
+      deviceId: '018f0000-0000-7000-8000-000000000004', posture: 'compliant', risk: 'low' },
+  },
+  signature: Buffer.alloc(64).toString('base64url'),
+};
+assert.equal(sourceEvidence(signedSourceFixture), true, JSON.stringify(sourceEvidence.errors));
+const wrongSourceVersion = structuredClone(signedSourceFixture);
+wrongSourceVersion.claims.schemaVersion = 2;
+assert.equal(sourceEvidence(wrongSourceVersion), false);
+const browserScore = structuredClone(signedSourceFixture);
+browserScore.claims.body.riskScore = 0;
+assert.equal(sourceEvidence(browserScore), false);
+const unknownRisk = structuredClone(signedSourceFixture);
+unknownRisk.claims.body.risk = 'trusted';
+assert.equal(sourceEvidence(unknownRisk), false);
+const networkFixture = structuredClone(signedSourceFixture);
+networkFixture.claims.body = { kind: 'network', userId: signedSourceFixture.claims.body.userId,
+  deviceId: signedSourceFixture.claims.body.deviceId, requestBindingSha256: Array(32).fill(0),
+  peerIp: '192.0.2.1', country: 'in', clientCertificateSha256: null };
+assert.equal(sourceEvidence(networkFixture), true, JSON.stringify(sourceEvidence.errors));
+networkFixture.claims.body.requestBindingSha256.pop();
+assert.equal(sourceEvidence(networkFixture), false);
 const apiIndex = ajv.compile(JSON.parse(readFileSync(path.join(docs, '../../enterprise-security-api-v1.schema.json'), 'utf8')));
 const eventIndex = ajv.compile(JSON.parse(readFileSync(path.join(docs, '../../enterprise-security-events-v1.schema.json'), 'utf8')));
 assert.equal(typeof apiIndex, 'function');

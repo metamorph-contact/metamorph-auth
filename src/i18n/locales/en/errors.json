@@ -6,6 +6,7 @@
   "errors.handle_unavailable": "That handle is unavailable.",
   "errors.invalid_request": "This authentication link is invalid or has expired.",
   "errors.organization_invalid": "Enter a valid organization name.",
+  "errors.organization_domain_conflict": "This work email needs an invitation or an explicit organization choice before signup.",
   "errors.password_policy": "This password does not meet the password policy.",
   "errors.session_expired": "That account session expired. Sign in again.",
   "errors.too_long_bytes": "Use at most {{maximum}} bytes of text.",

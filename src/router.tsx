@@ -1,3 +1,5 @@
+import {EmergencyEntryGate} from './enterprise-security/emergency-entry-gate'
+import type { IdentityFlowResumeReferenceV1 } from './contracts/generated/csi07/IdentityFlowResumeReferenceV1'
 import {
   createRootRoute,
   createRoute,
@@ -19,7 +21,8 @@ import {
   Text,
   toast,
 } from '@polymorph/ui/identity'
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { assertExternalNavigationLive } from './enterprise-security/external-navigation'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -38,6 +41,8 @@ import type { SignupContinuationResultV1 } from './contracts/generated/csi07/Sig
 import type { SignupProfileV1 } from './contracts/generated/csi11/SignupProfileV1'
 import type { SignupProgressV1 } from './contracts/generated/csi11/SignupProgressV1'
 import type { BrowserLogoutResultV1 } from './contracts/generated/csi10/BrowserLogoutResultV1'
+import type { IdentityStepUpCompleteRequestV1 } from './contracts/generated/enterprise-security-v1/types/IdentityStepUpCompleteRequestV1'
+import type { IdentityStepUpStartResultV1 } from './contracts/generated/enterprise-security-v1/types/IdentityStepUpStartResultV1'
 import { isSupportedLocale, setLocale } from './i18n'
 import { afterPageFade, navigateAfterFade } from './navigation/step-transition'
 import { installPresentationTheme } from './presentation/theme'
@@ -48,6 +53,9 @@ import {
   continueAccountEstablishment,
   continueSignup,
   createIdentityFlow,
+  resumeFederationFlow,
+  resumeIdentityFlow,
+  resumeFlowFromStart,
   finalizeDestination,
   loadAccounts,
   previewEmailLink,
@@ -62,18 +70,27 @@ import {
   updateSignup,
   uploadSignupPicture,
   type DisplayAccountsResult,
+  type DisplayAccount,
   type IdentityFlow,
   type PasswordRecoveryStartAttempt,
   type SignupStartAttempt,
   type StartedSignup,
 } from './protocol/client'
 import { ProtocolError } from './protocol/http'
+import {
+  base64UrlDigestToHex,
+  strongActionIdentityClient,
+  type StrongActionIdentityClient,
+} from './enterprise-security/strong-action-client'
+import { Plan03IdentityHttpError } from './enterprise-security/request-contract'
+import { passkeyBrowserAdapter } from './enterprise-security/passkey-browser'
 import { BrowserLogoutClient, type LogoutDisplayOptions } from './protocol/logout'
 import {
   consumeAuthFragmentOnce,
   hasUnconsumedAuthFragment,
   type EmailVerificationFragment,
   type InitialEntryFragment,
+  type FederationReturnFragment,
   type PasswordRecoveryFragment,
 } from './security/fragment'
 import {
@@ -84,12 +101,33 @@ import {
   readStartRecovery,
   saveStartRecovery,
   saveDestinationContinuation,
+  saveFederationReturn,
+  readFederationReturn,
+  clearFederationReturn,
+  clearIdentityFlowResume,
+  saveIdentityFlowResume,
+  readIdentityFlowResume,
   type StartRecovery,
 } from './security/session-receipts'
 import { armBfcacheRecovery } from './security/bfcache'
-import { exceedsUtf8Limit, utf8Length, validBoundedText, validEmail } from './presentation/validation'
+import {
+  boundedPasswordInput,
+  exceedsUtf8Limit,
+  PASSWORD_WIRE_MAX_BYTES,
+  validBoundedText,
+  validEmail,
+  validPasswordInput,
+} from './presentation/validation'
 
 type RouteParams = { locale: string; authProjectionId: string; catalogVersion: string }
+
+const ProviderRuntimeTestPanel = lazy(() => import('./enterprise-security/provider-test').then(module => ({default: module.ProviderRuntimeTestPanel})))
+const EmergencyFactorTestPanel = lazy(() => import('./enterprise-security/emergency-factor-test').then(module => ({default: module.EmergencyFactorTestPanel})))
+const FederationMethodChoices = lazy(() => import('./enterprise-security/federation-methods').then((module) => ({ default: module.FederationMethodChoices })))
+const FederationReturnPanel = lazy(() => import('./enterprise-security/federation-return').then(module=>({default:module.FederationReturnPanel})))
+const SelectedAccountInvitationInbox = lazy(() => import('./enterprise-security/account-inbox').then(module=>({default:module.SelectedAccountInvitationInbox})))
+const AccountInvitationInbox = lazy(() => import('./enterprise-security/account-inbox').then(module=>({default:module.AccountInvitationInbox})))
+const SamlHandoffFlowPanel = lazy(() => import('./enterprise-security/saml-entry').then(module=>({default:module.SamlHandoffFlowPanel})))
 
 const signupControls = () => import('@polymorph/ui/identity-signup')
 const ColorInput = lazy(async () => ({ default: (await signupControls()).ColorInput }))
@@ -104,6 +142,7 @@ function protocolMessage(error: unknown): string {
   if (error.code === 'auth.password.policy') return 'errors.password_policy'
   if (error.code === 'auth.signup.handle.unavailable') return 'errors.handle_unavailable'
   if (error.code === 'auth.signup.organization_name.invalid') return 'errors.organization_invalid'
+  if (error.code === 'auth.signup.domain.conflict') return 'errors.organization_domain_conflict'
   if (error.code === 'auth.dependency.unavailable' || error.code === 'auth_unavailable') return 'errors.auth_unavailable'
   if (error.code === 'auth_invalid_response' || error.code === 'auth_outcome_uncertain') return 'errors.auth_unavailable'
   if (error.code === 'auth.account_session.invalid' || error.code === 'auth.product_session.invalid') return 'errors.session_expired'
@@ -117,10 +156,6 @@ function failureKind(error: unknown): FailureKind {
   return (error instanceof ProtocolError && error.retryable) || error instanceof CatalogUnavailableError
     ? 'temporary'
     : 'terminal'
-}
-
-function boundedPassword(value: string): string | null {
-  return utf8Length(value) <= 2_048 ? value : null
 }
 
 type IdentityField = 'email' | 'password' | 'organization' | 'firstName' | 'lastName' | 'handle'
@@ -176,7 +211,7 @@ function FormStack({ children, onSubmit }: { children: ReactNode; onSubmit: (eve
   return <form onSubmit={onSubmit}><Stack gap={4}>{children}</Stack></form>
 }
 
-function Presentation({ catalog, children, title, description, transitionKey, pending, leaving, back }: {
+export function Presentation({ catalog, children, title, description, transitionKey, pending, leaving, back }: {
   catalog: LoadedIdentityCatalog
   children: ReactNode
   title: string
@@ -278,6 +313,10 @@ interface SignupProgressStep {
 }
 
 type AuthorizeStep =
+  | {kind:'federation';fragment:FederationReturnFragment}
+  | {kind:'recipientInbox';establishment:AccountEstablishmentResultV1}
+  | {kind:'selectedRecipientInbox';selected:DisplayAccount}
+  | {kind:'strongAction';selected:DisplayAccount}
   | { kind: 'credentials' }
   | { kind: 'signupEmail' }
   | { kind: 'signupRegion'; email: string }
@@ -290,6 +329,18 @@ type AuthorizeStep =
   | SignupProgressStep
   | { kind: 'pictureUploadFailed'; signup: SignupProgressStep; establishment: AccountEstablishmentResultV1 }
   | { kind: 'error' }
+
+interface StrongActionCompletionAttempt {
+  readonly entryAttemptId: string
+  readonly method: 'passkey' | 'totp'
+  readonly client: StrongActionIdentityClient
+  readonly controller: AbortController
+  readonly started: Extract<IdentityStepUpStartResultV1, { kind: 'local' }>
+  completion?: {
+    readonly inputKey: string
+    readonly request: IdentityStepUpCompleteRequestV1
+  }
+}
 
 function accountStep(result: DisplayAccountsResult): AuthorizeStep {
   return result.accounts.length === 0 && result.unavailableCount === 0
@@ -311,25 +362,31 @@ function browserLogoutNotCommitted(result: BrowserLogoutResultV1): boolean {
 }
 
 type InitialEntryState =
-  | { readonly kind: 'entry'; readonly fragment: InitialEntryFragment }
+  | { readonly kind: 'entry'; readonly fragment: InitialEntryFragment | FederationReturnFragment }
   | { readonly kind: 'recover'; readonly receipt: StartRecovery }
+  | { readonly kind: 'resume'; readonly reference: IdentityFlowResumeReferenceV1 }
 
 function initialEntry(): InitialEntryState {
   if (!hasUnconsumedAuthFragment()) {
+    const federation = readFederationReturn()
+    if(federation!==null)return Object.freeze({kind:'entry',fragment:federation})
+    const reference = readIdentityFlowResume()
+    if (reference !== null) return Object.freeze({kind:'resume',reference})
     const receipt = readStartRecovery()
     if (receipt === null) throw new Error('Missing authentication start')
     return Object.freeze({ kind: 'recover', receipt })
   }
   const value = consumeAuthFragmentOnce((candidate) => {
-    if (candidate.kind === 'initial' || candidate.kind === 'relocation') saveStartRecovery(candidate)
+    if (candidate.kind === 'initial' || candidate.kind === 'relocation') {clearFederationReturn();clearIdentityFlowResume();saveStartRecovery(candidate)}
+    if(candidate.kind==='federationReturn')saveFederationReturn(candidate)
   })
-  if (value.kind !== 'initial' && value.kind !== 'relocation') throw new Error('Wrong authentication continuation')
+  if (value.kind !== 'initial' && value.kind !== 'relocation' && value.kind !== 'federationReturn') throw new Error('Wrong authentication continuation')
   return Object.freeze({ kind: 'entry', fragment: value })
 }
 
 async function loadReady(
   params: RouteParams,
-  fragment: InitialEntryFragment,
+  fragment: InitialEntryFragment | FederationReturnFragment,
   catalogLoaded?: (catalog: LoadedIdentityCatalog) => void,
 ): Promise<ReadyContext> {
   if (params.authProjectionId !== fragment.projection || params.catalogVersion !== fragment.catalog) {
@@ -347,7 +404,22 @@ async function loadReady(
   installPresentationTheme(catalog.presentation.themePairingId)
   assertSessionStorageAvailable()
   const head = await browserHeadForCatalog(catalog)
-  const flow = await createIdentityFlow(catalog, head, fragment)
+  const flow = fragment.kind==='federationReturn' ? await resumeFederationFlow(catalog,head,fragment) : await createIdentityFlow(catalog, head, fragment)
+  if (flow.bootstrap.flowResume) saveIdentityFlowResume(flow.bootstrap.flowResume)
+  return { catalog, head, flow }
+}
+
+async function loadResumedReady(params: RouteParams, reference: IdentityFlowResumeReferenceV1): Promise<ReadyContext> {
+  if (params.authProjectionId !== reference.authProjectionId || params.catalogVersion !== reference.catalogVersion) {
+    throw new Error('Identity recovery path mismatch')
+  }
+  await setLocale(params.locale)
+  const catalog = await loadIdentityCatalog({ locale: params.locale, authProjectionId: params.authProjectionId,
+    catalogVersion: params.catalogVersion, catalogDigest: reference.catalogDigest })
+  armBfcacheRecovery(catalog)
+  installPresentationTheme(catalog.presentation.themePairingId)
+  const head = await browserHeadForCatalog(catalog)
+  const flow = await resumeIdentityFlow(catalog, head, reference)
   return { catalog, head, flow }
 }
 
@@ -374,10 +446,30 @@ function AuthorizePage() {
   const { t } = useTranslation()
   const [ready, setReady] = useState<ReadyContext>()
   const [step, setStep] = useState<AuthorizeStep>({ kind: 'credentials' })
+  const emailedScope=useRef<{flow:IdentityFlow;generation:number}|undefined>(undefined)
+  useEffect(()=>{
+    if(ready===undefined||ready.flow.bootstrap.emailedInvitation==null)return
+    const flow=ready.flow;const entry=flow.bootstrap.emailedInvitation
+    if(entry===null)return
+    const generation=(emailedScope.current?.generation??0)+1;emailedScope.current={flow,generation}
+    const scrub=()=>{entry.emailedToken=''}
+    const timer=window.setTimeout(()=>{scrub();setStep({kind:'error'})},Math.max(0,Math.min(Date.parse(entry.expiresAt),Date.parse(flow.bootstrap.expiresAt))-Date.now()))
+    window.addEventListener('pagehide',scrub)
+    return ()=>{window.clearTimeout(timer);window.removeEventListener('pagehide',scrub)
+      queueMicrotask(()=>{if(emailedScope.current?.generation===generation||emailedScope.current?.flow!==flow)scrub()})}
+  },[ready])
   const [pending, setPending] = useState(true)
   const [leaving, setLeaving] = useState(false)
+  const [externalCustody, setExternalCustody] = useState(false)
+  const externalCustodyRef = useRef(false)
+  const externalCustodyChanged = useCallback((held: boolean) => {
+    externalCustodyRef.current = held
+    if (held) setSignInPassword('')
+    setExternalCustody(held)
+  }, [])
   const [email, setEmail] = useState('')
   const [signInPassword, setSignInPassword] = useState('')
+  const [strongActionTotp, setStrongActionTotp] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   const [region, setRegion] = useState('')
   const [organization, setOrganization] = useState('')
@@ -406,19 +498,30 @@ function AuthorizePage() {
   } | undefined>(undefined)
   const signupStartAttempt = useRef<SignupStartAttempt | undefined>(undefined)
   const recoveryStartAttempt = useRef<PasswordRecoveryStartAttempt | undefined>(undefined)
+  const strongActionCompletion = useRef<StrongActionCompletionAttempt | undefined>(undefined)
   const operationPending = useRef(false)
 
   usePagehideScrub(() => {
     setSignInPassword('')
+    setStrongActionTotp('')
     setSignupPassword('')
     setPicture(undefined)
     setCredentialAttemptUncertain(undefined)
     signupStartAttempt.current = undefined
     signupMutationAttempt.current = undefined
     recoveryStartAttempt.current = undefined
+    strongActionCompletion.current?.controller.abort()
+    strongActionCompletion.current?.client.dispose()
+    strongActionCompletion.current = undefined
     setSignupMutationUncertain(false)
     setRecoveryAttemptUncertain(false)
   })
+
+  useEffect(() => () => {
+    strongActionCompletion.current?.controller.abort()
+    strongActionCompletion.current?.client.dispose()
+    strongActionCompletion.current = undefined
+  }, [])
 
   const move = (next: AuthorizeStep) => afterPageFade(setLeaving, () => setStep(next))
   const clearFieldError = (field: IdentityField) => setFieldErrors((current) => {
@@ -429,6 +532,10 @@ function AuthorizePage() {
   })
   const fail = (error: unknown) => {
     toast.danger(t(protocolMessage(error)))
+    // A rejected local factor leaves the strong-action screen usable. The
+    // completion owner below decides whether the exact payload must be kept
+    // for an ambiguous retry or replaced with corrected evidence.
+    if (error instanceof Plan03IdentityHttpError) return
     const field = protocolField(error)
     if (field !== undefined) {
       setFieldErrors((current) => ({ ...current, [field]: t(protocolMessage(error)) }))
@@ -474,6 +581,7 @@ function AuthorizePage() {
     let live = true
     void (async () => {
       let startupCatalog: LoadedIdentityCatalog | undefined
+      let recoveredReady: ReadyContext | undefined
       try {
         if (entryState.kind === 'recover') {
           if (entryState.receipt.projection !== params.authProjectionId || entryState.receipt.catalog !== params.catalogVersion) {
@@ -490,12 +598,38 @@ function AuthorizePage() {
           startupCatalog = catalog
           armBfcacheRecovery(catalog)
           installPresentationTheme(catalog.presentation.themePairingId)
-          await navigateAfterFade(catalog, catalogProductReturnUri(catalog, 'authStartRecovery'), setLeaving)
-          return
+          const head = await browserHeadForCatalog(catalog)
+          try {
+            const flow = await resumeFlowFromStart(catalog, head, entryState.receipt)
+            recoveredReady = {catalog, head, flow}
+          } catch (error) {
+            if (!(error instanceof ProtocolError) || error.recoveryAction !== 'restartProductAuth') throw error
+            await navigateAfterFade(catalog, catalogProductReturnUri(catalog, 'authStartRecovery'), setLeaving)
+            return
+          }
         }
-        const loaded = await loadReady(params, entryState.fragment, (catalog) => { startupCatalog = catalog })
+        const loaded = recoveredReady ?? (entryState.kind === 'resume'
+          ? await loadResumedReady(params, entryState.reference)
+          : entryState.kind === 'entry'
+            ? await loadReady(params, entryState.fragment, (catalog) => { startupCatalog = catalog })
+            : undefined)
+        if (loaded === undefined) throw new Error('Missing original identity flow')
+        if (loaded.flow.bootstrap.flowResume) saveIdentityFlowResume(loaded.flow.bootstrap.flowResume)
         if (!live) return
         setReady(loaded)
+        if(entryState.kind === 'entry' && entryState.fragment.kind==='federationReturn'){
+          // After identity-only capsule publication the original F command is
+          // no longer current. Recover H's retained establishment directly;
+          // no I callback or stronger authentication is replayed on reload.
+          const outcome = await recoverCredentialAttempt(loaded.flow)
+          if (!live) return
+          if (outcome?.kind === 'established' || outcome?.kind === 'useExisting') {
+            setStep({kind:'recipientInbox',establishment:outcome})
+            return
+          }
+          setStep({kind:'federation',fragment:entryState.fragment})
+          return
+        }
         const accountLogout = readAccountLogoutPending()
         if (accountLogout !== null) {
           const result = await new BrowserLogoutClient(loaded.catalog, loaded.head).resumeAccountLogout(accountLogout)
@@ -504,6 +638,7 @@ function AuthorizePage() {
             return
           }
         }
+        if (loaded.flow.bootstrap.providerTestEntry != null) { if (live) setStep({kind:'credentials'}); return }
         switch (loaded.flow.bootstrap.nextStep) {
           case 'relocateDestination': {
             if (loaded.flow.bootstrap.relocation === null) throw new Error('Missing relocation recovery')
@@ -517,13 +652,15 @@ function AuthorizePage() {
           }
           case 'chooseAccount': {
             const accounts = await loadAccounts(loaded.flow)
-            if (live) setStep(accountStep(accounts))
+            if (live) setStep(loaded.flow.bootstrap.strongActionEntry != null
+              ? { kind: 'accounts', result: accounts }
+              : accountStep(accounts))
             return
           }
           case 'recoverCredentialAttempt': {
             const recovered = await recoverCredentialAttempt(loaded.flow)
-            if (recovered.navigationUri !== null) {
-              await navigateAfterFade(loaded.catalog, recovered.navigationUri, setLeaving)
+            if (recovered?.kind === 'established' || recovered?.kind === 'useExisting') {
+              if (live) setStep({kind:'recipientInbox',establishment:recovered})
               return
             }
             if (live) setStep({ kind: 'credentials' })
@@ -543,12 +680,12 @@ function AuthorizePage() {
         } else if (live && startupCatalog !== undefined && error instanceof ProtocolError &&
             (error.recoveryAction === 'restartProductAuth' || error.recoveryAction === 'refreshCatalog')) {
           toast.danger(t(protocolMessage(error)))
-          if (entryState.kind === 'entry') clearStartRecovery(entryState.fragment.recovery)
+          if (entryState.kind === 'entry' && entryState.fragment.kind !== 'federationReturn') clearStartRecovery(entryState.fragment.recovery)
           await navigateAfterFade(startupCatalog, catalogProductReturnUri(startupCatalog, 'authStartRecovery'), setLeaving)
         } else if (live && startupCatalog !== undefined && entryState.kind === 'entry' &&
             error instanceof ProtocolError && error.retryable) {
           toast.danger(t(protocolMessage(error)))
-          clearStartRecovery(entryState.fragment.recovery)
+          if (entryState.fragment.kind !== 'federationReturn') clearStartRecovery(entryState.fragment.recovery)
           await navigateAfterFade(startupCatalog, catalogProductReturnUri(startupCatalog, 'authStartRecovery'), setLeaving)
         } else if (live) {
           toast.danger(t(protocolMessage(error)))
@@ -591,8 +728,170 @@ function AuthorizePage() {
     </Presentation>
   }
 
+  if (step.kind === 'selectedRecipientInbox') {
+    return <Suspense fallback={null}><SelectedAccountInvitationInbox flow={ready.flow} selected={step.selected}
+      release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='selectedRecipientInbox'?{kind:'error'}:current)}}
+      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (step.kind === 'recipientInbox') {
+    return <Suspense fallback={null}><AccountInvitationInbox flow={ready.flow} establishment={step.establishment}
+      release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='recipientInbox'&&current.establishment===step.establishment?{kind:'error'}:current)}}
+      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (step.kind === 'federation') {
+    return <Suspense fallback={null}><FederationReturnPanel flow={ready.flow} fragment={step.fragment}
+      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (ready.flow.bootstrap.emergencyEntry?.purpose === 'factor_test') {
+    return <Suspense fallback={null}><EmergencyFactorTestPanel flow={ready.flow} /></Suspense>
+  }
+  if (ready.flow.bootstrap.providerTestEntry != null) {
+    return <Suspense fallback={null}><ProviderRuntimeTestPanel flow={ready.flow}
+      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (ready.flow.bootstrap.samlHandoff !== null && ready.flow.bootstrap.samlHandoff !== undefined) {
+    return <Suspense fallback={null}><SamlHandoffFlowPanel flow={ready.flow}
+      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+  }
+  if (step.kind === 'strongAction') {
+    const entry = ready.flow.bootstrap.strongActionEntry
+    if (entry == null) throw new Error('Missing strong-action entry')
+    const complete = async (method: 'passkey' | 'totp') => {
+      let attempt = strongActionCompletion.current
+      if (attempt !== undefined &&
+          (attempt.entryAttemptId !== entry.attemptId || attempt.method !== method)) {
+        attempt.controller.abort()
+        attempt.client.dispose()
+        strongActionCompletion.current = undefined
+        attempt = undefined
+      }
+      if (attempt === undefined) {
+        const client = strongActionIdentityClient(ready.flow, step.selected.reference.browserAccountId)
+        const controller = new AbortController()
+        try {
+          const started = await client.start({
+            schemaVersion: 1,
+            attemptId: entry.attemptId,
+            operationKey: entry.operationKey,
+            targetDigest: base64UrlDigestToHex(entry.targetDigest),
+            // H derives the current revision from the protected selected-account
+            // handle; this wire value cannot lower or replace that source.
+            expectedSessionRevision: '1',
+            requestedMethod: { kind: method },
+          }, controller.signal)
+          if (started.kind !== 'local' || started.challenge.kind !== method) {
+            throw new Error('security.ceremony.mismatch')
+          }
+          attempt = { entryAttemptId: entry.attemptId, method, client, controller, started }
+          strongActionCompletion.current = attempt
+        } catch (error) {
+          controller.abort()
+          client.dispose()
+          throw error
+        }
+      }
+
+      const inputKey = method === 'totp' ? strongActionTotp : 'passkey'
+      if (attempt.completion === undefined || attempt.completion.inputKey !== inputKey) {
+        const proof = method === 'totp'
+          ? { kind: 'totp' as const, code: strongActionTotp }
+          : {
+              kind: 'passkey' as const,
+              assertion: await passkeyBrowserAdapter.assert({
+                kind: 'challenge',
+                schemaVersion: 1,
+                ceremonyId: entry.attemptId,
+                rpId: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.rpId : '',
+                challenge: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.challenge : '',
+                userVerification: attempt.started.challenge.kind === 'passkey' ? attempt.started.challenge.userVerification : 'required',
+                expiresAt: attempt.started.challenge.expiresAt,
+              }, attempt.controller.signal),
+            }
+        attempt.completion = {
+          inputKey,
+          request: {
+            mutationId: randomUuid7(),
+            ceremony: {
+              schemaVersion: 1,
+              attemptId: entry.attemptId,
+              continuationId: attempt.started.progress.continuationId,
+              expectedCeremonyRevision: attempt.started.progress.ceremonyRevision,
+            },
+            proof,
+          },
+        }
+      }
+
+      let result
+      try {
+        result = await attempt.client.complete(attempt.completion.request, attempt.controller.signal)
+      } catch (error) {
+        if (error instanceof Plan03IdentityHttpError && error.status < 500 &&
+            error.status !== 408 && error.status !== 429) {
+          // The server definitely rejected this proof. Keep the ceremony and
+          // delegation, but require corrected evidence with a new mutation ID.
+          attempt.completion = undefined
+          throw error
+        }
+        // Network/5xx outcomes are ambiguous. Preserve the exact immutable
+        // proof and mutation ID so the next click is a true idempotent retry.
+        toast.danger(t('errors.auth_unavailable'))
+        return
+      }
+      strongActionCompletion.current = undefined
+      attempt.controller.abort()
+      attempt.client.dispose()
+      setStrongActionTotp('')
+      try {
+        if (window.opener === null || window.opener.closed) throw new Error('security.ceremony.cancelled')
+        window.opener.postMessage({
+          kind: 'metamorphStrongActionResult',
+          schemaVersion: 1,
+          attemptId: entry.attemptId,
+          operationKey: entry.operationKey,
+          resultNonce: entry.resultNonce,
+          action: result.action,
+          expiresAt: result.expiresAt,
+        }, ready.catalog.projection.productUiOrigin)
+        window.close()
+      } catch (error) {
+        throw error
+      }
+    }
+    return <Presentation catalog={ready.catalog} transitionKey="strong-action" pending={pending} leaving={leaving}
+      title={t('auth.strongAction.title')} description={t('auth.strongAction.description')}>
+      <Stack gap={4}>
+        <Button label={t('auth.strongAction.passkey')} variant="outline" tone="accent"
+          onClick={() => void run(() => complete('passkey'))} />
+        <FormField id="strong-action-totp" label={t('auth.strongAction.totpLabel')}>
+          <Input autoComplete="one-time-code" maxLength={8} value={strongActionTotp}
+            onChange={(value) => setStrongActionTotp(value.replace(/\D/gu, '').slice(0, 8))} />
+        </FormField>
+        <Button label={t('auth.strongAction.totp')} disabled={!/^[0-9]{6,8}$/u.test(strongActionTotp)}
+          onClick={() => void run(() => complete('totp'))} />
+      </Stack>
+    </Presentation>
+  }
   if (step.kind === 'credentials') {
+    if (ready.flow.bootstrap.intent === 'emergency') {
+      return <Presentation catalog={ready.catalog} transitionKey="emergency-entry" pending={pending} leaving={leaving}
+        title={t('auth.email.title', { product })} description={t('auth.email.description')}>
+        <Stack gap={4}>
+          <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}>
+            <Input disabled={pending || leaving} type="email" autoComplete="email" maxLength={254} value={email}
+              onChange={(value) => { setEmail(value); clearFieldError('email') }} />
+          </FormField>
+          <Suspense fallback={null}><EmergencyEntryGate flow={ready.flow} email={email}
+            disabled={pending || leaving || !validEmail(email.trim())}
+            navigate={uri => navigateAfterFade(ready.catalog, uri, setLeaving)} /></Suspense>
+        </Stack>
+      </Presentation>
+    }
     const applyCredentialResult = (result: AccountEstablishmentResultV1) => {
+      if (result.kind === 'established' || result.kind === 'useExisting') {
+        setStep({kind:'recipientInbox',establishment:result})
+        return
+      }
       if (result.kind === 'credentialRejected') {
         setFieldErrors((current) => ({ ...current, password: t('errors.auth_invalid_credentials') }))
         focusField('password')
@@ -614,17 +913,13 @@ function AuthorizePage() {
     }
     const submit = (event: FormEvent) => {
       event.preventDefault()
+      if (externalCustodyRef.current) return
       void run(async () => {
         if (credentialAttemptUncertain !== undefined) {
           const recovered = await recoverCredentialAttempt(ready.flow)
-          if (recovered.navigationUri !== null) {
+          if (recovered !== null) {
             setCredentialAttemptUncertain(undefined)
-            await navigateAfterFade(ready.catalog, recovered.navigationUri, setLeaving)
-            return
-          }
-          if (recovered.result !== null) {
-            setCredentialAttemptUncertain(undefined)
-            applyCredentialResult(recovered.result)
+            applyCredentialResult(recovered)
             return
           }
           setCredentialAttemptUncertain(undefined)
@@ -642,31 +937,42 @@ function AuthorizePage() {
           if (error instanceof ProtocolError && error.retryable) setCredentialAttemptUncertain(normalizedEmail)
           throw error
         }
-        if (outcome.navigationUri !== null) {
-          await navigateAfterFade(ready.catalog, outcome.navigationUri, setLeaving)
-        } else {
-          applyCredentialResult(outcome.result)
-        }
+        applyCredentialResult(outcome)
       })
     }
     return <Presentation catalog={ready.catalog} transitionKey="credentials" pending={pending} leaving={leaving} title={t('auth.email.title', { product })} description={t('auth.email.description')}>
       <FormStack onSubmit={submit}>
-        <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}><Input disabled={credentialAttemptUncertain !== undefined} type="email" autoComplete="email" maxLength={254} value={email} onChange={(value) => { setEmail(value); clearFieldError('email') }} /></FormField>
-        <FormField id="identity-password" label={t('auth.password.label')} required error={fieldErrors.password} labelEnd={<Button disabled={credentialAttemptUncertain !== undefined} label={t('auth.password.forgot')} variant="ghost" tone="accent" size="sm" onClick={() => move({ kind: 'recovery' })} />}>
-          <PasswordInput disabled={credentialAttemptUncertain !== undefined} toggleLabel={t('password.show')} autoComplete="current-password" value={signInPassword} onChange={(value) => {
-            const bounded = boundedPassword(value)
+        <FormField id="identity-email" label={t('auth.email.label')} required error={fieldErrors.email}><Input disabled={externalCustody || credentialAttemptUncertain !== undefined} type="email" autoComplete="email" maxLength={254} value={email} onChange={(value) => { setEmail(value); clearFieldError('email') }} /></FormField>
+        <FormField id="identity-password" label={t('auth.password.label')} required error={fieldErrors.password} labelEnd={<Button disabled={externalCustody || credentialAttemptUncertain !== undefined} label={t('auth.password.forgot')} variant="ghost" tone="accent" size="sm" onClick={() => move({ kind: 'recovery' })} />}>
+          <PasswordInput disabled={externalCustody || credentialAttemptUncertain !== undefined} toggleLabel={t('password.show')} autoComplete="current-password" value={signInPassword} onChange={(value) => {
+            const bounded = boundedPasswordInput(value)
             if (bounded !== null) { setSignInPassword(bounded); clearFieldError('password') }
           }} />
         </FormField>
         {credentialRetryUntil > now && <Text tone="secondary"><span id="credential-cooldown">{t('auth.retry.wait', { seconds: Math.ceil((credentialRetryUntil - now) / 1_000) })}</span></Text>}
         <Button type="submit" aria-describedby={credentialRetryUntil > now ? 'credential-cooldown' : undefined}
-          label={t(credentialAttemptUncertain !== undefined ? 'actions.retry' : 'actions.signIn')} loading={pending} disabled={credentialRetryUntil > now ||
-          (credentialAttemptUncertain === undefined && (!validEmail(email.trim()) || signInPassword.length === 0 || utf8Length(signInPassword) > 1_024))} />
-        <Button disabled={credentialAttemptUncertain !== undefined} label={t('actions.signUp')} variant="ghost" tone="accent" onClick={() => {
+          label={t(credentialAttemptUncertain !== undefined ? 'actions.retry' : 'actions.signIn')} loading={pending} disabled={externalCustody || credentialRetryUntil > now ||
+          (credentialAttemptUncertain === undefined && (!validEmail(email.trim()) || !validPasswordInput(signInPassword)))} />
+        <Button disabled={externalCustody || credentialAttemptUncertain !== undefined} label={t('actions.signUp')} variant="ghost" tone="accent" onClick={() => {
           setSignInPassword('')
           void move({ kind: 'signupEmail' })
         }} />
       </FormStack>
+      <Suspense fallback={null}><EmergencyEntryGate flow={ready.flow} email={email} disabled={pending || leaving || credentialAttemptUncertain !== undefined} navigate={uri => navigateAfterFade(ready.catalog, uri, setLeaving)} /></Suspense>
+      <Suspense fallback={null}><FederationMethodChoices key={ready.flow.bootstrap.flowId} flow={ready.flow} email={email}
+        onCustodyChange={externalCustodyChanged}
+        disabled={pending || leaving || credentialAttemptUncertain !== undefined}
+        navigate={async (uri, signal, expiresAt) => {
+          setSignInPassword('')
+          await run(async () => {
+            // The exact HTTPS provider URI comes from the independently admitted
+            // start response. Product-return navigation uses its existing catalog gate.
+            await afterPageFade(setLeaving, () => {
+              assertExternalNavigationLive(signal, [ready.flow.bootstrap.expiresAt, ready.catalog.projection.expiresAt, expiresAt])
+              window.location.assign(uri)
+            })
+          })
+        }} /></Suspense>
     </Presentation>
   }
 
@@ -765,6 +1071,12 @@ function AuthorizePage() {
           return <li className="identity-account-actions" key={accountId}>
           <div className="identity-account-copy"><span className="identity-account-name"><bdi dir="auto">{account.summary.displayName}</bdi></span><span id={accountDescriptionId} className="identity-account-email"><bdi dir="auto">{account.summary.primaryEmail}</bdi></span><span className="identity-account-tenant"><bdi dir="auto">{account.summary.homeTenantLabel}</bdi></span></div>
           <Button disabled={selectionLocked} variant="outline" tone="accent" label={t(accountBusy ? 'actions.retry' : 'auth.chooseAccount.continue')} aria-describedby={accountDescriptionId} onClick={() => void run(async () => {
+            if(ready.flow.bootstrap.emailedInvitation!=null) {
+              await move({kind:'selectedRecipientInbox',selected:account});return
+            }
+            if (ready.flow.bootstrap.strongActionEntry != null) {
+              await move({kind:'strongAction',selected:account});return
+            }
             const attempt = accountSelectionAttempt ?? { browserAccountId: accountId, attemptId: randomUuid7() }
             if (attempt.browserAccountId !== accountId) return
             setAccountSelectionAttempt(attempt)
@@ -788,7 +1100,8 @@ function AuthorizePage() {
           <Text tone="secondary">{t('auth.chooseAccount.unavailable', { count: step.result.unavailableCount })}</Text>
           <Button label={t('actions.retry')} variant="outline" tone="neutral" onClick={() => void run(async () => move(accountStep(await loadAccounts(ready.flow))))} />
         </div>}
-        <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="accent" label={t('actions.useAnother')} onClick={() => move({ kind: 'credentials' })} />
+        {ready.flow.bootstrap.strongActionEntry == null &&
+          <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="accent" label={t('actions.useAnother')} onClick={() => move({ kind: 'credentials' })} />}
         <Button disabled={accountSelectionAttempt !== undefined} variant="ghost" tone="neutral" label={t('auth.chooseAccount.signOutAll')} onClick={() => move({ kind: 'confirmLogoutAll', result: step.result })} />
       </Stack>
     </Presentation>
@@ -932,11 +1245,11 @@ function AuthorizePage() {
   if (progress.nextStep === 'setPassword') {
     return <Presentation catalog={ready.catalog} transitionKey="signup-password" pending={pending} leaving={leaving} title={t('auth.signup.password')}>
       <FormStack onSubmit={(event) => { event.preventDefault(); submitSignup({ password: signupPassword }) }}>
-        <FormField id="identity-password" label={t('auth.signup.password')} required error={fieldErrors.password ?? (exceedsUtf8Limit(signupPassword, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={signupMutationUncertain} toggleLabel={t('password.show')} autoComplete="new-password" value={signupPassword} onChange={(value) => {
-          const bounded = boundedPassword(value)
+        <FormField id="identity-password" label={t('auth.signup.password')} required error={fieldErrors.password ?? (exceedsUtf8Limit(signupPassword, PASSWORD_WIRE_MAX_BYTES) ? t('errors.too_long_bytes', { maximum: PASSWORD_WIRE_MAX_BYTES }) : undefined)}><PasswordInput disabled={signupMutationUncertain} toggleLabel={t('password.show')} autoComplete="new-password" value={signupPassword} onChange={(value) => {
+          const bounded = boundedPasswordInput(value)
           if (bounded !== null) { setSignupPassword(bounded); clearFieldError('password') }
         }} /></FormField>
-        <Button type="submit" label={t(signupMutationUncertain ? 'actions.retry' : 'actions.continue')} loading={pending} disabled={!signupMutationUncertain && !validBoundedText(signupPassword, 1_024)} />
+        <Button type="submit" label={t(signupMutationUncertain ? 'actions.retry' : 'actions.continue')} loading={pending} disabled={!signupMutationUncertain && !validPasswordInput(signupPassword)} />
       </FormStack>
     </Presentation>
   }
@@ -1236,7 +1549,7 @@ function RecoverPasswordPage() {
   </Presentation>
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    if (pending || completionPending.current || !validBoundedText(password, 1_024)) return
+    if (pending || completionPending.current || !validPasswordInput(password)) return
     completionPending.current = true
     setPending(true)
     const attemptId = completionAttemptId ?? randomUuid7()
@@ -1275,12 +1588,12 @@ function RecoverPasswordPage() {
   }
   return <Presentation catalog={value.catalog} transitionKey="recover-password" pending={pending} leaving={leaving} title={t('auth.recovery.title')} description={<><bdi dir="auto">{preview.email}</bdi>{completionAttemptId !== undefined && <><br />{t('auth.recovery.retryDescription')}</>}</>}>
     <FormStack onSubmit={submit}>
-      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, 1_024) ? t('errors.too_long_bytes', { maximum: 1_024 }) : undefined)}><PasswordInput disabled={pending} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
-        const bounded = boundedPassword(value)
+      <FormField id="identity-password" label={t('auth.recovery.newPassword')} required error={passwordError ?? (exceedsUtf8Limit(password, PASSWORD_WIRE_MAX_BYTES) ? t('errors.too_long_bytes', { maximum: PASSWORD_WIRE_MAX_BYTES }) : undefined)}><PasswordInput disabled={pending} toggleLabel={t('password.show')} autoComplete="new-password" value={password} onChange={(value) => {
+        const bounded = boundedPasswordInput(value)
         if (bounded !== null) { setPassword(bounded); setPasswordError(undefined) }
       }} /></FormField>
       <Button type="submit" label={t(completionAttemptId === undefined ? 'actions.continue' : 'actions.retry')} loading={pending}
-        disabled={!validBoundedText(password, 1_024)} />
+        disabled={!validPasswordInput(password)} />
     </FormStack>
   </Presentation>
 }
@@ -1487,6 +1800,7 @@ function OutletShim() {
   return <Outlet />
 }
 
+const samlEntryRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: lazyRouteComponent(() => import('./enterprise-security/saml-entry'), 'SamlHandoffEntryPage') })
 const base = '/$locale/auth/$authProjectionId/$catalogVersion'
 const authorizeRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/authorize`, component: AuthorizePage })
 const continueRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/authorize/continue`, component: ContinuePage })
@@ -1505,6 +1819,15 @@ const accountSecurityActivityRoute = createRoute({
   },
   component: lazyRouteComponent(() => import('./enterprise-security/account-activity'), 'AccountSecurityActivityPage'),
 })
+const conditionalStepUpRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: `${base}/conditional-step-up/$continuationId`,
+  beforeLoad: async ({ params }) => {
+    if (!isSupportedLocale(params.locale) || !/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(params.continuationId)) throw notFound()
+    await setLocale(params.locale)
+  },
+  component: lazyRouteComponent(() => import('./enterprise-security/conditional-continuation-page'), 'ConditionalContinuationPage'),
+})
 const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale/_preview/enterprise-security/$screenId',
@@ -1520,8 +1843,10 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   },
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
+const scimActivationRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/scim/activate`, component: lazyRouteComponent(() => import("./enterprise-security/scim-page"), "ScimActivationPage") })
 const routeTree = rootRoute.addChildren([
-  authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute, accountSecurityActivityRoute,
+  samlEntryRoute, authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  conditionalStepUpRoute, scimActivationRoute, accountSecurityActivityRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })

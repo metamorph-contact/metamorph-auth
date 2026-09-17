@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderRuntimeTestProtocolV1",
+  "type": "string",
+  "enum": [
+    "oidc",
+    "saml"
+  ]
+}

@@ -29,6 +29,16 @@ describe('signed catalog boundaries', () => {
     expect(() => catalogNavigationUri(catalog, 'https://octamorph.example/not-registered')).toThrow()
   })
 
+  it('admits only a locale/catalog-bound non-bearer conditional nonce path with no extra input', () => {
+    const base = 'https://auth.example/en/auth/octamorph-browser/v1/conditional-step-up/'
+    const nonce = '018f0000-0000-7000-8000-000000000001'
+    expect(catalogNavigationUri(catalog, base + nonce)).toBe(base + nonce)
+    for (const suffix of [nonce + '#secret', nonce + '?account=other', nonce + '/extra', 'not-a-nonce']) {
+      expect(() => catalogNavigationUri(catalog, base + suffix)).toThrow()
+    }
+    expect(() => catalogNavigationUri(catalog, base.replace('/en/', '/fr/') + nonce)).toThrow()
+  })
+
   it('accepts only the three exact catalog-bound product relay documents', () => {
     for (const path of [
       '/api/auth/v1/relays/relocation',

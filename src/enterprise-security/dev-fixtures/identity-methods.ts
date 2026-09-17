@@ -1,3 +1,4 @@
+import { fixtureFederationProviders } from './federation-providers'
 import { buildSecurityErrorEnvelope } from '../../contracts/generated/enterprise-security-v1/fixtures.generated'
 import type { IdentityEntryRequestV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityEntryRequestV1'
 import type { IdentityMethodResolutionV1 } from '../../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
@@ -48,6 +49,8 @@ export function identityMethodFixture(scenario: IdentityPreviewScenario): Identi
       return {
         schemaVersion: 1,
         continuationId,
+        federationProviders: state === 'empty' ? [] : fixtureFederationProviders,
+        socialProviders: ['empty', 'partial'].includes(state) ? [] : ['google', 'microsoft', 'github'],
         methods: state === 'empty' ? [] : state === 'partial' ? ['password', 'federation'] : ['password', 'passkey', 'federation', 'social'],
         expiresAt: '2099-01-01T00:00:00Z',
       }

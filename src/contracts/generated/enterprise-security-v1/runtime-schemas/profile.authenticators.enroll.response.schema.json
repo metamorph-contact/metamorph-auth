@@ -1,0 +1,291 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::AuthenticatorEnrollmentStartV1. Do not edit.",
+  "$defs": {
+    "Base64UrlBlob64V1": {
+      "maxLength": 86,
+      "minLength": 2,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "type": "string"
+    },
+    "ContactEmailV1": {
+      "format": "email",
+      "maxLength": 320,
+      "minLength": 3,
+      "pattern": "^[!-~](?:[ -~]*[!-~])?$",
+      "type": "string"
+    },
+    "DeviceLabelV1": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string"
+    },
+    "OneTimeProofV1": {
+      "maxLength": 43,
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "TotpAlgorithmV1": {
+      "enum": [
+        "sha1"
+      ],
+      "type": "string"
+    },
+    "TotpDigitsV1": {
+      "const": 6
+    },
+    "TotpEnrollmentOptionsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "accountName": {
+          "$ref": "#/$defs/ContactEmailV1"
+        },
+        "algorithm": {
+          "$ref": "#/$defs/TotpAlgorithmV1"
+        },
+        "digits": {
+          "$ref": "#/$defs/TotpDigitsV1"
+        },
+        "issuer": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "periodSeconds": {
+          "$ref": "#/$defs/TotpPeriodSecondsV1"
+        },
+        "seed": {
+          "$ref": "#/$defs/TotpSeedV1",
+          "description": "RFC 4648 Base32 seed, only in the first successful response."
+        }
+      },
+      "required": [
+        "seed",
+        "issuer",
+        "accountName",
+        "algorithm",
+        "digits",
+        "periodSeconds"
+      ],
+      "type": "object"
+    },
+    "TotpPeriodSecondsV1": {
+      "const": 30
+    },
+    "TotpSeedV1": {
+      "maxLength": 32,
+      "minLength": 32,
+      "pattern": "^[A-Z2-7]{32}$",
+      "type": "string"
+    },
+    "WebAuthnAlgorithmProfileV1": {
+      "description": "The browser adapter maps this closed profile to COSE alg IDs. ES256 is\nalways offered; policy may additionally allow RS256 and/or EdDSA.",
+      "enum": [
+        "es256",
+        "es256_rs256",
+        "es256_ed_dsa",
+        "es256_rs256_ed_dsa"
+      ],
+      "type": "string"
+    },
+    "WebAuthnAttachmentV1": {
+      "enum": [
+        "platform",
+        "cross_platform"
+      ],
+      "type": "string"
+    },
+    "WebAuthnAttestationV1": {
+      "enum": [
+        "none",
+        "direct",
+        "enterprise"
+      ],
+      "type": "string"
+    },
+    "WebAuthnCreationOptionsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithmProfile": {
+          "$ref": "#/$defs/WebAuthnAlgorithmProfileV1"
+        },
+        "attachment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WebAuthnAttachmentV1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attestation": {
+          "$ref": "#/$defs/WebAuthnAttestationV1"
+        },
+        "challenge": {
+          "$ref": "#/$defs/OneTimeProofV1"
+        },
+        "residentKey": {
+          "$ref": "#/$defs/WebAuthnResidentKeyV1"
+        },
+        "rpId": {
+          "$ref": "#/$defs/WebAuthnRpIdV1"
+        },
+        "rpName": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "timeoutMs": {
+          "$ref": "#/$defs/WebAuthnTimeoutMsV1"
+        },
+        "userDisplayName": {
+          "$ref": "#/$defs/DeviceLabelV1"
+        },
+        "userHandle": {
+          "$ref": "#/$defs/Base64UrlBlob64V1"
+        },
+        "userName": {
+          "$ref": "#/$defs/ContactEmailV1"
+        },
+        "userVerification": {
+          "$ref": "#/$defs/WebAuthnUserVerificationV1"
+        }
+      },
+      "required": [
+        "rpId",
+        "rpName",
+        "userHandle",
+        "userName",
+        "userDisplayName",
+        "challenge",
+        "algorithmProfile",
+        "timeoutMs",
+        "residentKey",
+        "userVerification",
+        "attestation"
+      ],
+      "type": "object"
+    },
+    "WebAuthnResidentKeyV1": {
+      "enum": [
+        "preferred",
+        "required"
+      ],
+      "type": "string"
+    },
+    "WebAuthnRpIdV1": {
+      "maxLength": 253,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+      "type": "string"
+    },
+    "WebAuthnTimeoutMsV1": {
+      "maximum": 120000,
+      "minimum": 30000,
+      "type": "integer"
+    },
+    "WebAuthnUserVerificationV1": {
+      "enum": [
+        "preferred",
+        "required"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.authenticators.enroll:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "kind": {
+          "const": "webauthn_first_display",
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/$defs/WebAuthnCreationOptionsV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        }
+      },
+      "required": [
+        "kind",
+        "schemaVersion",
+        "ceremonyId",
+        "expiresAt",
+        "options"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "kind": {
+          "const": "totp_first_display",
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/$defs/TotpEnrollmentOptionsV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        }
+      },
+      "required": [
+        "kind",
+        "schemaVersion",
+        "ceremonyId",
+        "expiresAt",
+        "options"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "kind": {
+          "const": "material_unavailable",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        }
+      },
+      "required": [
+        "kind",
+        "schemaVersion",
+        "ceremonyId",
+        "expiresAt"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "AuthenticatorEnrollmentStartV1"
+}

@@ -1,0 +1,259 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::conditional_source_evidence::SignedConditionalSourceEvidenceV1. Do not edit.",
+  "$defs": {
+    "Base64UrlBlob64V1": {
+      "maxLength": 86,
+      "minLength": 2,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "type": "string"
+    },
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "ConditionalDevicePostureV1": {
+      "enum": [
+        "compliant",
+        "noncompliant"
+      ],
+      "type": "string"
+    },
+    "ConditionalRiskLevelV1": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "type": "string"
+    },
+    "ConditionalSourceEvidenceBodyV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "configurationSha256": {
+              "items": {
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "maxItems": 32,
+              "minItems": 32,
+              "type": "array"
+            },
+            "kind": {
+              "const": "trust_test",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "configurationSha256"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "clientCertificateSha256": {
+              "items": {
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "maxItems": 32,
+              "minItems": 32,
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "country": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CatalogKeyV1"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "deviceId": {
+              "$ref": "#/$defs/SecurityIdV1"
+            },
+            "kind": {
+              "const": "network",
+              "type": "string"
+            },
+            "peerIp": {
+              "$ref": "#/$defs/SecuritySourceIpV1"
+            },
+            "requestBindingSha256": {
+              "items": {
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "maxItems": 32,
+              "minItems": 32,
+              "type": "array"
+            },
+            "userId": {
+              "$ref": "#/$defs/SecurityIdV1"
+            }
+          },
+          "required": [
+            "kind",
+            "userId",
+            "deviceId",
+            "requestBindingSha256",
+            "peerIp"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "deviceId": {
+              "$ref": "#/$defs/SecurityIdV1"
+            },
+            "kind": {
+              "const": "posture",
+              "type": "string"
+            },
+            "posture": {
+              "$ref": "#/$defs/ConditionalDevicePostureV1"
+            },
+            "risk": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ConditionalRiskLevelV1"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "userId": {
+              "$ref": "#/$defs/SecurityIdV1"
+            }
+          },
+          "required": [
+            "kind",
+            "userId",
+            "deviceId",
+            "posture"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "ConditionalSourceEvidenceClaimsV1": {
+      "additionalProperties": false,
+      "description": "Signed normalized schema, also used by the configured external producer.\nNo opaque vendor scores or arbitrary JSON exist in the accepted body.",
+      "properties": {
+        "audienceId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "body": {
+          "$ref": "#/$defs/ConditionalSourceEvidenceBodyV1"
+        },
+        "collectedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "evidenceId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "issuerId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "keyGeneration": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "keyId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        },
+        "sourceId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "sourceRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "tenantId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "tenantId",
+        "sourceId",
+        "sourceRevision",
+        "issuerId",
+        "audienceId",
+        "keyId",
+        "keyGeneration",
+        "evidenceId",
+        "collectedAt",
+        "expiresAt",
+        "body"
+      ],
+      "type": "object"
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    },
+    "SecuritySourceIpV1": {
+      "maxLength": 45,
+      "oneOf": [
+        {
+          "format": "ipv4"
+        },
+        {
+          "format": "ipv6"
+        }
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:conditional-source-evidence",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claims": {
+      "$ref": "#/$defs/ConditionalSourceEvidenceClaimsV1"
+    },
+    "signature": {
+      "$ref": "#/$defs/Base64UrlBlob64V1"
+    }
+  },
+  "required": [
+    "claims",
+    "signature"
+  ],
+  "title": "SignedConditionalSourceEvidenceV1",
+  "type": "object"
+}

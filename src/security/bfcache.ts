@@ -1,5 +1,5 @@
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { catalogProductReturnUri } from '../catalog/boundaries'
+import { catalogProductReturnUri, catalogNavigationUri } from '../catalog/boundaries'
 import { discardConsumedAuthFragment } from './fragment'
 
 let recoveryUri: string | undefined
@@ -29,5 +29,21 @@ export function installBfcacheGuard(): void {
 
 export function armBfcacheRecovery(catalog: LoadedIdentityCatalog): void {
   recoveryUri = catalogProductReturnUri(catalog, 'authStartRecovery')
+  installBfcacheGuard()
+}
+
+/** A committed route must replace recovery inherited from an earlier SPA page. */
+export function armCurrentBfcacheRecovery(): void {
+  const current = new URL(window.location.href)
+  current.search = ''
+  current.hash = ''
+  recoveryUri = current.href
+  installBfcacheGuard()
+}
+
+export function armConditionalBfcacheRecovery(catalog: LoadedIdentityCatalog, continuationId: string): void {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(continuationId)) throw new Error('Invalid conditional continuation')
+  const projection = catalog.projection
+  recoveryUri = catalogNavigationUri(catalog, new URL(`/${encodeURIComponent(catalog.locale)}/auth/${encodeURIComponent(projection.authProjectionId)}/${encodeURIComponent(projection.catalogVersion)}/conditional-step-up/${continuationId}`, projection.commonUiOrigin).href)
   installBfcacheGuard()
 }

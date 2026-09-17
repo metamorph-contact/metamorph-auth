@@ -3,4 +3,4 @@
 import type { EffectivePolicyValueV1 } from "./EffectivePolicyValueV1";
 import type { PolicySelectionV1 } from "./PolicySelectionV1";
 
-export type PolicySettingViewV1<T> = { configured: PolicySelectionV1<T>, effective: EffectivePolicyValueV1<T>, };
+export type PolicySettingViewV1<T, E = T> = { configured: PolicySelectionV1<T>, effective: EffectivePolicyValueV1<E>, };

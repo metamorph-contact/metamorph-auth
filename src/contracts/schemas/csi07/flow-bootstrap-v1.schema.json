@@ -22,12 +22,52 @@
     "csrfToken": {
       "$ref": "#/$defs/Secret32"
     },
+    "emailedInvitation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RecipientEmailedInvitationEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "emergencyAuthorization": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EmergencyFlowAuthorization"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "emergencyEntry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProductEmergencyEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "expiresAt": {
       "type": "string",
       "format": "date-time"
     },
     "flowId": {
       "$ref": "#/$defs/Uuid7"
+    },
+    "flowResume": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/IdentityFlowResumeReferenceV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "initialIdentityApiOrigin": {
       "$ref": "#/$defs/Origin"
@@ -47,10 +87,40 @@
     "presentation": {
       "$ref": "#/$defs/PresentationV1"
     },
+    "providerTest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProviderRuntimeTestContextV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerTestEntry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProviderRuntimeTestEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "relocation": {
       "anyOf": [
         {
           "$ref": "#/$defs/RelocationRecoveryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "samlHandoff": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SamlHandoffEntryV1"
         },
         {
           "type": "null"
@@ -62,6 +132,16 @@
       "format": "uint16",
       "maximum": 65535,
       "minimum": 0
+    },
+    "strongActionEntry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProductStrongActionEntryV1"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "additionalProperties": false,
@@ -90,8 +170,15 @@
         "signUp",
         "addAccount",
         "switchAccount",
-        "continueSignup"
+        "continueSignup",
+        "strongAction",
+        "emergency"
       ]
+    },
+    "BrowserAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     },
     "CatalogId": {
       "type": "string",
@@ -111,6 +198,20 @@
       "minLength": 1,
       "pattern": "^[A-Za-z0-9_-]{43}$"
     },
+    "EmergencyFlowAuthorization": {
+      "type": "string",
+      "maxLength": 16384,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "EmergencyFlowPurposeV1": {
+      "description": "Product-owned launch scope for an emergency-only CSI flow. This value is\ncarried inside the product-signed start envelope and then replaced by a\ncontroller-signed, identity-home-encrypted authorization. It never proves\nthat the hinted identity is designated or ready.",
+      "type": "string",
+      "enum": [
+        "entry",
+        "factor_test"
+      ]
+    },
     "FlowNextStepV1": {
       "type": "string",
       "enum": [
@@ -120,6 +221,47 @@
         "chooseRegion",
         "continueSignup",
         "relocateDestination"
+      ]
+    },
+    "IdentityFlowResumeReferenceV1": {
+      "description": "Advisory recovery metadata only. The bootstrap read independently admits\nthe original current C anchor/head/flow cookie; this reference grants none.",
+      "type": "object",
+      "properties": {
+        "authProjectionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "catalogDigest": {
+          "$ref": "#/$defs/Digest32"
+        },
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "controllerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "flowId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "flowId",
+        "controllerRegionId",
+        "authProjectionId",
+        "catalogVersion",
+        "catalogDigest",
+        "expiresAt"
       ]
     },
     "Locale": {
@@ -162,6 +304,210 @@
         "themeId"
       ]
     },
+    "ProductEmergencyEntryV1": {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "identityHomeRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "launchId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "purpose": {
+          "$ref": "#/$defs/EmergencyFlowPurposeV1"
+        },
+        "resultNonce": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Secret32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "targetTenantId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "targetUserId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid7"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "purpose",
+        "launchId",
+        "targetTenantId",
+        "identityHomeRegionId",
+        "expiresAt"
+      ]
+    },
+    "ProductStrongActionEntryV1": {
+      "description": "Product-owned, non-authorizing launch metadata for one exact strong action.\nThe target digest is prepared by the authenticated product API; H still\nrechecks the selected CSI account, current policy, operation, target and\none-use proof when the eventual mutation commits.",
+      "type": "object",
+      "properties": {
+        "attemptId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "operationKey": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "resultNonce": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "targetDigest": {
+          "$ref": "#/$defs/Digest32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "operationKey",
+        "targetDigest",
+        "resultNonce",
+        "expiresAt"
+      ]
+    },
+    "ProviderRuntimeTestContextV1": {
+      "description": "Safe metadata projected only after C verifies I's preparation signature.",
+      "type": "object",
+      "properties": {
+        "browserAccountId": {
+          "$ref": "#/$defs/BrowserAccountId"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "protocol": {
+          "$ref": "#/$defs/ProviderRuntimeTestProtocolV1"
+        },
+        "providerId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "providerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        },
+        "tenantId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "testId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "testId",
+        "tenantId",
+        "providerId",
+        "browserAccountId",
+        "providerRegionId",
+        "protocol",
+        "expiresAt"
+      ]
+    },
+    "ProviderRuntimeTestEntryV1": {
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "preparation": {
+          "$ref": "#/$defs/ProviderRuntimeTestPreparation"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "testId": {
+          "$ref": "#/$defs/Uuid7"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "testId",
+        "preparation",
+        "expiresAt"
+      ]
+    },
+    "ProviderRuntimeTestPreparation": {
+      "type": "string",
+      "maxLength": 8192,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
+    "ProviderRuntimeTestProtocolV1": {
+      "type": "string",
+      "enum": [
+        "oidc",
+        "saml"
+      ]
+    },
+    "RecipientEmailedInvitationEntryV1": {
+      "description": "Original complete invitation token custody. The token's source hint is\nadvisory; only the canonical source MAC lookup admits an offer after login.",
+      "type": "object",
+      "properties": {
+        "emailedToken": {
+          "$ref": "#/$defs/RecipientEmailedToken"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "invitationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "sourceRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "invitationId",
+        "sourceRegionId",
+        "emailedToken",
+        "expiresAt"
+      ]
+    },
+    "RecipientEmailedToken": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    },
     "RelocationRecoveryV1": {
       "type": "object",
       "properties": {
@@ -180,6 +526,28 @@
       "required": [
         "navigationUri",
         "successorFlowId",
+        "expiresAt"
+      ]
+    },
+    "SamlHandoffEntryV1": {
+      "description": "Opaque unsolicited assertion custody. This is start metadata, never\nauthentication evidence; I admits its original retained proof separately.",
+      "type": "object",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "handoffProof": {
+          "$ref": "#/$defs/Secret32"
+        },
+        "providerRegionId": {
+          "$ref": "#/$defs/CatalogId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "handoffProof",
+        "providerRegionId",
         "expiresAt"
       ]
     },

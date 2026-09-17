@@ -12,9 +12,3 @@ export class IdentityMethodPreviewError extends Error {
     this.name = 'IdentityMethodPreviewError'
   }
 }
-
-// The Plan 06/07 wiring packets replace this fail-closed boundary with the
-// exact generated client. No current CSI credential path calls this method.
-export const liveIdentityMethodClient: IdentityMethodClient = {
-  resolveMethods: () => Promise.reject(new Error('Enterprise method resolution is not wired')),
-}

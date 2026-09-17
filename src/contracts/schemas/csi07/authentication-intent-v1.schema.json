@@ -7,6 +7,8 @@
     "signUp",
     "addAccount",
     "switchAccount",
-    "continueSignup"
+    "continueSignup",
+    "strongAction",
+    "emergency"
   ]
 }

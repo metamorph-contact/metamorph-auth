@@ -1,5 +1,19 @@
 # Metamorph Auth
 
+Plan 08D mounts `EmergencyEntryGate` in the common identity credentials view.
+The actual emergency-purpose flow owner supplies `EmergencyEntryContext`, bound
+to the current flow, target tenant and cataloged identity home. Ordinary flows
+have no emergency entry control. The form obtains opaque entry, verifies fresh
+UV passkey or local password+TOTP plus reason, preserves exact uncertain retries,
+and shows the absolute window/review obligation. Completion requires the actual
+CSI controller/callback owner and existing catalog navigation gate; an activation
+DTO is not a session grant. Private readiness pins stay sealed on the server.
+Expiry, account/flow changes, pagehide and BFCache restoration clear proof and
+retry memory. Actual purpose-flow publication, runtime admission and CSI
+completion installation remain SaaS EA-08I-02/05. Presentation changes require
+the next immutable identity UI catalog release before publication.
+
+
 This repository owns the common identity frontend. CSI-11 and CSI-12 built and
 reviewed the application; CSI-15 now composes its catalog-admitted release with
 the SaaS-owned regional authentication surfaces and cuts Octamorph over to that

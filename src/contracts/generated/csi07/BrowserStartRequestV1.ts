@@ -3,7 +3,12 @@ import type { AuthenticationIntentV1 } from "./AuthenticationIntentV1";
 import type { BrowserInitializationId } from "./BrowserInitializationId";
 import type { CatalogId } from "./CatalogId";
 import type { Locale } from "./Locale";
+import type { ProductEmergencyEntryV1 } from "./ProductEmergencyEntryV1";
+import type { ProductStrongActionEntryV1 } from "./ProductStrongActionEntryV1";
+import type { ProviderRuntimeTestEntryV1 } from "./ProviderRuntimeTestEntryV1";
+import type { RecipientEmailedInvitationEntryV1 } from "./RecipientEmailedInvitationEntryV1";
 import type { RelativeReturnId } from "./RelativeReturnId";
+import type { SamlHandoffEntryV1 } from "./SamlHandoffEntryV1";
 import type { Secret32 } from "./Secret32";
 
-export type BrowserStartRequestV1 = { schemaVersion: number, clientId: CatalogId, browserInitializationId: BrowserInitializationId, tabTransactionId: Secret32, returnId: RelativeReturnId, locale: Locale, intent: AuthenticationIntentV1, adoptionReceipt: string | null, };
+export type BrowserStartRequestV1 = { schemaVersion: number, clientId: CatalogId, browserInitializationId: BrowserInitializationId, tabTransactionId: Secret32, returnId: RelativeReturnId, locale: Locale, intent: AuthenticationIntentV1, adoptionReceipt: string | null, providerTestEntry: ProviderRuntimeTestEntryV1 | null, samlHandoff: SamlHandoffEntryV1 | null, emailedInvitation: RecipientEmailedInvitationEntryV1 | null, strongActionEntry: ProductStrongActionEntryV1 | null, emergencyEntry: ProductEmergencyEntryV1 | null, };

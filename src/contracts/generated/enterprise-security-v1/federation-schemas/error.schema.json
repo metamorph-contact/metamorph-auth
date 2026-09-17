@@ -1,0 +1,455 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::SecurityApiErrorV1. Do not edit.",
+  "$defs": {
+    "CatalogKeyV1": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-][a-z0-9])*$",
+      "type": "string"
+    },
+    "CatalogVersionV1": {
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "OperationReceiptV1": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "nextPollAfterSeconds": {
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "operationId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "revision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "state": {
+          "$ref": "#/$defs/OperationStateV1"
+        }
+      },
+      "required": [
+        "operationId",
+        "state",
+        "revision",
+        "acceptedAt"
+      ],
+      "type": "object"
+    },
+    "OperationStateV1": {
+      "enum": [
+        "queued",
+        "running",
+        "partially_completed",
+        "partially_failed",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "type": "string"
+    },
+    "PartialOperationDetailV1": {
+      "additionalProperties": false,
+      "properties": {
+        "failedCount": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "operation": {
+          "$ref": "#/$defs/OperationReceiptV1"
+        }
+      },
+      "required": [
+        "operation",
+        "failedCount"
+      ],
+      "type": "object"
+    },
+    "RegionalCorrectionDetailV1": {
+      "additionalProperties": false,
+      "properties": {
+        "catalogVersion": {
+          "$ref": "#/$defs/CatalogVersionV1"
+        },
+        "ownerRegionId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "realmId": {
+          "$ref": "#/$defs/CatalogKeyV1"
+        },
+        "routeEpoch": {
+          "$ref": "#/$defs/RevisionV1"
+        }
+      },
+      "required": [
+        "realmId",
+        "ownerRegionId",
+        "routeEpoch",
+        "catalogVersion"
+      ],
+      "type": "object"
+    },
+    "RetryDetailV1": {
+      "additionalProperties": false,
+      "properties": {
+        "retryAfterSeconds": {
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "retryAfterSeconds"
+      ],
+      "type": "object"
+    },
+    "RevisionConflictDetailV1": {
+      "additionalProperties": false,
+      "properties": {
+        "currentRevision": {
+          "$ref": "#/$defs/RevisionV1"
+        }
+      },
+      "required": [
+        "currentRevision"
+      ],
+      "type": "object"
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityErrorV1": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.assurance.required",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.assurance.phishing_resistance_required",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.assurance.recent_authentication_required",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.ceremony.expired",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.ceremony.mismatch",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.method.disabled",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.provider.unavailable",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.provider.not_ready",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.policy.changed",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.route.retry",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/RegionalCorrectionDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.recovery.limited",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.owner.unavailable",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/RetryDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.operation.partial_result",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/PartialOperationDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.operation.conflict",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/RevisionConflictDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.emergency.not_ready",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.request.invalid",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.request.unauthorized",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.request.forbidden",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.request.rate_limited",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/RetryDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "const": "security.dependency.unavailable",
+              "type": "string"
+            },
+            "detail": {
+              "$ref": "#/$defs/RetryDetailV1"
+            }
+          },
+          "required": [
+            "code",
+            "detail"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:error",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "An error envelope whose code determines its permitted detail shape.\nTransport policy still decides which error may be returned to a caller;\npublic ceremonies must never disclose account, recovery, or route state.",
+  "properties": {
+    "correlationId": {
+      "$ref": "#/$defs/SecurityIdV1"
+    },
+    "error": {
+      "$ref": "#/$defs/SecurityErrorV1"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SecuritySchemaVersionV1"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "correlationId",
+    "error"
+  ],
+  "title": "SecurityApiErrorV1",
+  "type": "object"
+}

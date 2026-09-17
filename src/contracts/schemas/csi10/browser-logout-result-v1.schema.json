@@ -5,6 +5,42 @@
     {
       "type": "object",
       "properties": {
+        "flowId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid7"
+        },
+        "recoveryAction": {
+          "$ref": "#/$defs/RecoveryActionV1"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "scope": {
+          "$ref": "#/$defs/BrowserLogoutScopeV1"
+        },
+        "state": {
+          "type": "string",
+          "const": "notCommittedFlow"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "flowId",
+        "recoveryAction"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
         "accounts": {
           "type": "array",
           "items": {
@@ -516,7 +552,8 @@
       "type": "string",
       "enum": [
         "identityAccount",
-        "identityBrowserAll"
+        "identityBrowserAll",
+        "identityFlow"
       ]
     },
     "CatalogId": {

@@ -5,6 +5,8 @@ import { decodeProtocolResponse, type ResponseSchemaName } from './decode'
 
 const MAX_RESPONSE_BYTES = 256 * 1024
 const MAX_JSON_REQUEST_BYTES = 64 * 1024
+// A 16-KiB password can JSON-escape to 96 KiB before protocol fields.
+const MAX_PASSWORD_REQUEST_BYTES = 128 * 1024
 const REQUEST_TIMEOUT_MS = 20_000
 
 export class ProtocolError extends Error {
@@ -43,7 +45,7 @@ function endpointAllows(path: string, code: string): boolean {
   }
   return [
     'auth.flow.expired', 'auth.credentials.invalid', 'auth.credentials.rate_limited', 'auth.password.policy',
-    'auth.signup.organization_name.invalid', 'auth.signup.handle.unavailable',
+    'auth.signup.organization_name.invalid', 'auth.signup.domain.conflict', 'auth.signup.handle.unavailable',
     'auth.account.temporarily_unavailable', 'auth.account_session.invalid', 'auth.account_establishment.superseded',
     'auth.destination.capacity', 'auth.destination.not_started', 'auth.destination.superseded',
     'auth.callback.invalid', 'auth.callback.superseded', 'auth.product_session.provisional',
@@ -66,6 +68,7 @@ function protocolError(envelope: ProtocolErrorEnvelopeV1, status: number, path: 
     ['auth.credentials.rate_limited', [429, 'retryCredentials', 'rateLimit']],
     ['auth.password.policy', [422, 'retryCredentials', 'passwordPolicy']],
     ['auth.signup.organization_name.invalid', [422, 'retryInput', 'empty']],
+    ['auth.signup.domain.conflict', [409, 'retryInput', 'empty']],
     ['auth.signup.handle.unavailable', [409, 'retryInput', 'empty']],
     ['auth.account.temporarily_unavailable', [503, 'retrySameOperation', 'empty']],
     ['auth.account_session.invalid', [401, 'reauthenticate', 'empty']],
@@ -159,8 +162,8 @@ export class AuthApi {
     this.origin = exactOrigin(origin)
   }
 
-  async post<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
-    return this.json('POST', path, body, schema, csrfToken, headers)
+  async post<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}, signal?: AbortSignal): Promise<Response> {
+    return this.json('POST', path, body, schema, csrfToken, headers, signal)
   }
 
   async put<Request, Response>(path: string, body: Request, schema: ResponseSchemaName, csrfToken?: string, headers: Readonly<Record<string, string>> = {}): Promise<Response> {
@@ -178,6 +181,7 @@ export class AuthApi {
     schema: ResponseSchemaName,
     csrfToken?: string,
     additionalHeaders: Readonly<Record<string, string>> = {},
+    signal?: AbortSignal,
   ): Promise<Response> {
     const requestUrl = new URL(path, this.origin)
     if (!/^\/api\/auth\/v1\/[A-Za-z0-9/_-]+$/u.test(path) || requestUrl.origin !== this.origin ||
@@ -186,7 +190,10 @@ export class AuthApi {
     }
     let response: globalThis.Response
     const encodedBody = body === undefined ? undefined : JSON.stringify(body)
-    if (encodedBody !== undefined && new TextEncoder().encode(encodedBody).byteLength > MAX_JSON_REQUEST_BYTES) {
+    const requestLimit = path === '/api/auth/v1/sign-ins' || path === '/api/auth/v1/password-recoveries/complete' ||
+      /^\/api\/auth\/v1\/signups\/[0-9a-f-]+\/password$/u.test(path)
+      ? MAX_PASSWORD_REQUEST_BYTES : MAX_JSON_REQUEST_BYTES
+    if (encodedBody !== undefined && new TextEncoder().encode(encodedBody).byteLength > requestLimit) {
       throw new ProtocolError('auth_request_too_large')
     }
     try {
@@ -197,7 +204,9 @@ export class AuthApi {
         redirect: 'error',
         cache: 'no-store',
         referrerPolicy: 'no-referrer',
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        signal: signal === undefined
+          ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+          : AbortSignal.any([signal, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]),
         headers: {
           Accept: 'application/json',
           ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),

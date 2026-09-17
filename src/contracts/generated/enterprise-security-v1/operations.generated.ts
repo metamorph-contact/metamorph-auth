@@ -180,35 +180,17 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.compliance.report.status.response.schema.json",
     "responseType": "SecurityAsyncResultV1"
   },
-  "admin.conditional.apply": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.apply.request.schema.json",
-    "requestType": "ConditionalCommandGuardV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.apply.response.schema.json",
-    "responseType": "ConditionalMutationResultV1"
-  },
   "admin.conditional.explain": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.request.schema.json",
     "requestType": "ConditionalExplainRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.explain.response.schema.json",
-    "responseType": "ConditionalDecisionV1"
-  },
-  "admin.conditional.preview": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.preview.request.schema.json",
-    "requestType": "ConditionalReadRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.preview.response.schema.json",
-    "responseType": "ConditionalPreviewV1"
+    "responseType": "ConditionalExplanationV1"
   },
   "admin.conditional.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.read.request.schema.json",
     "requestType": "ConditionalReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.read.response.schema.json",
-    "responseType": "ConditionalPolicyV1"
-  },
-  "admin.conditional.rollback": {
-    "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.rollback.request.schema.json",
-    "requestType": "ConditionalRollbackRequestV1",
-    "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.rollback.response.schema.json",
-    "responseType": "ConditionalMutationResultV1"
+    "responseType": "ConditionalWorkspaceV1"
   },
   "admin.conditional.rule.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.rule.create.request.schema.json",
@@ -238,7 +220,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.conditional.simulate.request.schema.json",
     "requestType": "ConditionalSimulationRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.conditional.simulate.response.schema.json",
-    "responseType": "ConditionalDecisionV1"
+    "responseType": "ConditionalExplanationV1"
   },
   "admin.contacts.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.contacts.create.request.schema.json",
@@ -366,11 +348,23 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.domains.verify.response.schema.json",
     "responseType": "AdminDomainProofCheckResultV1"
   },
+  "admin.emergency.alert_test.read": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestReadRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.read.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
+  "admin.emergency.alert_test.start": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.request.schema.json",
+    "requestType": "AdminEmergencyAlertTestStartRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.alert_test.start.response.schema.json",
+    "responseType": "AdminEmergencyAlertTestResultV1"
+  },
   "admin.emergency.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.read.request.schema.json",
     "requestType": "AdminEmergencyReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.emergency.read.response.schema.json",
-    "responseType": "PageResultV1<EmergencyAssignmentCardV1>"
+    "responseType": "AdminEmergencyReadResultV1"
   },
   "admin.emergency.readiness": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.emergency.readiness.request.schema.json",
@@ -532,7 +526,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.network.read.request.schema.json",
     "requestType": "ConditionalSourceReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.network.read.response.schema.json",
-    "responseType": "PageResultV1<ConditionalSourceV1>"
+    "responseType": "ConditionalSourcesReadResultV1"
   },
   "admin.network.source.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.network.source.create.request.schema.json",
@@ -568,7 +562,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.posture.read.request.schema.json",
     "requestType": "ConditionalSourceReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.posture.read.response.schema.json",
-    "responseType": "PageResultV1<ConditionalSourceV1>"
+    "responseType": "ConditionalSourcesReadResultV1"
   },
   "admin.posture.source.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.posture.source.create.request.schema.json",
@@ -906,6 +900,18 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.entry.response.schema.json",
     "responseType": "IdentityAcceptedV1"
   },
+  "identity.emergency.factor_test.complete": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.complete.request.schema.json",
+    "requestType": "IdentityEmergencyFactorTestCompleteRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.complete.response.schema.json",
+    "responseType": "IdentityEmergencyFactorTestReceiptV1"
+  },
+  "identity.emergency.factor_test.start": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.start.request.schema.json",
+    "requestType": "IdentityEmergencyFactorTestStartRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.emergency.factor_test.start.response.schema.json",
+    "responseType": "IdentityAcceptedV1"
+  },
   "identity.factor_recovery.complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.factor_recovery.complete.request.schema.json",
     "requestType": "IdentityFactorRecoveryCompleteRequestV1",
@@ -940,7 +946,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/identity.federation.callback.request.schema.json",
     "requestType": "ExternalIdentityCallbackRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.federation.callback.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
   },
   "identity.federation.dashboard_launch": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.federation.dashboard_launch.request.schema.json",
@@ -970,19 +976,25 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.start.request.schema.json",
     "requestType": "IdentityEmailStartRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.start.response.schema.json",
-    "responseType": "IdentityAcceptedV1"
+    "responseType": "IdentityJitPrimaryEmailStartResultV1"
   },
   "identity.jit.primary_email.verify": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.verify.request.schema.json",
     "requestType": "IdentityEmailVerifyRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.primary_email.verify.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
+  },
+  "identity.jit.privacy.acknowledge": {
+    "requestSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.request.schema.json",
+    "requestType": "IdentityJitPrivacyAcknowledgeRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/identity.jit.privacy.acknowledge.response.schema.json",
+    "responseType": "PrivacyAcknowledgementHandoffV1"
   },
   "identity.jit.profile_complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.jit.profile_complete.request.schema.json",
     "requestType": "IdentityProfileCompleteRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.jit.profile_complete.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityFederationProgressV1"
   },
   "identity.methods.resolve": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.methods.resolve.request.schema.json",
@@ -1040,21 +1052,21 @@ export const enterpriseSecurityOperations = {
   },
   "identity.scim.activation.complete": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.activation.complete.request.schema.json",
-    "requestType": "IdentityScimActivationCompleteRequestV1",
+    "requestType": "IdentityScimCompleteRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.activation.complete.response.schema.json",
     "responseType": "IdentityCeremonyProgressV1"
   },
   "identity.scim.primary_email.start": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.start.request.schema.json",
-    "requestType": "IdentityEmailStartRequestV1",
+    "requestType": "IdentityScimEmailStartRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.start.response.schema.json",
     "responseType": "IdentityAcceptedV1"
   },
   "identity.scim.primary_email.verify": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.verify.request.schema.json",
-    "requestType": "IdentityEmailVerifyRequestV1",
+    "requestType": "IdentityScimEmailVerifyRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/identity.scim.primary_email.verify.response.schema.json",
-    "responseType": "IdentityCeremonyProgressV1"
+    "responseType": "IdentityScimVerifiedActivationV1"
   },
   "identity.signal.receive": {
     "requestSchema": "generated/enterprise-security-v1/api/identity.signal.receive.request.schema.json",

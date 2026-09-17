@@ -12,4 +12,4 @@ identityContext: string,
 /**
  * CSI-14's exact method/path/body/header binding digest.
  */
-businessRequestBindingDigest: string, targetTenantId: string, resourceId: string, actionId: string, requestId: string, actionProof: ActionProofRefV1 | null, };
+businessRequestBindingDigest: string, targetTenantId: string, resourceId: string, actionId: string, requestId: string, actionProof: ActionProofRefV1 | null, conditionalContinuationId: string | null, };

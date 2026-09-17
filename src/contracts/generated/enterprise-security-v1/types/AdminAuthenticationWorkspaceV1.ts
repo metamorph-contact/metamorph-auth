@@ -4,5 +4,16 @@ import type { ActiveAuthenticationPolicyV1 } from "./ActiveAuthenticationPolicyV
 import type { DraftAuthenticationPolicyV1 } from "./DraftAuthenticationPolicyV1";
 import type { PendingAuthenticationPolicyV1 } from "./PendingAuthenticationPolicyV1";
 import type { ScheduledAuthenticationPolicyV1 } from "./ScheduledAuthenticationPolicyV1";
+import type { SocialDeploymentAvailabilityV1 } from "./SocialDeploymentAvailabilityV1";
 
-export type AdminAuthenticationWorkspaceV1 = { schemaVersion: 1, targetTenantId: string, policyHeadRevision: string, realmBaselineRevision: string, authorizationCatalogVersion: string, active: ActiveAuthenticationPolicyV1, draft: DraftAuthenticationPolicyV1 | null, scheduled: ScheduledAuthenticationPolicyV1 | null, pendingCandidate: PendingAuthenticationPolicyV1 | null, };
+export type AdminAuthenticationWorkspaceV1 = { schemaVersion: 1, targetTenantId: string, policyHeadRevision: string, realmBaselineRevision: string, authorizationCatalogVersion: string,
+/**
+ * Authenticated realm deployment projection, not a tenant credential
+ * setting. None explicitly gates social editors when its owner is absent.
+ */
+socialAvailability: SocialDeploymentAvailabilityV1 | null, active: ActiveAuthenticationPolicyV1, draft: DraftAuthenticationPolicyV1 | null,
+/**
+ * True when the draft's base policy revision, realm baseline, or catalog
+ * no longer matches the active source. It cannot reuse prior validation.
+ */
+draftSourceStale: boolean, scheduled: ScheduledAuthenticationPolicyV1 | null, pendingCandidate: PendingAuthenticationPolicyV1 | null, };

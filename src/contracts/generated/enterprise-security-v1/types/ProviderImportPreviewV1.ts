@@ -5,4 +5,4 @@
  * Read-safe parsed preview. It is not configuration-ready and carries no
  * customer private key or client secret.
  */
-export type ProviderImportPreviewV1 = { "protocol": "saml", idpEntityId: string, idpSsoUrl: string, signingFingerprints: [string, ...Array<string>], } | { "protocol": "oidc", issuer: string, authorizationUrl: string, tokenUrl: string, jwksUrl: string, signingFingerprints: Array<string>, };
+export type ProviderImportPreviewV1 = { "protocol": "saml", idpEntityId: string, idpSsoUrl: string, signingFingerprints: [string, ...Array<string>], } | { "protocol": "oidc", issuer: string, authorizationUrl: string, tokenUrl: string, jwksUrl: string, signingFingerprints: Array<string>, } | { "protocol": "oidc_jwks", signingFingerprints: [string, ...Array<string>], };

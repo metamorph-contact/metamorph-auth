@@ -828,7 +828,19 @@ export const enterpriseSecurityCatalog = {
         "assurance": "session",
         "operations": [
           "admin.emergency.read",
-          "admin.emergency.readiness"
+          "admin.emergency.readiness",
+          "admin.emergency.alert_test.read"
+        ]
+      },
+      {
+        "access": {
+          "capability": "execute",
+          "feature": "emergency_access",
+          "kind": "rbac"
+        },
+        "assurance": "session",
+        "operations": [
+          "admin.emergency.alert_test.start"
         ]
       },
       {
@@ -936,8 +948,7 @@ export const enterpriseSecurityCatalog = {
         "operations": [
           "admin.conditional.read",
           "admin.conditional.simulate",
-          "admin.conditional.explain",
-          "admin.conditional.preview"
+          "admin.conditional.explain"
         ]
       },
       {
@@ -960,9 +971,7 @@ export const enterpriseSecurityCatalog = {
         "assurance": "strong",
         "operations": [
           "admin.conditional.rule.update",
-          "admin.conditional.rule.reorder",
-          "admin.conditional.apply",
-          "admin.conditional.rollback"
+          "admin.conditional.rule.reorder"
         ]
       },
       {
@@ -1300,9 +1309,18 @@ export const enterpriseSecurityCatalog = {
         },
         "assurance": "public_ceremony",
         "operations": [
-          "identity.methods.resolve",
           "identity.password_recovery.start",
-          "identity.factor_recovery.start",
+          "identity.factor_recovery.start"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "csi_flow"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.methods.resolve",
           "identity.federation.start",
           "identity.social.start"
         ]
@@ -1408,7 +1426,8 @@ export const enterpriseSecurityCatalog = {
           "identity.federation.callback",
           "identity.jit.primary_email.start",
           "identity.jit.primary_email.verify",
-          "identity.jit.profile_complete"
+          "identity.jit.profile_complete",
+          "identity.jit.privacy.acknowledge"
         ]
       },
       {
@@ -1484,6 +1503,26 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "kind": "public_ceremony",
+          "priorProof": "social_signup_journey"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.continue"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
+          "priorProof": "social_handoff_token"
+        },
+        "assurance": "public_ceremony",
+        "operations": [
+          "identity.social.handoff"
+        ]
+      },
+      {
+        "access": {
+          "kind": "public_ceremony",
           "priorProof": "account_bound_social_transaction"
         },
         "assurance": "strong",
@@ -1504,21 +1543,23 @@ export const enterpriseSecurityCatalog = {
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "anonymous_entry"
+          "priorProof": "emergency_csi_flow"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.entry"
+          "identity.emergency.entry",
+          "identity.emergency.factor_test.start"
         ]
       },
       {
         "access": {
           "kind": "public_ceremony",
-          "priorProof": "emergency_entry_ticket"
+          "priorProof": "emergency_ceremony_ticket"
         },
         "assurance": "emergency_entry",
         "operations": [
-          "identity.emergency.activate"
+          "identity.emergency.activate",
+          "identity.emergency.factor_test.complete"
         ]
       },
       {
@@ -1703,7 +1744,7 @@ export const enterpriseSecurityCatalog = {
     "policyRules": [
       "Bounds constrain configured tenant overrides; mandatory realm baseline values may be stronger. The password-only minimum of 15 characters matches CSI's live lower bound. Other defaults are development product choices, not an assertion that the current CSI runtime already enforces them.",
       "The compiler validates the whole effective policy after realm/tenant merging: password_minimum_characters must not exceed password_maximum_characters; session_idle_seconds must not exceed session_absolute_seconds; action_strong_seconds must not exceed action_recent_seconds. Reject an incoherent candidate with a distinct typed ordering issue before publication rather than silently clamping, swapping or accepting its individually in-range values. Effective action age is the minimum of the named class, realm baseline and target policy. A null session-cap default means unlimited until an administrator explicitly configures a numeric cap; it is not zero. A null remembered-device duration means off by default; a configured duration is 1–90 days, with no sub-day enabled value.",
-      "Password maximum characters and maximum NFC UTF-8 bytes are separate limits. The existing CSI sign-in controller currently rejects passwords over 1024 bytes even though the password-policy loader permits a 16-KiB ceiling; Plan 03 must migrate and test every signup/change/recovery/sign-in ingress to the same effective byte bound before an override above 1024 bytes becomes selectable. Password composition, periodic expiry, routine password history, raw token-lifetime controls, attacker-triggerable permanent locks and security questions are not supported.",
+      "Password maximum characters and maximum NFC UTF-8 bytes are separate limits. CSI signup, recovery and sign-in now admit a bounded 16-KiB raw password. Identity home applies NFC and effective length policy when creating a verifier, and NFC with the fixed wire bound when verifying an existing one so later policy tightening cannot lock out a valid password. Plan 03 must still implement profile password change and Plan 04 must publish effective tenant overrides before a higher tenant limit becomes selectable. Password composition, periodic expiry, routine password history, raw token-lifetime controls, attacker-triggerable permanent locks and security questions are not supported.",
       "Existing users may enter bounded MFA rollout grace; first-login enrollment applies to new users, and grace never satisfies a separately sensitive action.",
       "separateMetamorphFactorAfterSso defaults false. When true, a verified SSO proof and a separate fresh Metamorph-controlled factor proof are both required; provider-reported MFA/AAL cannot satisfy the local-factor conjunct. The effective evidence records both sources, timestamps and revisions."
     ],

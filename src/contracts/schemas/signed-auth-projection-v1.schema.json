@@ -457,6 +457,7 @@
     "ReturnPurposeV1": {
       "type": "string",
       "enum": [
+        "authenticationEntry",
         "authStartRecovery",
         "productCompletion",
         "signupAdoption"

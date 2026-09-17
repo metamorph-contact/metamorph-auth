@@ -96,7 +96,7 @@
     },
     "DestinationStart": {
       "type": "string",
-      "maxLength": 8192,
+      "maxLength": 24576,
       "minLength": 5,
       "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
     },

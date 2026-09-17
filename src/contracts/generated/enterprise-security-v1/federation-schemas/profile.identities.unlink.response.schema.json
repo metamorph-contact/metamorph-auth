@@ -1,0 +1,117 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/enterprise-security-contract::ProfileIdentityUnlinkResultV1. Do not edit.",
+  "$defs": {
+    "OperationReceiptV1": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "nextPollAfterSeconds": {
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "operationId": {
+          "$ref": "#/$defs/SecurityIdV1"
+        },
+        "revision": {
+          "$ref": "#/$defs/RevisionV1"
+        },
+        "state": {
+          "$ref": "#/$defs/OperationStateV1"
+        }
+      },
+      "required": [
+        "operationId",
+        "state",
+        "revision",
+        "acceptedAt"
+      ],
+      "type": "object"
+    },
+    "OperationStateV1": {
+      "enum": [
+        "queued",
+        "running",
+        "partially_completed",
+        "partially_failed",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "type": "string"
+    },
+    "RevisionV1": {
+      "maxLength": 20,
+      "pattern": "^([1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]{1}|1844674407370955161[0-4]|18446744073709551615)$",
+      "type": "string"
+    },
+    "SecurityIdV1": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "SecuritySchemaVersionV1": {
+      "const": 1
+    }
+  },
+  "$id": "urn:metamorph:enterprise-security:v1:api:profile.identities.unlink:response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Cross-owner work can be accepted without claiming the authoritative\nsource floor has committed. Only SourceEffective is an unlink success.",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/OperationReceiptV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        },
+        "state": {
+          "const": "accepted",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "schemaVersion",
+        "operation"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/OperationReceiptV1"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/SecuritySchemaVersionV1"
+        },
+        "sourceEffectiveAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "state": {
+          "const": "source_effective",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "schemaVersion",
+        "sourceEffectiveAt",
+        "operation"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "ProfileIdentityUnlinkResultV1"
+}

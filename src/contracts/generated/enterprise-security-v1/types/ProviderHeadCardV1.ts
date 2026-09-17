@@ -4,4 +4,9 @@ import type { EnterpriseProtocolV1 } from "./EnterpriseProtocolV1";
 import type { ProviderLifecycleV1 } from "./ProviderLifecycleV1";
 import type { ProviderPresetV1 } from "./ProviderPresetV1";
 
-export type ProviderHeadCardV1 = { providerId: string, displayName: string, protocol: EnterpriseProtocolV1, preset: ProviderPresetV1, state: ProviderLifecycleV1, headRevision: string, currentProviderRevision: string | null, configurationReadyRevision: string | null, runtimeTestedRevision: string | null, providerDisableEpoch: string, updatedAt: string, };
+export type ProviderHeadCardV1 = { providerId: string, displayName: string, protocol: EnterpriseProtocolV1, preset: ProviderPresetV1, state: ProviderLifecycleV1, headRevision: string, currentProviderRevision: string | null, configurationReadyRevision: string | null,
+/**
+ * Earliest imported metadata or trust-binding expiry. A stored ready
+ * revision is historical once this instant passes.
+ */
+configurationReadyExpiresAt: string | null, runtimeTestedRevision: string | null, providerDisableEpoch: string, updatedAt: string, };

@@ -1,0 +1,41 @@
+{
+  "$comment": "Generated from metamorph-saas/crates/authorization-recipient-contract::RecipientInvitationListRequestV1. Do not edit.",
+  "$defs": {
+    "RecipientInvitationFilterV1": {
+      "enum": [
+        "pending",
+        "history"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "urn:metamorph:authorization:recipient:v1:RecipientInvitationListRequestV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cursor": {
+      "pattern": "^[A-Za-z0-9_-]{16,1024}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "limit": {
+      "format": "uint8",
+      "maximum": 50,
+      "minimum": 1,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "state": {
+      "$ref": "#/$defs/RecipientInvitationFilterV1"
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "RecipientInvitationListRequestV1",
+  "type": "object"
+}

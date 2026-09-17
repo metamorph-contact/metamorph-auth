@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FlowResumeFromStartRequestV1",
+  "description": "Resume an already created C flow after losing its first bootstrap response.\nThis P-signed receipt does not create a flow or authorize an account.",
+  "type": "object",
+  "properties": {
+    "authProjectionId": {
+      "$ref": "#/$defs/CatalogId"
+    },
+    "recoveryReceipt": {
+      "$ref": "#/$defs/StartRecoveryReceipt"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "authProjectionId",
+    "recoveryReceipt"
+  ],
+  "$defs": {
+    "CatalogId": {
+      "type": "string",
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$"
+    },
+    "StartRecoveryReceipt": {
+      "type": "string",
+      "maxLength": 3072,
+      "minLength": 5,
+      "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]*){2}(?:(?:\\.[A-Za-z0-9_-]*){2})?$"
+    }
+  }
+}

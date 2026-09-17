@@ -3,5 +3,11 @@
 import type { DomainChooserModeV1 } from "./DomainChooserModeV1";
 import type { DomainClaimStateV1 } from "./DomainClaimStateV1";
 import type { DomainDiscoveryEligibilityV1 } from "./DomainDiscoveryEligibilityV1";
+import type { DomainProofStateV1 } from "./DomainProofStateV1";
 
-export type DomainClaimCardV1 = { domainId: string, domain: string, state: DomainClaimStateV1, claimRevision: string, currentProofId: string | null, currentProofRevision: string | null, verifiedRouteEpoch: string | null, discoveryEligibility: DomainDiscoveryEligibilityV1, activeProviderBindingCount: string, routingRevision: string, chooserMode: DomainChooserModeV1, defaultProviderId: string | null, renewalDueAt: string | null, proofExpiresAt: string | null, };
+export type DomainClaimCardV1 = { domainId: string, domain: string, state: DomainClaimStateV1, claimRevision: string, currentProofId: string | null, currentProofRevision: string | null, currentProofState: DomainProofStateV1 | null,
+/**
+ * Latest proof reservation/transfer epoch, retained after challenge expiry
+ * for exact cleanup commands. This is not verified discovery authority.
+ */
+proofRouteEpoch: string | null, verifiedRouteEpoch: string | null, discoveryEligibility: DomainDiscoveryEligibilityV1, activeProviderBindingCount: string, routingRevision: string, chooserMode: DomainChooserModeV1, defaultProviderId: string | null, renewalDueAt: string | null, proofExpiresAt: string | null, };
