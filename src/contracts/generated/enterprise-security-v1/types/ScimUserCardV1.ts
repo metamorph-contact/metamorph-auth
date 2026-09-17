@@ -3,5 +3,6 @@
 import type { OperationReceiptV1 } from "./OperationReceiptV1";
 import type { ScimActivationStateV1 } from "./ScimActivationStateV1";
 import type { ScimResourceStateV1 } from "./ScimResourceStateV1";
+import type { ScimUserLifecycleProgressV1 } from "./ScimUserLifecycleProgressV1";
 
-export type ScimUserCardV1 = { scimUserId: string, provisionerId: string, canonicalUserId: string | null, state: ScimResourceStateV1, activationState: ScimActivationStateV1 | null, resourceRevision: string, invitationId: string | null, targetAccessRevocation: OperationReceiptV1 | null, };
+export type ScimUserCardV1 = { scimUserId: string, directoryUserName: string, displayName: string | null, provisionerId: string, canonicalUserId: string | null, state: ScimResourceStateV1, activationState: ScimActivationStateV1 | null, resourceRevision: string, invitationId: string | null, targetAccessRevocation: OperationReceiptV1 | null, lifecycleProgress: ScimUserLifecycleProgressV1 | null, };

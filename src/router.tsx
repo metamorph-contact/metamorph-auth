@@ -211,7 +211,7 @@ function FormStack({ children, onSubmit }: { children: ReactNode; onSubmit: (eve
   return <form onSubmit={onSubmit}><Stack gap={4}>{children}</Stack></form>
 }
 
-function Presentation({ catalog, children, title, description, transitionKey, pending, leaving, back }: {
+export function Presentation({ catalog, children, title, description, transitionKey, pending, leaving, back }: {
   catalog: LoadedIdentityCatalog
   children: ReactNode
   title: string
@@ -1822,8 +1822,9 @@ const enterprisePreviewRoute = import.meta.env.DEV ? createRoute({
   },
   component: lazyRouteComponent(() => import('./enterprise-security/dev-preview'), 'IdentitySecurityPreviewPage'),
 }) : null
+const scimActivationRoute = createRoute({ getParentRoute: () => rootRoute, path: `${base}/scim/activate`, component: lazyRouteComponent(() => import("./enterprise-security/scim-page"), "ScimActivationPage") })
 const routeTree = rootRoute.addChildren([
-  samlEntryRoute, authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute,
+  samlEntryRoute, authorizeRoute, continueRoute, verifyEmailRoute, recoverPasswordRoute, logoutRoute, scimActivationRoute,
   ...(enterprisePreviewRoute === null ? [] : [enterprisePreviewRoute]),
 ])
 export const router = createRouter({ routeTree, defaultPreload: 'intent', defaultPreloadStaleTime: 60_000 })

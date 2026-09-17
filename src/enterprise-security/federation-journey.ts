@@ -118,6 +118,8 @@ export function nextFederationState(result: IdentityFederationProgressV1): Feder
       return { kind: 'invitations', progress }
     case 'provider_test_completed':
       return { kind: 'test_completed', progress }
+    case 'pending_provisioning':
+      throw new Error('security.ceremony.mismatch')
     case 'ready':
       return { kind: 'ready', progress }
     case 'rejected':

@@ -16,3 +16,5 @@ only: the UI displays a local translation selected by the typed error code.
 
 Every supported locale must implement the same key inventory. New routes always
 include the locale path segment and must be prefetched with that segment.
+
+Plan 09 F owns `locales/en/scim.json` for its live SCIM pages, including primary-email verification, capability expiry, exact uncertain retry, pending provisioning and owner unavailable states.

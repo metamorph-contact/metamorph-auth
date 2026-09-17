@@ -49,6 +49,7 @@ const requestEntries = []
 const responseEntries = []
 let errorEntry
 for (const file of (await readdir(directory)).sort()) {
+  if (file === "scim-entry.schema.json") continue;
   const side =
     file === 'error.schema.json'
       ? 'error'
