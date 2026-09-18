@@ -49,6 +49,7 @@ export function FederationMethodChoices({
     onCustodyChange?.(false)
     setPending(false)
     setExpired(false)
+    if (disabled) return
     const controller = new AbortController()
     const timer = window.setTimeout(() => {
       void Promise.resolve()
@@ -93,7 +94,7 @@ export function FederationMethodChoices({
       window.removeEventListener('pagehide', scrub)
       onCustodyChange?.(false)
     }
-  }, [flow, routeHint, generation, onCustodyChange])
+  }, [flow, routeHint, generation, onCustodyChange, disabled])
   const visible = resolution?.email === routeHint ? resolution.value : undefined
   useEffect(() => {
     if (!visible) return

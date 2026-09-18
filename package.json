@@ -16,7 +16,7 @@
     "check:validators": "node scripts/generate-runtime-validators.mjs --check",
     "generate:plan03-validators": "node scripts/generate-plan03-validators.mjs",
     "check:plan03-validators": "node scripts/generate-plan03-validators.mjs --check",
-    "check:generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-catalog --bin identity_catalog -- check-generated-contracts ../metamorph-auth docs/features/authentication/contracts config/central-identity/identity-catalog.development.json ../metamorph-auth/catalog/identity-ui-release.development.json",
+    "check:generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-catalog --bin identity_catalog -- check-generated-contracts ../metamorph-auth docs/features/authentication/contracts config/central-identity/two-region-development/identity-catalog-v1.json ../metamorph-auth/catalog/identity-ui-release.development.json",
     "check:csi07-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi07-generated-contracts ../metamorph-auth",
     "check:csi08-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi08-generated-contracts ../metamorph-auth",
     "check:csi09-generated": "cd ../metamorph-saas && cargo run --quiet -p metamorph-identity-controller --bin identity_controller_contracts -- check-csi09-generated-contracts ../metamorph-auth",

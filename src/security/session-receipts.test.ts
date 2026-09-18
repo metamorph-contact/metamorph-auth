@@ -4,9 +4,11 @@ import {
   __test,
   clearStartRecovery,
   readDestinationContinuation,
+  readRelayResumption,
   readStartRecovery,
   saveStartRecovery,
   saveDestinationContinuation,
+  saveRelayResumption,
 } from './session-receipts'
 
 const continuation = {
@@ -23,6 +25,17 @@ describe('tab-scoped recovery receipts', () => {
   it('write/read-verifies the complete destination continuation', () => {
     expect(saveDestinationContinuation(continuation)).toEqual(continuation)
     expect(readDestinationContinuation()).toEqual(continuation)
+  })
+
+  it('write/read-verifies the non-authorizing relay resumption receipt', () => {
+    const relay = {
+      kind: 'relayResumption' as const,
+      operation: '01890f3a-6e3a-7c15-8c65-450b85e12a02',
+      resume: 'header.payload.signature',
+    }
+    expect(saveRelayResumption(relay)).toEqual(relay)
+    expect(readRelayResumption()).toEqual(relay)
+    expect(readDestinationContinuation()).toBeNull()
   })
 
   it('retains only the non-authorizing start recovery receipt', () => {

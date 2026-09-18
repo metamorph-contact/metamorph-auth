@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "identity-ui-development-7",
+  "releaseId": "identity-ui-development-8",
   "presentationSchemaVersions": [1],
   "catalogRootPins": [
     {
@@ -73,12 +73,12 @@
     }
   ],
   "localeMessageKeys": {
-    "en": ["auth.product.catalog-test", "auth.product.octamorph", "region.local-a"]
+    "en": ["auth.product.catalog-test", "auth.product.octamorph", "region.local-a", "region.local-b"]
   },
   "localeBundles": {
     "en": {
       "relativePath": "src/i18n/locales/en/catalog.json",
-      "sha256": "G44Oxh61t8tYlezU4RQNBsKHjDV1zOmFenL4Wu4KVwg"
+      "sha256": "HFTexBbfwsfnOeAjsFB6OzJN1yHwBX79bmnFpOsDtPM"
     }
   },
   "presentations": [

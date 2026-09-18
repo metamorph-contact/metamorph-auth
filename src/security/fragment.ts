@@ -48,6 +48,12 @@ export type DestinationContinuationFragment = Readonly<{
   receipt: string
 }>
 
+export type RelayResumptionFragment = Readonly<{
+  kind: 'relayResumption'
+  operation: string
+  resume: string
+}>
+
 export type SamlHandoffFragment = Readonly<{ kind: 'samlHandoff'; handoffProof: string; providerRegionId: string }>
 export type FederationReturnFragment = Readonly<{
   kind: 'federationReturn'; projection: string; controller: string; catalog: string; digest: string
@@ -60,6 +66,7 @@ export type AuthFragment =
   | InitialEntryFragment
   | EmailVerificationFragment
   | PasswordRecoveryFragment
+  | RelayResumptionFragment
   | DestinationContinuationFragment
 
 export class InvalidAuthFragmentError extends Error {
@@ -104,6 +111,14 @@ function protectedValue(params: URLSearchParams, name: string, maximum: number):
 function digestValue(params: URLSearchParams, name: string): string {
   const candidate = params.get(name)
   if (candidate === null || !/^[A-Za-z0-9_-]{43}$/u.test(candidate)) {
+    throw new InvalidAuthFragmentError()
+  }
+  return candidate
+}
+
+function uuid7Value(params: URLSearchParams, name: string): string {
+  const candidate = value(params, name)
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(candidate)) {
     throw new InvalidAuthFragmentError()
   }
   return candidate
@@ -173,12 +188,20 @@ function parseFragment(hash: string): AuthFragment {
       context: protectedValue(params, 'context', 8 * 1024),
     })
   }
+  if (kind === null && params.has('resume')) {
+    exact(params, ['v', 'operation', 'resume'])
+    return Object.freeze({
+      kind: 'relayResumption',
+      operation: uuid7Value(params, 'operation'),
+      resume: protectedValue(params, 'resume', 4 * 1024),
+    })
+  }
   if (kind === null && params.has('flow')) {
     exact(params, ['v', 'flow', 'operation', 'digest', 'receipt'])
     return Object.freeze({
       kind: 'destination',
-      flow: value(params, 'flow'),
-      operation: value(params, 'operation'),
+      flow: uuid7Value(params, 'flow'),
+      operation: uuid7Value(params, 'operation'),
       digest: digestValue(params, 'digest'),
       receipt: protectedValue(params, 'receipt', 8 * 1024),
     })
