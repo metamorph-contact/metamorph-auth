@@ -618,6 +618,12 @@ export const enterpriseSecurityOperations = {
     "responseSchema": "generated/enterprise-security-v1/api/admin.providers.read.response.schema.json",
     "responseType": "AdminProviderReadResultV1"
   },
+  "admin.providers.rollback": {
+    "requestSchema": "generated/enterprise-security-v1/api/admin.providers.rollback.request.schema.json",
+    "requestType": "AdminProviderRollbackRequestV1",
+    "responseSchema": "generated/enterprise-security-v1/api/admin.providers.rollback.response.schema.json",
+    "responseType": "AdminProviderRollbackResultV1"
+  },
   "admin.providers.rotate_certificate": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.providers.rotate_certificate.request.schema.json",
     "requestType": "AdminProviderRotateCertificateRequestV1",
@@ -646,25 +652,25 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.activations.list.request.schema.json",
     "requestType": "AdminScimReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.activations.list.response.schema.json",
-    "responseType": "PageResultV1<ScimActivationCardV1>"
+    "responseType": "AdminScimScopedPageV1<ScimActivationCardV1>"
   },
   "admin.scim.drift.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.drift.read.request.schema.json",
     "requestType": "AdminScimRunReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.drift.read.response.schema.json",
-    "responseType": "PageResultV1<ScimDriftCardV1>"
+    "responseType": "AdminScimScopedPageV1<ScimDriftCardV1>"
   },
   "admin.scim.groups.list": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.groups.list.request.schema.json",
     "requestType": "AdminScimReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.groups.list.response.schema.json",
-    "responseType": "PageResultV1<ScimGroupCardV1>"
+    "responseType": "AdminScimScopedPageV1<ScimGroupCardV1>"
   },
   "admin.scim.invitations.list": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.invitations.list.request.schema.json",
     "requestType": "AdminScimReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.invitations.list.response.schema.json",
-    "responseType": "PageResultV1<ScimInvitationCardV1>"
+    "responseType": "AdminScimScopedPageV1<ScimInvitationCardV1>"
   },
   "admin.scim.mapping.apply": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.mapping.apply.request.schema.json",
@@ -724,13 +730,13 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.reconcile.request.schema.json",
     "requestType": "AdminScimReconcileRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.reconcile.response.schema.json",
-    "responseType": "ScimReconciliationCardV1"
+    "responseType": "AdminScimReconciliationResultV1"
   },
   "admin.scim.reconciliation.cancel": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.reconciliation.cancel.request.schema.json",
     "requestType": "AdminScimRunCommandRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.reconciliation.cancel.response.schema.json",
-    "responseType": "ScimReconciliationCardV1"
+    "responseType": "AdminScimReconciliationResultV1"
   },
   "admin.scim.reconciliation.read": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.reconciliation.read.request.schema.json",
@@ -742,7 +748,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.reconciliation.retry.request.schema.json",
     "requestType": "AdminScimRunCommandRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.reconciliation.retry.response.schema.json",
-    "responseType": "ScimReconciliationCardV1"
+    "responseType": "AdminScimReconciliationResultV1"
   },
   "admin.scim.token.create": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.token.create.request.schema.json",
@@ -766,7 +772,7 @@ export const enterpriseSecurityOperations = {
     "requestSchema": "generated/enterprise-security-v1/api/admin.scim.users.list.request.schema.json",
     "requestType": "AdminScimReadRequestV1",
     "responseSchema": "generated/enterprise-security-v1/api/admin.scim.users.list.response.schema.json",
-    "responseType": "PageResultV1<ScimUserCardV1>"
+    "responseType": "AdminScimScopedPageV1<ScimUserCardV1>"
   },
   "admin.session_policy.apply": {
     "requestSchema": "generated/enterprise-security-v1/api/admin.session_policy.apply.request.schema.json",

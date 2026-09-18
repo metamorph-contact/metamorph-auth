@@ -2,6 +2,7 @@ import { Button, Stack, Text } from '@polymorph/ui/identity'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { IdentityFlow } from '../protocol/client'
+import { clearRealmSocialAuthorization } from '../protocol/client'
 import type { IdentityMethodResolutionV1 } from '../contracts/generated/enterprise-security-v1/types/IdentityMethodResolutionV1'
 import { identityFederationClient } from './federation-client'
 import { FederationJourney, live } from './federation-journey'
@@ -14,19 +15,7 @@ i18n.addResourceBundle('en', 'enterprise-security', en)
 
 /** Advisory external identity discovery stays scoped to the current flow/email. Password
  * submission continues through its existing current-policy owner. */
-export function FederationMethodChoices({
-  flow,
-  email,
-  disabled,
-  navigate,
-  onCustodyChange,
-}: {
-  flow: IdentityFlow
-  email: string
-  disabled: boolean
-  navigate: (uri: string, signal: AbortSignal, expiresAt: string) => Promise<void>
-  onCustodyChange?: (held: boolean) => void
-}) {
+export function FederationMethodChoices({ flow, email, disabled, navigate, onCustodyChange }: { flow: IdentityFlow; email: string; disabled: boolean; navigate: (uri: string, signal: AbortSignal, expiresAt: string) => Promise<void>; onCustodyChange?: (held: boolean) => void }) {
   const { t } = useTranslation('enterprise-security')
   const normalized = email.trim().toLowerCase()
   const routeHint = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(normalized) ? normalized : null
@@ -79,6 +68,7 @@ export function FederationMethodChoices({
     }, 300)
     const scrub = () => {
       controller.abort()
+      clearRealmSocialAuthorization(flow)
       journeyRef.current?.stop()
       journeyRef.current = undefined
       setResolution(undefined)
@@ -88,6 +78,7 @@ export function FederationMethodChoices({
     window.addEventListener('pagehide', scrub)
     return () => {
       controller.abort()
+      clearRealmSocialAuthorization(flow)
       journeyRef.current?.stop()
       journeyRef.current = undefined
       window.clearTimeout(timer)
@@ -98,13 +89,9 @@ export function FederationMethodChoices({
   const visible = resolution?.email === routeHint ? resolution.value : undefined
   useEffect(() => {
     if (!visible) return
-    const duration =
-      Math.min(
-        Date.parse(visible.expiresAt),
-        Date.parse(flow.bootstrap.expiresAt),
-        Date.parse(flow.catalog.projection.expiresAt),
-      ) - Date.now()
+    const duration = Math.min(Date.parse(visible.expiresAt), Date.parse(flow.bootstrap.expiresAt), Date.parse(flow.catalog.projection.expiresAt)) - Date.now()
     const expire = () => {
+      clearRealmSocialAuthorization(flow)
       journeyRef.current?.stop()
       journeyRef.current = undefined
       setResolution(undefined)
@@ -131,12 +118,7 @@ export function FederationMethodChoices({
     try {
       if (!journeyRef.current?.hasUnresolvedCommand) {
         journeyRef.current?.stop()
-        journeyRef.current = new FederationJourney(
-          flow.bootstrap.flowId,
-          flow.catalog.projection.clientId,
-          identityFederationClient(flow, typeof provider === 'string' ? undefined : provider.providerRegionId),
-          flow.bootstrap.expiresAt,
-        )
+        journeyRef.current = new FederationJourney(flow.bootstrap.flowId, flow.catalog.projection.clientId, identityFederationClient(flow, typeof provider === 'string' ? undefined : provider.providerRegionId), flow.bootstrap.expiresAt)
       }
     } catch (error) {
       busy.current = false
@@ -174,14 +156,24 @@ export function FederationMethodChoices({
   return (
     <Stack gap={2}>
       {visible?.socialProviders.map((provider) => (
-        <Button key={provider} label={t(`security.social.${provider}`)} variant="outline" tone="neutral"
-          disabled={disabled || pending || expired} loading={pending}
-          onClick={() => { void start(provider) }} />
+        <Button
+          key={provider}
+          label={t(`security.social.${provider}`)}
+          variant="outline"
+          tone="neutral"
+          disabled={disabled || pending || expired}
+          loading={pending}
+          onClick={() => {
+            void start(provider)
+          }}
+        />
       ))}
       {visible?.federationProviders.map((provider) => (
         <Button
           key={`${provider.targetTenantId}/${provider.providerId}`}
-          label={t('security.journey.provider', { provider: provider.providerDisplayName })}
+          label={t('security.journey.provider', {
+            provider: provider.providerDisplayName,
+          })}
           variant="outline"
           tone="neutral"
           disabled={disabled || pending || expired}
@@ -201,11 +193,16 @@ export function externalIdentityErrorKey(error: unknown): string {
   if (!(error instanceof FederationHttpError)) return 'security.journey.unavailable'
   switch (error.envelope.error.code) {
     case 'security.method.disabled':
-    case 'security.request.forbidden': return 'security.social.denied'
-    case 'security.ceremony.expired': return 'security.journey.expired'
+    case 'security.request.forbidden':
+      return 'security.social.denied'
+    case 'security.ceremony.expired':
+      return 'security.journey.expired'
     case 'security.ceremony.mismatch':
-    case 'security.request.invalid': return 'security.social.invalid'
-    case 'security.request.rate_limited': return 'security.social.rateLimited'
-    default: return 'security.journey.unavailable'
+    case 'security.request.invalid':
+      return 'security.social.invalid'
+    case 'security.request.rate_limited':
+      return 'security.social.rateLimited'
+    default:
+      return 'security.journey.unavailable'
   }
 }

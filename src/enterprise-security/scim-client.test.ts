@@ -141,6 +141,21 @@ describe('Plan 09 protected activation transport', () => {
       client.call('identity.scim.primary_email.start', request, id, signal),
     ).rejects.toThrow()
   })
+  it('rejects a false or expired acceptance response', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(response({ ...accepted, accepted: false }))
+      .mockResolvedValueOnce(
+        response({ ...accepted, expiresAt: '2000-01-01T00:00:00Z' }),
+      )
+    vi.stubGlobal('fetch', fetcher)
+    await expect(
+      client.call('identity.scim.primary_email.start', request, id, signal),
+    ).rejects.toMatchObject({ retryable: false })
+    await expect(
+      client.call('identity.scim.primary_email.start', request, id, signal),
+    ).rejects.toMatchObject({ retryable: false })
+  })
   it('preserves retryability when response streaming fails after dispatch', async () => {
     vi.stubGlobal(
       'fetch',
