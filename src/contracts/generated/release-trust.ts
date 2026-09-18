@@ -9,7 +9,8 @@ export const AUTH_PROJECTION_PRODUCTS = {
   "octamorph-browser": "octamorph"
 } as const;
 export const AUTH_REGION_MESSAGE_KEYS = {
-  "local-a": "region.local-a"
+  "local-a": "region.local-a",
+  "local-b": "region.local-a"
 } as const;
 export const CATALOG_ROOT_PINS = [
   {

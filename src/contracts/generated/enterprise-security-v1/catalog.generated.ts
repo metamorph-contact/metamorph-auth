@@ -789,6 +789,7 @@ export const enterpriseSecurityCatalog = {
         "assurance": "strong",
         "operations": [
           "admin.providers.update",
+          "admin.providers.rollback",
           "admin.providers.rotate_secret",
           "admin.providers.rotate_certificate",
           "admin.providers.assurance_mapping"

@@ -123,18 +123,22 @@ export class ScimIdentityClient {
         throw new ScimIdentityError(true)
       throw new ScimIdentityError(retryable, seconds)
     }
-    if (!contract.response(value)) throw new ScimIdentityError(true)
+    if (!contract.response(value)) throw new ScimIdentityError(false)
     const result = value as unknown as Record<string, unknown>
     const ceremony =
       'ceremony' in request ? request.ceremony : request.activation.ceremony
     const progress = (result.progress ?? result) as Record<string, unknown>
     if (
       progress.continuationId !== ceremony.continuationId ||
+      ('accepted' in result &&
+        (result.accepted !== true ||
+          typeof result.expiresAt !== 'string' ||
+          Date.parse(result.expiresAt) <= Date.now())) ||
       ('nextStep' in progress &&
         (progress.nextStep !== 'pending_provisioning' ||
           progress.subjectReproof !== null))
     )
-      throw new ScimIdentityError(true)
+      throw new ScimIdentityError(false)
     if ('completion' in result) {
       const completion =
         result.completion as ScimIdentityOperations['identity.scim.primary_email.verify']['response']['completion']
@@ -147,7 +151,7 @@ export class ScimIdentityClient {
         completion.completionCapability ===
           ('startCapability' in request ? request.startCapability : '')
       )
-        throw new ScimIdentityError(true)
+        throw new ScimIdentityError(false)
     }
     return value as ScimIdentityOperations[K]['response']
   }

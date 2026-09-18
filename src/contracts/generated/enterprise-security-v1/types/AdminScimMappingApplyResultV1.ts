@@ -3,4 +3,4 @@
 import type { OperationReceiptV1 } from "./OperationReceiptV1";
 import type { ScimMappingStateV1 } from "./ScimMappingStateV1";
 
-export type AdminScimMappingApplyResultV1 = { schemaVersion: 1, mappingId: string, mappingRevision: string, state: ScimMappingStateV1, authorizationOperation: OperationReceiptV1, };
+export type AdminScimMappingApplyResultV1 = { schemaVersion: 1, targetTenantId: string, provisionerId: string, mutationId: string, mappingId: string, mappingRevision: string, state: ScimMappingStateV1, authorizationOperation: OperationReceiptV1, };

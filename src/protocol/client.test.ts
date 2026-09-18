@@ -1,18 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import {
-  cachedRealmSocialAuthorization,
-  clearRealmSocialAuthorization,
-  chooseAccount,
-  completeRecovery,
-  currentRealmSocialAuthorization,
-  loadAccounts,
-  startSignup,
-  type DisplayAccount,
-  type IdentityFlow,
-  type SignupStartAttempt,
-} from './client'
+import { cachedRealmSocialAuthorization, clearRealmSocialAuthorization, chooseAccount, completeRecovery, currentRealmSocialAuthorization, loadAccounts, startSignup, type DisplayAccount, type IdentityFlow, type SignupStartAttempt } from './client'
 import { AuthApi, ProtocolError } from './http'
 
 const operationId = '01890f3a-6e3a-7c15-8c65-450b85e12a01'
@@ -32,21 +21,10 @@ describe('realm social authorization', () => {
     } as unknown as IdentityFlow
     const signal = new AbortController().signal
 
-    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe(
-      'realm.social.authorization',
-    )
-    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe(
-      'realm.social.authorization',
-    )
+    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe('realm.social.authorization')
+    await expect(currentRealmSocialAuthorization(flow, signal)).resolves.toBe('realm.social.authorization')
     expect(cachedRealmSocialAuthorization(flow)).toBe('realm.social.authorization')
-    expect(post).toHaveBeenCalledWith(
-      `/api/auth/v1/flows/${operationId}/credential-capabilities`,
-      { schemaVersion: 1, action: 'socialRoute' },
-      'credentialCapability',
-      'c'.repeat(43),
-      {},
-      expect.any(AbortSignal),
-    )
+    expect(post).toHaveBeenCalledWith(`/api/auth/v1/flows/${operationId}/credential-capabilities`, { schemaVersion: 1, action: 'socialRoute' }, 'credentialCapability', 'c'.repeat(43), {}, expect.any(AbortSignal))
     expect(post.mock.calls[0]?.[5]).not.toBe(signal)
     expect(post).toHaveBeenCalledTimes(1)
     clearRealmSocialAuthorization(flow)
@@ -56,7 +34,10 @@ describe('realm social authorization', () => {
   it('keeps concurrent callers cancellation-independent', async () => {
     let resolveCapability: ((value: unknown) => void) | undefined
     const post = vi.fn().mockImplementation(
-      () => new Promise(resolve => { resolveCapability = resolve }),
+      () =>
+        new Promise((resolve) => {
+          resolveCapability = resolve
+        }),
     )
     const flow = {
       controller: { post },
@@ -78,18 +59,46 @@ describe('realm social authorization', () => {
     await expect(retained).resolves.toBe('realm.social.authorization')
     expect(post).toHaveBeenCalledTimes(1)
   })
+
+  it('aborts underlying issuance and discards a late capability when cleared', async () => {
+    let resolveCapability: ((value: unknown) => void) | undefined
+    let issuanceSignal: AbortSignal | undefined
+    const post = vi.fn().mockImplementation((...args: unknown[]) => {
+      issuanceSignal = args[5] as AbortSignal
+      return new Promise((resolve) => {
+        resolveCapability = resolve
+      })
+    })
+    const flow = {
+      controller: { post },
+      bootstrap: { flowId: operationId, csrfToken: 'c'.repeat(43), expiresAt },
+    } as unknown as IdentityFlow
+
+    const pending = currentRealmSocialAuthorization(flow)
+    await vi.waitFor(() => expect(post).toHaveBeenCalledTimes(1))
+    clearRealmSocialAuthorization(flow)
+    expect(issuanceSignal?.aborted).toBe(true)
+    resolveCapability?.({
+      action: 'socialRoute',
+      schemaVersion: 1,
+      federationFlowAuthorization: 'late.realm.social.authorization',
+      expiresAt,
+    })
+    await expect(pending).rejects.toThrow('security.ceremony.expired')
+    expect(cachedRealmSocialAuthorization(flow)).toBeNull()
+  })
 })
 
 describe('password ingress', () => {
   it('allows a multibyte replacement above the old 1024-byte sign-in guard', async () => {
     const post = vi.fn().mockResolvedValue({ schemaVersion: 1, kind: 'completed' })
     const home = { post } as unknown as AuthApi
-    const request = { newPassword: '界'.repeat(384), completionAttemptId: operationId } as Parameters<typeof completeRecovery>[1]
+    const request = {
+      newPassword: '界'.repeat(384),
+      completionAttemptId: operationId,
+    } as Parameters<typeof completeRecovery>[1]
     await completeRecovery(home, request)
-    expect(post).toHaveBeenCalledWith(
-      '/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined,
-      { 'Idempotency-Key': operationId },
-    )
+    expect(post).toHaveBeenCalledWith('/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined, { 'Idempotency-Key': operationId })
     await expect(completeRecovery(home, { ...request, newPassword: '界'.repeat(5462) })).rejects.toThrow('Invalid password')
     expect(post).toHaveBeenCalledTimes(1)
   })
@@ -99,40 +108,56 @@ describe('identity workflow recovery', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('reuses the exact signup operation after a lost creation response', async () => {
-    const controllerPost = vi.fn()
+    const controllerPost = vi
+      .fn()
       .mockResolvedValueOnce({
-        action: 'signUp', schemaVersion: 1, establishmentOperationId: operationId,
-        destinationCapability: 'a.b.c', expiresAt,
+        action: 'signUp',
+        schemaVersion: 1,
+        establishmentOperationId: operationId,
+        destinationCapability: 'a.b.c',
+        expiresAt,
       })
       .mockResolvedValueOnce({
-        schemaVersion: 1, kind: 'registered', signupId: operationId,
-        registrationProof: 'd.e.f', expiresAt,
+        schemaVersion: 1,
+        kind: 'registered',
+        signupId: operationId,
+        registrationProof: 'd.e.f',
+        expiresAt,
       })
-    const preparation = new Response(JSON.stringify({
-      schemaVersion: 1, preparationReceipt: 'g.h.i', expiresAt,
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } })
-    const progress = new Response(JSON.stringify({
-      schemaVersion: 1,
-      kind: 'verificationPending',
-      signupId: operationId,
-      nextStep: 'checkEmail',
-      csrfToken: 's'.repeat(43),
-      resendAvailableAt: expiresAt,
-      expiresAt,
-    }), { status: 202, headers: { 'Content-Type': 'application/json' } })
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(preparation)
-      .mockRejectedValueOnce(new TypeError('response lost'))
-      .mockResolvedValueOnce(progress)
+    const preparation = new Response(
+      JSON.stringify({
+        schemaVersion: 1,
+        preparationReceipt: 'g.h.i',
+        expiresAt,
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    )
+    const progress = new Response(
+      JSON.stringify({
+        schemaVersion: 1,
+        kind: 'verificationPending',
+        signupId: operationId,
+        nextStep: 'checkEmail',
+        csrfToken: 's'.repeat(43),
+        resendAvailableAt: expiresAt,
+        expiresAt,
+      }),
+      { status: 202, headers: { 'Content-Type': 'application/json' } },
+    )
+    const fetchMock = vi.fn().mockResolvedValueOnce(preparation).mockRejectedValueOnce(new TypeError('response lost')).mockResolvedValueOnce(progress)
     vi.stubGlobal('fetch', fetchMock)
 
     const catalog = {
       projection: {
         catalogVersion: 'v1',
-        regions: [{
-          regionId: 'eu', identityOrigin: 'https://identity.eu.example',
-          controllerOrigin: 'https://controller.eu.example', productApiOrigin: 'https://api.eu.example',
-        }],
+        regions: [
+          {
+            regionId: 'eu',
+            identityOrigin: 'https://identity.eu.example',
+            controllerOrigin: 'https://controller.eu.example',
+            productApiOrigin: 'https://api.eu.example',
+          },
+        ],
       },
     } as unknown as LoadedIdentityCatalog
     const flow = {
@@ -140,7 +165,10 @@ describe('identity workflow recovery', () => {
       controller: { post: controllerPost },
       bootstrap: { flowId: operationId, csrfToken: 'c'.repeat(43) },
     } as unknown as IdentityFlow
-    const attempt: SignupStartAttempt = { email: 'person@example.com', regionId: 'eu' }
+    const attempt: SignupStartAttempt = {
+      email: 'person@example.com',
+      regionId: 'eu',
+    }
 
     await expect(startSignup(flow, attempt)).rejects.toBeInstanceOf(ProtocolError)
     await expect(startSignup(flow, attempt)).resolves.toMatchObject({
@@ -182,27 +210,39 @@ describe('account option reconciliation', () => {
   }
 
   it('submits an authoritative invalid home outcome instead of silently dropping it', async () => {
-    const controllerPost = vi.fn().mockImplementation((path: string) => path.endsWith('/accounts')
-      ? Promise.resolve({ schemaVersion: 1, accounts: [reference], capsuleRepair: 'notRequired' })
-      : Promise.resolve({ schemaVersion: 1, kind: 'invalid', browserAccountId: operationId }))
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
-      schemaVersion: 1,
-      kind: 'invalid',
-      validationAttemptId: operationId,
-      outcome: 'invalid.outcome.sig',
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } })))
+    const controllerPost = vi.fn().mockImplementation((path: string) =>
+      path.endsWith('/accounts')
+        ? Promise.resolve({
+            schemaVersion: 1,
+            accounts: [reference],
+            capsuleRepair: 'notRequired',
+          })
+        : Promise.resolve({
+            schemaVersion: 1,
+            kind: 'invalid',
+            browserAccountId: operationId,
+          }),
+    )
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            schemaVersion: 1,
+            kind: 'invalid',
+            validationAttemptId: operationId,
+            outcome: 'invalid.outcome.sig',
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      ),
+    )
 
     await expect(loadAccounts(accountFlow(controllerPost))).resolves.toEqual({
       accounts: [],
       unavailableCount: 0,
     })
-    expect(controllerPost).toHaveBeenLastCalledWith(
-      expect.stringContaining('/account-validations'),
-      expect.objectContaining({ homeOutcome: 'invalid.outcome.sig' }),
-      'accountValidation',
-      'c'.repeat(43),
-      { 'Idempotency-Key': operationId },
-    )
+    expect(controllerPost).toHaveBeenLastCalledWith(expect.stringContaining('/account-validations'), expect.objectContaining({ homeOutcome: 'invalid.outcome.sig' }), 'accountValidation', 'c'.repeat(43), { 'Idempotency-Key': operationId })
   })
 
   it('reports a home outage separately from a genuinely empty account list', async () => {
@@ -234,12 +274,7 @@ describe('account option reconciliation', () => {
       },
     } as unknown as DisplayAccount
 
-    await expect(chooseAccount(
-      accountFlow(controllerPost),
-      account,
-      operationId,
-      'route.move.receipt',
-    )).resolves.toBe('https://product.in.example/auth/return')
+    await expect(chooseAccount(accountFlow(controllerPost), account, operationId, 'route.move.receipt')).resolves.toBe('https://product.in.example/auth/return')
 
     expect(controllerPost).toHaveBeenCalledWith(
       `/api/auth/v1/flows/${operationId}/account-selections`,
