@@ -1,7 +1,8 @@
 import type { IdentityFlowResumeReferenceV1 } from '../contracts/generated/csi07/IdentityFlowResumeReferenceV1'
-import type { DestinationContinuationFragment, InitialEntryFragment, FederationReturnFragment } from './fragment'
+import type { DestinationContinuationFragment, InitialEntryFragment, FederationReturnFragment, RelayResumptionFragment } from './fragment'
 
 const DESTINATION_KEY = 'metamorph.auth.destination.v1'
+const RELAY_RESUMPTION_KEY = 'metamorph.auth.relay-resumption.v1'
 const ACCOUNT_LOGOUT_KEY = 'metamorph.auth.account-logout.v1'
 const START_RECOVERY_KEY = 'metamorph.auth.start-recovery.v1'
 const FEDERATION_RETURN_KEY = 'metamorph.auth.federation-return.v1'
@@ -10,6 +11,7 @@ const UUID7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{
 const PROTECTED = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]*){2}(?:(?:\.[A-Za-z0-9_-]*){2})?$/u
 const DIGEST = /^[A-Za-z0-9_-]{43}$/u
 const RECOVERY_MAX_AGE_MS = 5 * 60 * 1_000
+const RELAY_RESUMPTION_MAX_AGE_MS = 15 * 60 * 1_000
 const START_MAX_AGE_MS = 2 * 60 * 1_000
 const CLOCK_SKEW_MS = 60 * 1_000
 const CATALOG_ID = /^[a-z0-9](?:[a-z0-9]|[._-](?=[a-z0-9])){0,95}$/u
@@ -105,6 +107,13 @@ interface StoredDestination {
   readonly operation: string
   readonly digest: string
   readonly receipt: string
+  readonly receivedAt: string
+}
+
+interface StoredRelayResumption {
+  readonly schemaVersion: 1
+  readonly operation: string
+  readonly resume: string
   readonly receivedAt: string
 }
 
@@ -222,6 +231,7 @@ export function clearStartRecovery(expectedReceipt?: string): void {
 /** The receipt is signed, short-lived and non-authorizing without browser cookies. */
 export function saveDestinationContinuation(value: DestinationContinuationFragment): DestinationContinuationFragment {
   assertSessionStorageAvailable()
+  sessionStorage.removeItem(RELAY_RESUMPTION_KEY)
   const stored: StoredDestination = Object.freeze({
     schemaVersion: 1,
     flow: value.flow,
@@ -237,6 +247,51 @@ export function saveDestinationContinuation(value: DestinationContinuationFragme
     throw new Error('Destination continuation did not persist')
   }
   return verified
+}
+
+export function saveRelayResumption(value: RelayResumptionFragment): RelayResumptionFragment {
+  assertSessionStorageAvailable()
+  sessionStorage.removeItem(DESTINATION_KEY)
+  const stored: StoredRelayResumption = Object.freeze({
+    schemaVersion: 1,
+    operation: value.operation,
+    resume: value.resume,
+    receivedAt: new Date().toISOString(),
+  })
+  sessionStorage.setItem(RELAY_RESUMPTION_KEY, JSON.stringify(stored))
+  const verified = readRelayResumption()
+  if (verified === null || verified.operation !== value.operation || verified.resume !== value.resume) {
+    throw new Error('Relay resumption did not persist')
+  }
+  return verified
+}
+
+export function readRelayResumption(): RelayResumptionFragment | null {
+  const encoded = sessionStorage.getItem(RELAY_RESUMPTION_KEY)
+  if (encoded === null) return null
+  if (new TextEncoder().encode(encoded).byteLength > 6 * 1024) {
+    sessionStorage.removeItem(RELAY_RESUMPTION_KEY)
+    return null
+  }
+  try {
+    const parsed: unknown = JSON.parse(encoded)
+    if (parsed === null || typeof parsed !== 'object') throw new Error('Invalid relay resumption')
+    const record = parsed as Record<string, unknown>
+    if (Object.keys(record).length !== 4 || record.schemaVersion !== 1 ||
+        typeof record.operation !== 'string' || !UUID7.test(record.operation) ||
+        !protectedValue(record.resume, 4 * 1024) ||
+        !currentTimestamp(record.receivedAt, RELAY_RESUMPTION_MAX_AGE_MS)) {
+      throw new Error('Invalid relay resumption')
+    }
+    return Object.freeze({
+      kind: 'relayResumption',
+      operation: record.operation,
+      resume: record.resume,
+    })
+  } catch {
+    sessionStorage.removeItem(RELAY_RESUMPTION_KEY)
+    return null
+  }
 }
 
 export function readDestinationContinuation(): DestinationContinuationFragment | null {

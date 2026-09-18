@@ -57,6 +57,7 @@ import {
   resumeIdentityFlow,
   resumeFlowFromStart,
   finalizeDestination,
+  resumeDestinationRelay,
   loadAccounts,
   previewEmailLink,
   randomUuid7,
@@ -92,15 +93,19 @@ import {
   type InitialEntryFragment,
   type FederationReturnFragment,
   type PasswordRecoveryFragment,
+  type RelayResumptionFragment,
+  type DestinationContinuationFragment,
 } from './security/fragment'
 import {
   assertSessionStorageAvailable,
   clearStartRecovery,
   readAccountLogoutPending,
   readDestinationContinuation,
+  readRelayResumption,
   readStartRecovery,
   saveStartRecovery,
   saveDestinationContinuation,
+  saveRelayResumption,
   saveFederationReturn,
   readFederationReturn,
   clearFederationReturn,
@@ -305,6 +310,24 @@ interface ReadyContext {
   flow: IdentityFlow
 }
 
+function retainFlowResumeReference(flow: IdentityFlow): void {
+  if (flow.bootstrap.flowResume !== null) {
+    saveIdentityFlowResume(flow.bootstrap.flowResume)
+    return
+  }
+  const bootstrapExpiry = Date.parse(flow.bootstrap.expiresAt)
+  if (!Number.isFinite(bootstrapExpiry)) throw new Error('Invalid flow expiry')
+  saveIdentityFlowResume(Object.freeze({
+    schemaVersion: 1,
+    flowId: flow.bootstrap.flowId,
+    controllerRegionId: flow.head.placement.controllerRegionId,
+    authProjectionId: flow.bootstrap.authProjectionId,
+    catalogVersion: flow.bootstrap.catalogVersion,
+    catalogDigest: flow.bootstrap.catalogDigest,
+    expiresAt: new Date(Math.min(bootstrapExpiry, Date.now() + 5 * 60_000)).toISOString(),
+  }))
+}
+
 interface SignupProgressStep {
   readonly kind: 'signupProgress'
   readonly home: IdentityFlow['controller']
@@ -405,7 +428,7 @@ async function loadReady(
   assertSessionStorageAvailable()
   const head = await browserHeadForCatalog(catalog)
   const flow = fragment.kind==='federationReturn' ? await resumeFederationFlow(catalog,head,fragment) : await createIdentityFlow(catalog, head, fragment)
-  if (flow.bootstrap.flowResume) saveIdentityFlowResume(flow.bootstrap.flowResume)
+  retainFlowResumeReference(flow)
   return { catalog, head, flow }
 }
 
@@ -614,7 +637,7 @@ function AuthorizePage() {
             ? await loadReady(params, entryState.fragment, (catalog) => { startupCatalog = catalog })
             : undefined)
         if (loaded === undefined) throw new Error('Missing original identity flow')
-        if (loaded.flow.bootstrap.flowResume) saveIdentityFlowResume(loaded.flow.bootstrap.flowResume)
+        retainFlowResumeReference(loaded.flow)
         if (!live) return
         setReady(loaded)
         if(entryState.kind === 'entry' && entryState.fragment.kind==='federationReturn'){
@@ -729,14 +752,20 @@ function AuthorizePage() {
   }
 
   if (step.kind === 'selectedRecipientInbox') {
-    return <Suspense fallback={null}><SelectedAccountInvitationInbox flow={ready.flow} selected={step.selected}
-      release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='selectedRecipientInbox'?{kind:'error'}:current)}}
-      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+    return <Presentation {...ready} transitionKey="selected-recipient-inbox" pending={pending} leaving={leaving}
+      title={t('auth.finalizing.title')} description={t('auth.finalizing.description')}>
+      <Suspense fallback={<Text>{t('auth.loading')}</Text>}><SelectedAccountInvitationInbox flow={ready.flow} selected={step.selected}
+        release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='selectedRecipientInbox'?{kind:'error'}:current)}}
+        navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+    </Presentation>
   }
   if (step.kind === 'recipientInbox') {
-    return <Suspense fallback={null}><AccountInvitationInbox flow={ready.flow} establishment={step.establishment}
-      release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='recipientInbox'&&current.establishment===step.establishment?{kind:'error'}:current)}}
-      navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+    return <Presentation {...ready} transitionKey="recipient-inbox" pending={pending} leaving={leaving}
+      title={t('auth.finalizing.title')} description={t('auth.finalizing.description')}>
+      <Suspense fallback={<Text>{t('auth.loading')}</Text>}><AccountInvitationInbox flow={ready.flow} establishment={step.establishment}
+        release={()=>{if(ready.flow.bootstrap.emailedInvitation)ready.flow.bootstrap.emailedInvitation.emailedToken='';setStep(current=>current.kind==='recipientInbox'&&current.establishment===step.establishment?{kind:'error'}:current)}}
+        navigation={uri=>navigateAfterFade(ready.catalog,uri,setLeaving)}/></Suspense>
+    </Presentation>
   }
   if (step.kind === 'federation') {
     return <Suspense fallback={null}><FederationReturnPanel flow={ready.flow} fragment={step.fragment}
@@ -1579,7 +1608,7 @@ function RecoverPasswordPage() {
         setPasswordError(t(protocolMessage(caught)))
         focusField('password')
       }
-      if (!(caught instanceof ProtocolError) || !caught.retryable) {
+      if (!(caught instanceof ProtocolError) || caught.recoveryAction !== 'retrySameOperation') {
         setCompletionAttemptId(undefined)
         setPassword('')
       }
@@ -1603,13 +1632,14 @@ function ContinuePage() {
   const { t } = useTranslation()
   const fragment = useMemo(() => {
     if (!hasUnconsumedAuthFragment()) {
-      const recovered = readDestinationContinuation()
+      const recovered = readDestinationContinuation() ?? readRelayResumption()
       if (recovered === null) throw new Error('Missing destination continuation')
       return recovered
     }
     const value = consumeAuthFragmentOnce()
-    if (value.kind !== 'destination') throw new Error('Wrong destination continuation')
-    return saveDestinationContinuation(value)
+    if (value.kind === 'destination') return saveDestinationContinuation(value)
+    if (value.kind === 'relayResumption') return saveRelayResumption(value)
+    throw new Error('Wrong destination continuation')
   }, [])
   const [failure, setFailure] = useState<FailureKind>()
   const [catalog, setCatalog] = useState<LoadedIdentityCatalog>()
@@ -1623,13 +1653,27 @@ function ContinuePage() {
         await setLocale(params.locale)
         const head = await readBrowserHead()
         if (head === null) throw new Error('Missing controller binding')
-        const catalog = await loadIdentityCatalog({ locale: params.locale, authProjectionId: params.authProjectionId, catalogVersion: params.catalogVersion, catalogDigest: fragment.digest })
+        const reference = fragment.kind === 'relayResumption' ? readIdentityFlowResume() : null
+        if (fragment.kind === 'relayResumption' && (reference === null ||
+            reference.authProjectionId !== params.authProjectionId || reference.catalogVersion !== params.catalogVersion)) {
+          throw new Error('Missing relay resumption flow')
+        }
+        const catalog = await loadIdentityCatalog({
+          locale: params.locale,
+          authProjectionId: params.authProjectionId,
+          catalogVersion: params.catalogVersion,
+          catalogDigest: fragment.kind === 'destination' ? fragment.digest : reference!.catalogDigest,
+        })
         if (live) setCatalog(catalog)
         armBfcacheRecovery(catalog)
         installPresentationTheme(catalog.presentation.themePairingId)
-        const uri = await finalizeDestination(catalog, head, fragment)
+        const uri = fragment.kind === 'destination'
+          ? await finalizeDestination(catalog, head, fragment as DestinationContinuationFragment)
+          : await resumeDestinationRelay(catalog, head, reference!, fragment as RelayResumptionFragment)
         await navigateAfterFade(catalog, uri, setLeaving)
-      } catch (error) { if (live) setFailure(failureKind(error)) }
+      } catch (error) {
+        if (live) setFailure(failureKind(error))
+      }
     })()
     return () => { live = false }
   }, [attempt])

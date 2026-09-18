@@ -50,6 +50,8 @@ import type { DestinationReceiptRequestV1 } from '../contracts/generated/csi07/D
 import type { AuthorizationFinalizationRequestV1 } from '../contracts/generated/csi08/AuthorizationFinalizationRequestV1'
 import type { AuthorizationFinalizationResultV1 } from '../contracts/generated/csi08/AuthorizationFinalizationResultV1'
 import type { DestinationReceiptResultV1 } from '../contracts/generated/csi08/DestinationReceiptResultV1'
+import type { RelayResumptionRequestV1 } from '../contracts/generated/csi07/RelayResumptionRequestV1'
+import type { RelayResumptionResultV1 } from '../contracts/generated/csi07/RelayResumptionResultV1'
 import type { EmailLinkPreviewRequestV1 } from '../contracts/generated/csi11/EmailLinkPreviewRequestV1'
 import type { EmailLinkPreviewResultV1 } from '../contracts/generated/csi11/EmailLinkPreviewResultV1'
 import type { EmailVerificationRequestV1 } from '../contracts/generated/csi11/EmailVerificationRequestV1'
@@ -72,7 +74,7 @@ import type { SignupProfileV1 } from '../contracts/generated/csi11/SignupProfile
 import type { SignupProgressV1 } from '../contracts/generated/csi11/SignupProgressV1'
 import type { SignupResendRequestV1 } from '../contracts/generated/csi11/SignupResendRequestV1'
 import type { SignupResolveRequestV1 } from '../contracts/generated/csi11/SignupResolveRequestV1'
-import type { DestinationContinuationFragment, EmailVerificationFragment, InitialEntryFragment, FederationReturnFragment } from '../security/fragment'
+import type { DestinationContinuationFragment, EmailVerificationFragment, InitialEntryFragment, FederationReturnFragment, RelayResumptionFragment } from '../security/fragment'
 import type { AuthApi } from './http'
 import { ProtocolError } from './http'
 import { randomSecret32, randomUuid7 } from './random'
@@ -93,6 +95,14 @@ export interface DisplayAccount {
 export interface DisplayAccountsResult {
   readonly accounts: readonly DisplayAccount[]
   readonly unavailableCount: number
+}
+
+interface RecoveredCredentialRegistration {
+  readonly attemptId: string
+  readonly identityApiOrigin: string
+  readonly credentialCapability: string
+  readonly registrationProof: string
+  readonly federationFlowAuthorization: string
 }
 
 function headReference(head: BrowserHeadState) {
@@ -322,10 +332,83 @@ export async function continueAccountEstablishment(flow: IdentityFlow, result: A
   return next.navigationUri
 }
 
+async function recoverCurrentCredentialRegistration(
+  flow: IdentityFlow,
+  preparationEmail?: string,
+): Promise<RecoveredCredentialRegistration | null> {
+  const recovery = await flow.controller.post<EmptyV1, CredentialAttemptRecoveryResultV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempt-recovery`,
+    { schemaVersion: 1 }, 'credentialAttemptRecovery', flow.bootstrap.csrfToken,
+  )
+  if (recovery.kind === 'none') return null
+  if (recovery.kind === 'recover') {
+    return {
+      attemptId: recovery.attemptId,
+      identityApiOrigin: recovery.identityApiOrigin,
+      credentialCapability: recovery.retryMaterial.credentialCapability,
+      registrationProof: recovery.retryMaterial.registrationProof,
+      federationFlowAuthorization: recovery.retryMaterial.federationFlowAuthorization,
+    }
+  }
+  const home = admittedIdentityApi(flow.catalog, recovery.identityApiOrigin)
+  const original = await home.post<CredentialPreparationRecoveryRequestV1, CredentialPreparationRecoveryResultV1>(
+    '/api/auth/v1/federation/credential-preparations/recover',
+    { schemaVersion: 1, preparationRecoveryProof: recovery.preparationRecoveryProof },
+    'credentialPreparationRecovery',
+  )
+  if (original.kind === 'notPrepared' && preparationEmail === undefined) return null
+  const attempt = original.kind === 'recovered' ? original.preparation : await home.post<CredentialAttemptRequestV1, CredentialAttemptResultV1>(
+    '/api/auth/v1/federation/credential-attempts',
+    { schemaVersion: 1, email: preparationEmail!, capability: recovery.credentialCapability },
+    'credentialAttempt', undefined, { 'Idempotency-Key': recovery.attemptId },
+  )
+  const registration = await flow.controller.post<CredentialAttemptRegistrationRequestV1, CredentialAttemptRegistrationResultV1>(
+    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempts`,
+    { schemaVersion: 1, attemptReceipt: attempt.attemptReceipt, credentialCapability: recovery.credentialCapability, recoveryCapability: attempt.recoveryCapability },
+    'credentialRegistration', flow.bootstrap.csrfToken,
+  )
+  return {
+    attemptId: recovery.attemptId,
+    identityApiOrigin: recovery.identityApiOrigin,
+    credentialCapability: recovery.credentialCapability,
+    registrationProof: registration.registrationProof,
+    federationFlowAuthorization: registration.federationFlowAuthorization,
+  }
+}
+
 export async function signIn(flow: IdentityFlow, email: string, password: string): Promise<AccountEstablishmentResultV1> {
   const canonicalEmail = normalizeEmailForWire(email)
   if (canonicalEmail === null) throw new Error('Invalid email')
   assertBoundedPassword(password)
+  clearRealmSocialAuthorization(flow)
+  const preparation = federationPreparations.get(flow)
+  if (preparation?.email === canonicalEmail && preparation.pending !== undefined) {
+    try {
+      await preparation.pending
+    } catch {
+      // Only controller recovery below decides whether an interrupted
+      // advisory lookup became the current registered attempt.
+    }
+  }
+  if (preparation !== undefined && preparation.email !== canonicalEmail) {
+    throw new Error('Federation flow input changed')
+  }
+  const recovered = await recoverCurrentCredentialRegistration(flow, canonicalEmail)
+  if (recovered !== null) {
+    const home = admittedIdentityApi(flow.catalog, recovered.identityApiOrigin)
+    return home.post<SignInRequestV1, AccountEstablishmentResultV1>(
+      '/api/auth/v1/sign-ins',
+      {
+        schemaVersion: 1,
+        email: canonicalEmail,
+        password,
+        attemptId: recovered.attemptId,
+        capability: recovered.credentialCapability,
+        registrationProof: recovered.registrationProof,
+      },
+      'accountEstablishment', undefined, { 'Idempotency-Key': recovered.attemptId },
+    )
+  }
   const capability = await flow.controller.post<CredentialCapabilityRequestV1, CredentialCapabilityResultV1>(
     `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-capabilities`,
     { schemaVersion: 1, action: 'signInRoute' }, 'credentialCapability', flow.bootstrap.csrfToken,
@@ -364,30 +447,8 @@ export async function signIn(flow: IdentityFlow, email: string, password: string
  * No identity-provider receipt is treated as an account establishment. */
 export async function currentFederationAuthorization(flow: IdentityFlow, preparationEmail?: string): Promise<string | null> {
   if (flow.bootstrap.providerTestEntry != null) return currentProviderRuntimeTestAuthorization(flow)
-
-  const recovery = await flow.controller.post<EmptyV1, CredentialAttemptRecoveryResultV1>(
-    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempt-recovery`,
-    { schemaVersion: 1 }, 'credentialAttemptRecovery', flow.bootstrap.csrfToken,
-  )
-  if (recovery.kind === 'none') return null
-  if (recovery.kind === 'recover') return recovery.retryMaterial.federationFlowAuthorization
-  const home = admittedIdentityApi(flow.catalog, recovery.identityApiOrigin)
-  const original = await home.post<CredentialPreparationRecoveryRequestV1, CredentialPreparationRecoveryResultV1>(
-    '/api/auth/v1/federation/credential-preparations/recover',
-    {schemaVersion:1, preparationRecoveryProof:recovery.preparationRecoveryProof}, 'credentialPreparationRecovery',
-  )
-  if (original.kind === 'notPrepared' && preparationEmail === undefined) return null
-  const attempt = original.kind === 'recovered' ? original.preparation : await home.post<CredentialAttemptRequestV1, CredentialAttemptResultV1>(
-    '/api/auth/v1/federation/credential-attempts',
-    {schemaVersion:1, email:preparationEmail!, capability:recovery.credentialCapability}, 'credentialAttempt', undefined,
-    {'Idempotency-Key':recovery.attemptId},
-  )
-  const registered = await flow.controller.post<CredentialAttemptRegistrationRequestV1, CredentialAttemptRegistrationResultV1>(
-    `/api/auth/v1/flows/${safeId(flow.bootstrap.flowId)}/credential-attempts`,
-    {schemaVersion:1, attemptReceipt:attempt.attemptReceipt, credentialCapability:recovery.credentialCapability, recoveryCapability:attempt.recoveryCapability},
-    'credentialRegistration', flow.bootstrap.csrfToken,
-  )
-  return registered.federationFlowAuthorization
+  return (await recoverCurrentCredentialRegistration(flow, preparationEmail))
+    ?.federationFlowAuthorization ?? null
 }
 type ProviderTestAuthorization = { authorization?: string; pending?: Promise<string> }
 const providerTestAuthorizations = new WeakMap<IdentityFlow, ProviderTestAuthorization>()
@@ -924,6 +985,43 @@ export async function finalizeDestination(
     'authorizationFinalization', undefined, { 'Idempotency-Key': attached.finalizationAttemptId },
   )
   return finalized.navigationUri
+}
+
+export async function resumeDestinationRelay(
+  catalog: LoadedIdentityCatalog,
+  head: BrowserHeadState,
+  reference: IdentityFlowResumeReferenceV1,
+  continuation: RelayResumptionFragment,
+): Promise<string> {
+  if (reference.authProjectionId !== catalog.projection.authProjectionId ||
+      reference.catalogVersion !== catalog.projection.catalogVersion ||
+      reference.catalogDigest !== catalog.projection.realmCatalogDigest) {
+    throw new Error('Relay resumption catalog changed')
+  }
+  const region = catalog.projection.regions.find((candidate) => candidate.regionId === head.placement.controllerRegionId)
+  if (region === undefined) throw new Error('Pinned controller is unavailable')
+  const controller = controllerApiForRegion(catalog, region.regionId, region.controllerOrigin)
+  const bootstrap = await controller.post<EmptyV1, FlowBootstrapV1>(
+    `/api/auth/v1/flows/${safeId(reference.flowId)}/bootstrap`, { schemaVersion: 1 }, 'flowBootstrap',
+  )
+  assertBootstrap(catalog, bootstrap)
+  const resumed = await controller.post<RelayResumptionRequestV1, RelayResumptionResultV1>(
+    `/api/auth/v1/flows/${safeId(reference.flowId)}/relay-resumptions`,
+    { schemaVersion: 1, resumeReceipt: continuation.resume }, 'relayResumption', bootstrap.csrfToken,
+  )
+  if (resumed.kind === 'relay') {
+    const uri = new URL(resumed.navigationUri)
+    const fields = new URLSearchParams(uri.hash.slice(1))
+    const names = [...fields.keys()]
+    if (names.length !== 4 || names.some((name, index) => name !== ['v', 'operation', 'payload', 'resume'][index]) ||
+        fields.get('v') !== '1' || fields.get('operation') !== continuation.operation ||
+        fields.get('resume') !== continuation.resume || !/^[A-Za-z0-9_-]+$/u.test(fields.get('payload') ?? '')) {
+      throw new Error('Relay resumption changed the bound operation')
+    }
+    return resumed.navigationUri
+  }
+  if (resumed.recoveryAction === 'restartProductAuth') return catalogProductReturnUri(catalog, 'authStartRecovery')
+  throw new Error('Relay resumption returned an unsupported terminal action')
 }
 
 export async function uploadSignupPicture(

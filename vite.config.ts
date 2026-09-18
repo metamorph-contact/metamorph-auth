@@ -5,10 +5,19 @@ import { dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repositoryRoot = dirname(fileURLToPath(import.meta.url));
+const deploymentCatalogPath = resolve(
+  repositoryRoot,
+  process.env.METAMORPH_AUTH_CATALOG_PATH ??
+    '../metamorph-saas/config/central-identity/identity-catalog.development.json',
+)
 const deploymentCatalog = JSON.parse(
-  readFileSync(resolve(repositoryRoot, '../metamorph-saas/config/central-identity/identity-catalog.development.json'), 'utf8'),
+  readFileSync(deploymentCatalogPath, 'utf8'),
 ) as { catalogVersion: string }
-const publicationRoot = resolve(repositoryRoot, 'catalog/publication', deploymentCatalog.catalogVersion)
+const publicationRoot = resolve(
+  repositoryRoot,
+  process.env.METAMORPH_AUTH_PUBLICATION_ROOT ?? 'catalog/publication',
+  deploymentCatalog.catalogVersion,
+)
 
 const release = JSON.parse(
   readFileSync(new URL('./catalog/identity-ui-release.development.json', import.meta.url), 'utf8'),

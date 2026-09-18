@@ -1,7 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { LoadedIdentityCatalog } from '../catalog/runtime'
-import { cachedRealmSocialAuthorization, clearRealmSocialAuthorization, chooseAccount, completeRecovery, currentRealmSocialAuthorization, loadAccounts, startSignup, type DisplayAccount, type IdentityFlow, type SignupStartAttempt } from './client'
+import {
+  cachedRealmSocialAuthorization,
+  clearRealmSocialAuthorization,
+  chooseAccount,
+  completeRecovery,
+  currentRealmSocialAuthorization,
+  loadAccounts,
+  signIn,
+  startSignup,
+  type DisplayAccount,
+  type IdentityFlow,
+  type SignupStartAttempt,
+} from './client'
 import { AuthApi, ProtocolError } from './http'
 
 const operationId = '01890f3a-6e3a-7c15-8c65-450b85e12a01'
@@ -90,6 +102,8 @@ describe('realm social authorization', () => {
 })
 
 describe('password ingress', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
   it('allows a multibyte replacement above the old 1024-byte sign-in guard', async () => {
     const post = vi.fn().mockResolvedValue({ schemaVersion: 1, kind: 'completed' })
     const home = { post } as unknown as AuthApi
@@ -101,6 +115,56 @@ describe('password ingress', () => {
     expect(post).toHaveBeenCalledWith('/api/auth/v1/password-recoveries/complete', request, 'recoveryCompleted', undefined, { 'Idempotency-Key': operationId })
     await expect(completeRecovery(home, { ...request, newPassword: '界'.repeat(5462) })).rejects.toThrow('Invalid password')
     expect(post).toHaveBeenCalledTimes(1)
+  })
+
+  it('reuses an email-method preparation instead of racing a second credential operation', async () => {
+    const controllerPost = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      kind: 'recover',
+      attemptId: operationId,
+      identityApiOrigin: 'https://identity.eu.example',
+      recoveryCapability: 'recovery.capability.value',
+      retryMaterial: {
+        credentialCapability: 'credential.capability.value',
+        registrationProof: 'registration.proof.value',
+        federationFlowAuthorization: 'federation.authorization.value',
+      },
+      expiresAt,
+    })
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      schemaVersion: 1,
+      kind: 'credentialRejected',
+      recoveryAction: 'retryCredentials',
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }))
+    vi.stubGlobal('fetch', fetchMock)
+    const flow = {
+      catalog: {
+        projection: {
+          catalogVersion: 'v1',
+          regions: [{ regionId: 'eu', identityOrigin: 'https://identity.eu.example' }],
+        },
+      } as unknown as LoadedIdentityCatalog,
+      controller: { post: controllerPost },
+      bootstrap: { flowId: operationId, csrfToken: 'c'.repeat(43) },
+    } as unknown as IdentityFlow
+
+    await expect(signIn(flow, 'person@example.com', 'correct horse battery staple'))
+      .resolves.toMatchObject({ kind: 'credentialRejected' })
+
+    expect(controllerPost).toHaveBeenCalledTimes(1)
+    expect(controllerPost).toHaveBeenCalledWith(
+      `/api/auth/v1/flows/${operationId}/credential-attempt-recovery`,
+      { schemaVersion: 1 },
+      'credentialAttemptRecovery',
+      'c'.repeat(43),
+    )
+    const request = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body as string) as Record<string, unknown>
+    expect(request).toMatchObject({
+      email: 'person@example.com',
+      attemptId: operationId,
+      capability: 'credential.capability.value',
+      registrationProof: 'registration.proof.value',
+    })
   })
 })
 

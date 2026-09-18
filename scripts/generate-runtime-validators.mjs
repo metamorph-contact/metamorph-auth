@@ -30,6 +30,7 @@ const schemas = {
   providerRuntimeTestFlow: 'src/contracts/schemas/csi07/provider-runtime-test-flow-result-v1.schema.json',
   strongActionDelegation: 'src/contracts/schemas/csi07/strong-action-delegation-result-v1.schema.json',
   accountContinuation: 'src/contracts/schemas/csi07/account-continuation-result-v1.schema.json',
+  relayResumption: 'src/contracts/schemas/csi07/relay-resumption-result-v1.schema.json',
   recipientAccountAdmission: 'src/contracts/schemas/csi07/recipient-account-admission-v1.schema.json',
   recipientBootstrap: 'src/contracts/schemas/authorization-recipient-v1/RecipientInboxBootstrapResultV1.schema.json',
   recipientList: 'src/contracts/schemas/authorization-recipient-v1/RecipientInvitationListResultV1.schema.json',

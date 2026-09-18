@@ -2180,7 +2180,7 @@
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-accepted-v1.schema.json": "1ff2aed6d9f808d869568a2da74eddf2df2d97079b6f6757d9d4ec01d5af40ab",
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "35fb91ab749c07b3c1b8c05e2af675aca907f75ea321d7783b52dfb6954990ee",
     "metamorph-auth/src/contracts/schemas/csi11/password-recovery-completed-v1.schema.json": "d9c58ac1d25f5edcbbafd01c801fe7ec9b9af7ef0729def08852186e3c1f8f6c",
-    "metamorph-auth/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "ddec4cd59520f464b8d07b00afdf028c2945c1183e780de4be7186fc08c4fe2a",
+    "metamorph-auth/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "f7dea3561f019cca0aec11e113d038367cd29134619762f11acb117614ef15cf",
     "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-cancel-request.schema.json": "40225f72c14bf2ce41cac4c04cfd610f932640860d7b5095ffd8a32db31f8504",
     "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-create-request.schema.json": "6309bce3f07005086615d2a0d14c8339cfe20e8426a1b040f398cdd741d44f75",
     "metamorph-saas/docs/features/audit-logging/contracts/generated/audit-logs-v1/schemas/export-download-authorize-request.schema.json": "ac09c5195a4d840ddaa1702c7456a8b694660d5d2d34f64e2cdadedf01148726",
@@ -2216,7 +2216,7 @@
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-accepted-v1.schema.json": "1ff2aed6d9f808d869568a2da74eddf2df2d97079b6f6757d9d4ec01d5af40ab",
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-complete-request-v1.schema.json": "35fb91ab749c07b3c1b8c05e2af675aca907f75ea321d7783b52dfb6954990ee",
     "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-completed-v1.schema.json": "d9c58ac1d25f5edcbbafd01c801fe7ec9b9af7ef0729def08852186e3c1f8f6c",
-    "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "ddec4cd59520f464b8d07b00afdf028c2945c1183e780de4be7186fc08c4fe2a"
+    "octamorph/apps/frontend/src/contracts/schemas/csi11/password-recovery-request-v1.schema.json": "f7dea3561f019cca0aec11e113d038367cd29134619762f11acb117614ef15cf"
   },
   "externalOperations": {
     "admin.audit.export.cancel": {

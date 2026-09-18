@@ -10,6 +10,7 @@ export type ResponseSchemaName =
   | 'routeResolution' | 'routeContinuation' | 'credentialAttempt' | 'credentialRegistration'
   | 'credentialAttemptRecovery' | 'credentialPreparationRecovery' | 'accountEstablishment' | 'accounts' | 'accountMetadata'
   | 'accountValidation' | 'accountSelection' | 'accountAuthorization' | 'accountContinuation' | 'providerRuntimeTestFlow'
+  | 'relayResumption'
   | 'strongActionDelegation'
   | 'signupPreparation' | 'signupRegistration' | 'signupContinuation' | 'verifiedSignupTransfer'
   | 'destinationReceipt' | 'authorizationFinalization' | 'signupProgress' | 'signupCompletion'
@@ -38,6 +39,7 @@ const validators = {
   providerRuntimeTestFlow: generated.providerRuntimeTestFlow,
   strongActionDelegation: generated.strongActionDelegation,
   accountContinuation: generated.accountContinuation,
+  relayResumption: generated.relayResumption,
   recipientAccountAdmission: generated.recipientAccountAdmission,
   recipientBootstrap: generated.recipientBootstrap,
   recipientList: generated.recipientList,
