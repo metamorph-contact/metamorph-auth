@@ -1485,7 +1485,9 @@ function VerifyEmailPage() {
   </Presentation>
   if (value === undefined || preview === undefined) return <GenericPage />
   if (expired) return <Presentation catalog={value.catalog} transitionKey="verify-email-expired" pending={false} leaving={leaving} title={t('auth.linkExpired.title')} description={t('auth.linkExpired.description')}>
-    <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+    <div className="identity-centered-action">
+      <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+    </div>
   </Presentation>
   const confirm = () => void (async () => {
     if (pending || confirmationPending.current) return
@@ -1574,7 +1576,9 @@ function RecoverPasswordPage() {
   </Presentation>
   if (value === undefined || preview === undefined) return <GenericPage />
   if (expired) return <Presentation catalog={value.catalog} transitionKey="recover-password-expired" pending={false} leaving={leaving} title={t('auth.linkExpired.title')} description={t('auth.linkExpired.description')}>
-    <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+    <div className="identity-centered-action">
+      <Button label={t('auth.linkExpired.restart')} onClick={() => void navigateAfterFade(value.catalog, catalogProductReturnUri(value.catalog, 'authStartRecovery'), setLeaving)} />
+    </div>
   </Presentation>
   const submit = (event: FormEvent) => {
     event.preventDefault()

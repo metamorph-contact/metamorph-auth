@@ -77,6 +77,12 @@ body {
   gap: var(--pm-space-2);
 }
 
+.identity-centered-action {
+  display: flex;
+  inline-size: 100%;
+  justify-content: center;
+}
+
 .identity-account {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
