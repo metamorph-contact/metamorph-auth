@@ -62,6 +62,7 @@ export function EmergencyEntry({
   const client = identityEmergencyClient(flow, owner.identityHomeRegionId);
   const live = () => {
     fresh(flow.bootstrap.expiresAt);
+    fresh(flow.bootstrap.emergencyEntry?.expiresAt ?? "");
     fresh(flow.catalog.projection.expiresAt);
     if (entry) fresh(entry.expiresAt);
     if (activation) fresh(activation.expiresAt);
@@ -94,6 +95,7 @@ export function EmergencyEntry({
   useEffect(() => {
     const expiry = Math.min(
       Date.parse(flow.bootstrap.expiresAt),
+      Date.parse(flow.bootstrap.emergencyEntry?.expiresAt ?? ""),
       Date.parse(flow.catalog.projection.expiresAt),
       entry ? Date.parse(entry.expiresAt) : Infinity,
       activation ? Date.parse(activation.expiresAt) : Infinity,

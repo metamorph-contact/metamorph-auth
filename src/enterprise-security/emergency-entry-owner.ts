@@ -6,9 +6,9 @@ import type { IdentityEmergencyActivationV1 } from "../contracts/generated/enter
  * authorization. Completion must advance the actual CSI controller and its
  * registered callback/session fences; an activation DTO cannot create a grant. */
 export interface EmergencyEntryOwner {
-  flowId: string;
-  targetTenantId: string;
-  identityHomeRegionId: string;
+  readonly flowId: string;
+  readonly targetTenantId: string;
+  readonly identityHomeRegionId: string;
   complete(
     flow: IdentityFlow,
     activation: IdentityEmergencyActivationV1,
@@ -25,13 +25,16 @@ export function emergencyEntryOwnerForFlow(
   flow: IdentityFlow,
 ): EmergencyEntryOwner | undefined {
   const entry = flow.bootstrap.emergencyEntry;
+  const entryExpiresAt = entry ? Date.parse(entry.expiresAt) : Number.NaN;
   if (
     flow.bootstrap.intent !== "emergency" ||
     entry?.purpose !== "entry" ||
     entry.targetUserId !== null ||
     entry.resultNonce !== null ||
-    flow.bootstrap.emergencyAuthorization === null ||
-    Date.parse(entry.expiresAt) <= Date.now()
+    typeof flow.bootstrap.emergencyAuthorization !== "string" ||
+    flow.bootstrap.emergencyAuthorization.length === 0 ||
+    !Number.isFinite(entryExpiresAt) ||
+    entryExpiresAt <= Date.now()
   )
     return undefined;
   return Object.freeze({

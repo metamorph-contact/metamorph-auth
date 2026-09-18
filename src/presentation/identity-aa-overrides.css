@@ -1,11 +1,12 @@
 /* Identity is a WCAG 2.2 AA surface. Polymorph's general theme admission uses
    APCA; these scoped role overrides close the stricter identity pairings
-   without changing the generic design-system contract for product UIs. */
+   without changing the generic design-system contract for product UIs.
+
+   The octamorph pairing's accent fills are not overridden here: they are the
+   product's own register pins (octamorph-register-pins.css), which the contrast
+   gate judges together with this file. Light focus is pinned there as well;
+   dark focus stays here, where the register's colour would miss the floor. */
 [data-system='octamorph'][data-palette='iris'][data-mode='light'] {
-  --pm-accent-bg: #7048d0;
-  --pm-accent-bg-hover: #683fc3;
-  --pm-accent-bg-active: #5f35b5;
-  --pm-accent-contrast: #ffffff;
   --pm-danger-solid: #c6282e;
   --pm-danger-solid-hover: #b92329;
   --pm-danger-solid-active: #a61e24;
@@ -15,15 +16,9 @@
   --pm-danger-border: #c6282e;
   --pm-border-default: #8f8f94;
   --pm-border-field: #8f8f94;
-  --pm-border-focus: #7048d0;
-  --pm-border-focus-solid: #7048d0;
 }
 
 [data-system='octamorph'][data-palette='iris'][data-mode='dark'] {
-  --pm-accent-bg: #8b65f8;
-  --pm-accent-bg-hover: #9677fa;
-  --pm-accent-bg-active: #a287fb;
-  --pm-accent-contrast: #0a0a0c;
   --pm-danger-solid: #b6706b;
   --pm-danger-solid-hover: #bf7b75;
   --pm-danger-solid-active: #c88782;

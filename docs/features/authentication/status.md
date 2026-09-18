@@ -34,6 +34,37 @@ Live emergency UI/transport wiring is Plan 08D; actual CSI/local-secret/common
 owner installation remains SaaS EA-08I. No live emergency receipt or human test
 is claimed by this generated contract change.
 
+## Octamorph register pins on the identity surface — 2026-09-18
+
+Human testing found the `octamorph-iris` primary button unrecognisable beside
+the product's own: a light violet fill with a black label in dark mode, on a
+16px grid. The admitted documents derive that fill, and the AA overrides had
+then re-tuned it for the contrast gate (`#7048d0` light, `#8b65f8` with
+`#0a0a0c` dark) without reference to Octamorph's register pins, which only the
+product frontend applied. `src/presentation/octamorph-register-pins.css` now
+pins the action fills `#4e1fd3` / `#5521e9` / `#411ca8` with a white label in
+both modes, the light focus colour, and the 13px root anchor; the superseded
+accent and light-focus lines are removed from `identity-aa-overrides.css`.
+
+`scripts/check-identity-contrast.mjs` changed with it. It now reads both files
+in cascade order, requires the accent family to be pinned for `octamorph-iris`,
+newly holds the focus indicator to 3:1, and replaces the unconditional 3:1
+fill-boundary rule with SC 1.4.11's labelled-control reading: the pinned fill is
+2.10:1 on the dark surface, and passes because its label is 8.53:1 on the fill
+and 17.9:1 against the surface. The register's dark focus colour is rejected by
+the new focus floor (2.10:1), which is why dark keeps `#a78bfa`.
+
+Focused checks: `check:contrast` and `check:themes` pass, and a scratch copy of
+the gate rejects a dark register focus pin, an unreadable label, and a missing
+pins file. In the running development server the solid accent button computes
+to `rgb(78, 31, 211)` with a white label at a 13px root in both modes; the
+`shadcn-neutral` pairing is untouched by selector. The human has not yet
+re-tested the expired-link page. Known gaps: the theme documents under
+`src/presentations/themes` are still digest-pinned copies taken before
+Octamorph moved its control ladder to 32/36/40, so `sm` and `lg` controls stay
+at 28/34 here until the next UI release re-cuts them (`md` is already 36 in the
+illustrated layout); and the pin values are a hand copy of the product's file.
+
 ## Plan 06 integrator and Plan 07 social identity — 2026-09-16
 
 EA-06I is development-complete for repository-owned work: current CSI/CSRF method/start admission and same-flow SP

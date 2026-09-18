@@ -74,6 +74,28 @@ CSI-16 additionally scrubs and conceals the complete identity document before
 BFCache suspension and retains only the bounded non-authorizing receipt needed
 to recover destination completion after refresh.
 
+A product presentation wears three first-party style layers, in this order:
+the admitted pairing (`src/presentation/generated-themes.css`), the identity
+AA overrides (`identity-aa-overrides.css`), and the product's register pins
+(`octamorph-register-pins.css`). The pins exist because an admitted pairing is
+not the whole of a product's design language: Octamorph's documents derive a
+lighter accent fill than the product's primary action, and the product corrects
+that with register pins every wearer must apply (`../octamorph/design/README.md`).
+The identity surface wears two of them for `octamorph-iris` — the action fills
+with their label, and the 13px working grid — so a primary button is the same
+object on the product's sign-in page and on the identity pages it hands off to.
+It deliberately does not wear the register's field-focus or tertiary-button
+grammar, and in dark mode it keeps its own focus colour, because the register's
+focus colour reaches only 2.1:1 on the dark surface. Pin values are a copy of
+`../octamorph/design/product-pins.json` (`iris`) and must be re-copied when the
+product moves them; nothing mechanical holds the two files equal yet.
+
+`npm run check:contrast` judges the cascade of the last two layers, not either
+file alone. A solid fill must separate from its surface at 3:1 or else be
+identified by a label that clears 4.5:1 on the fill and against that surface —
+WCAG 2.2 SC 1.4.11's own reading of a button with visible text — and every
+focus indicator must separate from its surface at 3:1 with no such fallback.
+
 Generated DTOs and schemas come from `../metamorph-saas`; never edit them here.
 The [central first-party browser contract](../../../../metamorph-saas/docs/features/authentication/contracts/central-first-party-browser-v1.md)
 is the durable protocol boundary; CSI packet records are historical

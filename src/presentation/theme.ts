@@ -6,6 +6,9 @@ import {
 
 import './generated-themes.css'
 import './identity-aa-overrides.css'
+// Last, so a product's register pins outrank the derivation and the AA
+// overrides alike — the order the contrast gate judges.
+import './octamorph-register-pins.css'
 
 const PAIRINGS = Object.freeze({
   'octamorph-iris': { system: 'octamorph', palette: 'iris' },

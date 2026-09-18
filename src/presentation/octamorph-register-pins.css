@@ -1,0 +1,41 @@
+/* Octamorph's register pins, worn by the identity surface.
+
+   The admitted octamorph/iris documents derive their accent fill from the
+   engine's solid ladder, which lands a lighter violet (#8b65f8) than the
+   product's primary action (#4e1fd3). Octamorph corrects that with register
+   pins that every wearer of the pairing applies after the emitted block
+   (../octamorph/design/README.md, "Register pins"); the values here are the
+   iris entry of ../octamorph/design/product-pins.json, verbatim. Without them
+   the identity pages and the product's own sign-in page disagree about what a
+   primary button is, inside one sign-in journey.
+
+   Two pins are worn: the action fills with their label, and the 13px working
+   grid (type is emitted in rem, so the themed root owns the anchor). The
+   register's field-focus and tertiary-button grammar are not: identity keeps
+   the ring on a focused field, which the AA gate's focus floor depends on.
+
+   Loaded after identity-aa-overrides.css. scripts/check-identity-contrast.mjs
+   judges the cascade of both files, so a pin is held to the same AA floors as
+   an override. */
+[data-system='octamorph'][data-palette='iris'][data-mode='light'] {
+  --pm-accent-bg: #4e1fd3;
+  --pm-accent-bg-hover: #5521e9;
+  --pm-accent-bg-active: #411ca8;
+  --pm-accent-contrast: #ffffff;
+  --pm-border-focus: #4e1fd3;
+  --pm-border-focus-solid: #4e1fd3;
+  font-size: 81.25%;
+}
+
+/* Dark keeps the AA override's focus colour. The register pins #4e1fd3 there
+   too, but it reaches only 2.1:1 on the dark surface, and a focus indicator
+   has no label to be identified by instead (WCAG 2.2 SC 1.4.11). The fill is
+   pinned all the same: a filled button is identified by its label, which the
+   gate holds to 4.5:1 on the fill and against the surface behind it. */
+[data-system='octamorph'][data-palette='iris'][data-mode='dark'] {
+  --pm-accent-bg: #4e1fd3;
+  --pm-accent-bg-hover: #5521e9;
+  --pm-accent-bg-active: #411ca8;
+  --pm-accent-contrast: #ffffff;
+  font-size: 81.25%;
+}

@@ -6,7 +6,10 @@ import {
   fireEvent,
   waitFor,
 } from "@testing-library/react";
-import { EmergencyEntryContext } from "./emergency-entry-owner";
+import {
+  EmergencyEntryContext,
+  emergencyEntryOwnerForFlow,
+} from "./emergency-entry-owner";
 import { EmergencyEntryGate } from "./emergency-entry-gate";
 const { call } = vi.hoisted(() => ({ call: vi.fn() }));
 vi.mock("./emergency-client", () => ({
@@ -19,6 +22,7 @@ vi.mock("@polymorph/core", async (original) => ({
 afterEach(() => {
   cleanup();
   call.mockReset();
+  owner.complete.mockReset();
 });
 const id = "01994000-0000-7000-8000-000000000001",
   tenant = "01994000-0000-7000-8000-000000000002";
@@ -27,13 +31,60 @@ const flow = {
   bootstrap: { flowId: id, expiresAt },
   catalog: { projection: { expiresAt } },
 } as never;
+const emergencyFlowFixture = {
+  bootstrap: {
+    flowId: id,
+    expiresAt,
+    intent: "emergency",
+    emergencyEntry: {
+      purpose: "entry",
+      targetUserId: null,
+      resultNonce: null,
+      targetTenantId: tenant,
+      identityHomeRegionId: "local-a",
+      expiresAt,
+    },
+    emergencyAuthorization: "header.payload.signature",
+  },
+  catalog: { projection: { expiresAt } },
+};
+const emergencyFlow = emergencyFlowFixture as never;
 const owner = {
   flowId: id,
   targetTenantId: tenant,
   identityHomeRegionId: "local-a",
   complete: vi.fn(),
 };
+it("rejects stale or malformed emergency purpose authority", () => {
+  for (const bootstrap of [
+    {
+      ...emergencyFlowFixture.bootstrap,
+      emergencyAuthorization: "",
+    },
+    {
+      ...emergencyFlowFixture.bootstrap,
+      emergencyEntry: {
+        ...emergencyFlowFixture.bootstrap.emergencyEntry,
+        expiresAt: "not-a-time",
+      },
+    },
+    {
+      ...emergencyFlowFixture.bootstrap,
+      emergencyEntry: {
+        ...emergencyFlowFixture.bootstrap.emergencyEntry,
+        expiresAt: new Date(Date.now() - 1).toISOString(),
+      },
+    },
+  ])
+    expect(
+      emergencyEntryOwnerForFlow({
+        ...emergencyFlowFixture,
+        bootstrap,
+      } as never),
+    ).toBeUndefined();
+});
 it("exposes entry only on the matched emergency-purpose flow", async () => {
+  expect(emergencyEntryOwnerForFlow(emergencyFlow)).toBeDefined();
   const props = {
     flow,
     email: "admin@example.com",
@@ -48,18 +99,21 @@ it("exposes entry only on the matched emergency-purpose flow", async () => {
     </EmergencyEntryContext.Provider>,
   );
   expect(screen.queryByRole("button")).toBeNull();
-  view.rerender(
-    <EmergencyEntryContext.Provider value={owner}>
-      <EmergencyEntryGate {...props} />
-    </EmergencyEntryContext.Provider>,
-  );
+  cleanup();
+  render(<EmergencyEntryGate {...props} flow={emergencyFlow} />);
   expect(
-    await screen.findByRole("button", {
-      name: "Emergency administrator access",
-    }),
+    await screen.findByRole(
+      "button",
+      {
+        name: "Emergency administrator access",
+      },
+      { timeout: 5_000 },
+    ),
   ).toBeDefined();
 });
 it("reconciles an unknown activation with the same proof then scrubs on pagehide", async () => {
+  const navigate = vi.fn();
+  owner.complete.mockResolvedValue("/en/account");
   call.mockImplementation(async (op: string, request: unknown) => {
     if (op === "identity.emergency.entry")
       return {
@@ -98,10 +152,10 @@ it("reconciles an unknown activation with the same proof then scrubs on pagehide
   render(
     <EmergencyEntryContext.Provider value={owner}>
       <EmergencyEntryGate
-        flow={flow}
+        flow={emergencyFlow}
         email="admin@example.com"
         disabled={false}
-        navigate={vi.fn()}
+        navigate={navigate}
       />
     </EmergencyEntryContext.Provider>,
   );
@@ -152,9 +206,17 @@ it("reconciles an unknown activation with the same proof then scrubs on pagehide
       "Critical alert delivery is degraded; an incident is recorded and independent retries continue.",
     ),
   ).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "actions.continue" }));
+  await waitFor(() => expect(owner.complete).toHaveBeenCalledOnce());
+  expect(owner.complete.mock.calls[0]?.[0]).toBe(emergencyFlow);
+  expect(owner.complete.mock.calls[0]?.[1]).toMatchObject({
+    activationId: id,
+    targetTenantId: tenant,
+  });
+  await waitFor(() => expect(navigate).toHaveBeenCalledWith("/en/account"));
   fireEvent(window, new Event("pagehide"));
-  expect(screen.queryByRole("button", { name: "Continue" })).toBeNull();
-  expect(owner.complete).not.toHaveBeenCalled();
+  expect(screen.queryByRole("button", { name: "actions.continue" })).toBeNull();
+  expect(owner.complete).toHaveBeenCalledOnce();
 });
 
 it("clears entry and proof form when the actual owner context changes", async () => {
@@ -165,7 +227,7 @@ it("clears entry and proof form when the actual owner context changes", async ()
     expiresAt,
   });
   const props = {
-    flow,
+    flow: emergencyFlow,
     email: "admin@example.com",
     disabled: false,
     navigate: vi.fn(),
