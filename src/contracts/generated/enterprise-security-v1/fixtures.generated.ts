@@ -184,7 +184,7 @@ const auditEvent: CustomerSecurityAuditEventV1 = {
     "kind": "system"
   },
   "authenticationEvidenceRevision": null,
-  "authorizationCatalogVersion": "development-5",
+  "authorizationCatalogVersion": "development-7",
   "awareAt": null,
   "causationEventId": null,
   "clientId": null,

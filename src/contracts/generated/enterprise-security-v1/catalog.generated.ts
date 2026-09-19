@@ -145,7 +145,7 @@ export const enterpriseSecurityCatalog = {
       "Password alone is at most AAL1. Password plus verified TOTP may satisfy AAL2 but is not phishing resistant. Verified user-verifying WebAuthn may satisfy AAL2 and phishing resistance; an attested hardware key does not automatically assert AAL3. External provider outcomes remain capped by explicit tested mapping and initiation mode."
     ],
     "authorizationCatalog": {
-      "catalogVersion": "development-5",
+      "catalogVersion": "development-7",
       "path": "config/authorization-catalog.json",
       "rule": "References below are lookups into the sole RBAC catalog, never copied scope definitions. Profile references are UI feature references only and cannot grant access."
     },
